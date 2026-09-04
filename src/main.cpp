@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 #include <memory>
 #include <esp_heap_caps.h>
@@ -200,6 +202,11 @@ void applyTimeConfig(const DeviceConfig& cfg, bool force) {
 }
 
 void setup() {
+#if defined(AWTRIX_SOC_ESP32S3)
+  // Bench-test build only: allow operation below the brownout threshold.
+  // This does not make an undersized supply safe or stable.
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+#endif
   Serial.begin(115200);
   Serial.println();
 
