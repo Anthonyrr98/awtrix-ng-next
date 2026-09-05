@@ -2,6 +2,9 @@
 
 #include <PubSubClient.h>
 #include <WiFiClient.h>
+#ifndef AWTRIX_NATIVE
+#include <WiFiClientSecure.h>
+#endif
 
 #include <cstdint>
 #include <functional>
@@ -35,6 +38,9 @@ class MqttLink {
   static net::LinkError mapState(int pubSubState);
 
   WiFiClient wifi_;
+#ifndef AWTRIX_NATIVE
+  WiFiClientSecure secure_;
+#endif
   PubSubClient* client_ = nullptr;
   net::IHostResolver* resolver_ = nullptr;
   net::LinkStatus* status_ = nullptr;
@@ -46,6 +52,7 @@ class MqttLink {
   uint16_t port_ = 1883;
   uint16_t failuresAgainstAddress_ = 0;
   bool enabled_ = false;
+  bool tls_ = false;
   bool haveServer_ = false;
   bool wasConnected_ = false;
   bool sawWifi_ = false;

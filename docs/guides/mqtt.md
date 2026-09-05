@@ -22,6 +22,8 @@ curl -X POST http://<awtrix-ip>/api/v1/device/reboot
 
 If your broker wants credentials, add `mqttUser` and `mqttPass`. With both empty AWTRIX connects anonymously. Every key, its default and its type is in [System configuration → MQTT and Home Assistant](../reference/system.md#mqtt-and-home-assistant).
 
+For HiveMQ Cloud, also set `mqttTls:true` and `mqttPort:8883`. TLS verifies the broker against the built-in ISRG Root X1 certificate; it never falls back to an unverified connection.
+
 To see whether it worked, read `GET /api/v1/device`: the [`mqtt`](../reference/device.md#connection-status) object says whether AWTRIX is connected and, if not, why. The web UI shows the same thing on its MQTT tab.
 
 To turn MQTT off again, flip the gate: `{"mqttEnabled":false}`, then reboot - the running client keeps talking to the broker until AWTRIX restarts. The host and credentials are kept.

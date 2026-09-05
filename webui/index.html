@@ -1250,6 +1250,7 @@ const SYSF={
  authUser:F('web','text','Username|Benutzername','Needed once a login is required.|Nötig, sobald ein Login verlangt wird.'),
  authPass:F('web','secret','Password|Passwort','Leave empty to keep the saved password.|Leer lassen, um das gespeicherte Passwort zu behalten.'),
  mqttEnabled:F('mqtt','toggle','Enable MQTT|MQTT aktivieren','Connect to the broker below.|Mit dem Broker unten verbinden.'),
+ mqttTls:F('mqtt','toggle','TLS encryption|TLS-Verschlüsselung','Verify the broker certificate and encrypt the connection (usually port 8883).|Broker-Zertifikat prüfen und die Verbindung verschlüsseln (meist Port 8883).'),
  mqttHost:F('mqtt','text','Broker host|Broker-Host','IP or hostname.|IP oder Hostname.'),
  mqttPort:F('mqtt','number','Broker port|Broker-Port','1883 on most brokers.|1883 bei den meisten Brokern.',{min:1,max:65535}),
  mqttUser:F('mqtt','text','Username|Benutzername','Leave empty if the broker allows anonymous access.|Leer lassen, wenn der Broker anonymen Zugriff erlaubt.'),
@@ -1360,7 +1361,7 @@ function applyGpioCaps(c){
 const PINKEYS=['pinMatrix','pinBtnLeft','pinBtnSelect','pinBtnRight','pinBattery','pinLdr',
   'pinBuzzer','pinI2cSda','pinI2cScl','pinDfRx','pinDfTx','pinI2sBclk','pinI2sLrclk','pinI2sDout'];
 const REBOOT_KEYS=new Set(['wifiSsid','wifiPass','netStatic','ip','gateway','subnet','dns1','dns2',
-  'wifiConnectTimeout','hostname','webPort','mqttEnabled','mqttHost','mqttPort','mqttUser',
+  'wifiConnectTimeout','hostname','webPort','mqttEnabled','mqttTls','mqttHost','mqttPort','mqttUser',
   'mqttPass','mqttPrefix','statsInterval','dfplayer','scriptingEnabled'].concat(PINKEYS));
 function paintPinUse(fields){
   const by=new Map();

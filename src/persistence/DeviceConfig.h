@@ -21,6 +21,7 @@ struct DeviceConfig {
   int wifiRoamRssi = 0;
 
   bool mqttEnabled = false;
+  bool mqttTls = false;
   std::string mqttHost;
   uint16_t mqttPort = 1883;
   std::string mqttUser, mqttPass, mqttPrefix;

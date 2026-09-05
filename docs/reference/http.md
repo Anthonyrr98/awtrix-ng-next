@@ -1600,6 +1600,7 @@ Behaviour to know:
 | `wifiConnectTimeout` | long | `15000` | boot join timeout in ms (5000–120000) before falling back to the provisioning AP |
 | `wifiRoamRssi` | int | `0` | roam below this RSSI in dBm (−90–0); `0` = off |
 | `mqttEnabled` | boolean | `false` | master switch; `true` needs a non-empty `mqttHost` |
+| `mqttTls` | boolean | `false` | encrypt MQTT and verify the broker certificate |
 | `mqttHost` | string | `""` | |
 | `mqttPort` | integer | `1883` | 1–65535 |
 | `mqttUser` | string | `""` | |

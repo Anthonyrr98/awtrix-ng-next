@@ -14,6 +14,7 @@
   X(wifiConnectTimeout, "wifitmo", 0) \
   X(wifiRoamRssi, "wifiroam", 0)      \
   X(mqttEnabled, "menable", 0)        \
+  X(mqttTls, "mtls", 0)               \
   X(mqttHost, "mhost", 0)             \
   X(mqttPort, "mport", 0)             \
   X(mqttUser, "muser", 0)             \

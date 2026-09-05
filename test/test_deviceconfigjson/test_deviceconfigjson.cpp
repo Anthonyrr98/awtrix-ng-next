@@ -33,6 +33,7 @@ DeviceConfig seeded() {
   c.ip = "192.168.1.50";
   c.wifiConnectTimeout = 30000;
   c.mqttPort = 8883;
+  c.mqttTls = true;
   c.tempOffset = -3.5f;
   c.lowBatteryThreshold = 15;
   c.brightnessSmoothing = 5000;
@@ -73,8 +74,8 @@ static int members(const std::string& json) {
 }
 
 static void test_the_reply_carries_every_field() {
-  TEST_ASSERT_EQUAL_INT(66, members(written(seeded(), false)));
-  TEST_ASSERT_EQUAL_INT(69, members(written(seeded(), true)));
+  TEST_ASSERT_EQUAL_INT(67, members(written(seeded(), false)));
+  TEST_ASSERT_EQUAL_INT(70, members(written(seeded(), true)));
 }
 
 static void test_secrets_are_omitted_unless_asked_for() {
@@ -89,6 +90,7 @@ static void test_every_type_reads_its_value() {
   TEST_ASSERT_FALSE(after(R"({"netStatic":false})").netStatic);
   TEST_ASSERT_EQUAL_INT(9000, after(R"({"wifiConnectTimeout":9000})").wifiConnectTimeout);
   TEST_ASSERT_EQUAL_UINT16(1883, after(R"({"mqttPort":1883})").mqttPort);
+  TEST_ASSERT_TRUE(after(R"({"mqttTls":true})").mqttTls);
   TEST_ASSERT_EQUAL_FLOAT(-9.5f, after(R"({"tempOffset":-9.5})").tempOffset);
   TEST_ASSERT_EQUAL_FLOAT(-9.0f, after(R"({"tempOffset":-9})").tempOffset);
   TEST_ASSERT_EQUAL_UINT8(20, after(R"({"lowBatteryThreshold":20})").lowBatteryThreshold);

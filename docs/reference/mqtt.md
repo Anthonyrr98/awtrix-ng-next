@@ -19,6 +19,7 @@ shape - hold on every topic below.
 | Key | Type | Range | Default | Units | Meaning |
 |---|---|---|---|---|---|
 | `mqttEnabled` | bool | - | `false` | - | Master switch. **`true` runs the client** (requires a non-empty `mqttHost`); `false` keeps the settings but never connects. |
+| `mqttTls` | bool | - | `false` | - | Enables certificate-verified TLS; HiveMQ Cloud normally uses port `8883`. |
 | `mqttHost` | string | - | `""` | - | Broker host. |
 | `mqttPort` | int | 1–65535 | `1883` | - | Broker port. |
 | `mqttUser` | string | - | `""` | - | Username. Empty **and** empty `mqttPass` = anonymous connect. |

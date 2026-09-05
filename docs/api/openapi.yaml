@@ -2049,6 +2049,10 @@ components:
             Master switch for the MQTT client. Runs only while true; false keeps
             the settings below but never connects. Setting it true requires a
             non-empty mqttHost, else 422 validationFailed.
+        mqttTls:
+          type: boolean
+          default: false
+          description: Verify the broker certificate and encrypt the MQTT transport.
         mqttHost: { type: string, default: "" }
         mqttPort: { type: integer, default: 1883, minimum: 1, maximum: 65535 }
         mqttUser: { type: string, default: "" }

@@ -162,6 +162,7 @@ are usable, and a dropped link is checked every 5 s and reconnected.
 | Key | Type | Range | Default | Effect | Reboot |
 |---|---|---|---|---|---|
 | `mqttEnabled` | bool | - | `false` | Master switch for the MQTT client. `false` → nothing connects, publishes or subscribes; the stored host/user/password are kept. Setting it `true` requires a non-empty `mqttHost`, else `422 validationFailed`. | yes |
+| `mqttTls` | bool | - | `false` | Encrypt the connection and verify the broker certificate against the built-in ISRG Root X1 trust anchor. Use port `8883` for HiveMQ Cloud. | yes |
 | `mqttHost` | string | - | `""` | Broker host. An ordinary string - blank it freely; whether MQTT runs is decided by `mqttEnabled`, not by this field. A `.local` name is resolved over mDNS and needs a responder answering for it on the same network; an IP address needs no lookup at all. | yes |
 | `mqttPort` | uint16 | 1–65535 | `1883` | Broker port. Range-checked - outside 1–65535 is `422 validationFailed`. | yes |
 | `mqttUser` | string | - | `""` | Broker username. **Not a secret** - it *is* returned by `GET`. When user and password are both empty, AWTRIX connects anonymously. | yes |
