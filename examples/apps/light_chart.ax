@@ -1,0 +1,43 @@
+# @name Light Chart
+# @desc Rolling ambient-light history
+# @author Anthonyrr98
+# @version 1.0
+# @config every number "Sample interval" default=1 min=1 max=60 unit=min
+# @config trend color "Trend colour" default=#FFAA00
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class LightChartApp
+  var samples, ticks, period, current, trend, dwell
+  def init()
+    self.samples = []
+    self.ticks = 0
+    self.period = store.get("every") * 60
+    self.current = 0
+    self.trend = store.get("trend")
+    self.dwell = store.get("show") * 1000
+  end
+  def loop()
+    if self.ticks <= 0
+      self.ticks = self.period
+      var value = sensor.light()
+      if value != nil
+        self.current = value
+        self.samples.push(value)
+        if size(self.samples) > 16 self.samples.remove(0) end
+      end
+    end
+    self.ticks -= 1
+  end
+  def draw()
+    clear()
+    if size(self.samples) > 1
+      line_chart(self.samples, self.trend, true)
+    else
+      progress(self.current, self.trend, 0x101010)
+    end
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return LightChartApp()

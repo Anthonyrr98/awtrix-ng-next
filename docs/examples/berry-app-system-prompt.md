@@ -303,6 +303,9 @@ inside `draw()` allocates forty times a second.
 | `speed` | float | time multiplier; `1.0` normal, `0` freezes, negatives run backwards |
 | `palette` | string or list | colour source for palette-driven effects |
 | `blend` | bool | interpolate between palette entries instead of hard bands |
+| `density` | int, 0–100 | particle/column density (Matrix, Fireworks, TwinklingStars) |
+| `trail` | int, 1–64 | trail length override (Matrix) |
+| `intensity` | int, 0–100 | brightness/energy (Matrix, Fireworks, TwinklingStars) |
 
 **The 8 built-in palette names:** `Cloud` · `Lava` · `Ocean` · `Forest` · `Stripe` · `Party` ·
 `Heat` · `Rainbow`. A palette the user uploaded works by name too, and so does a list of up to 16

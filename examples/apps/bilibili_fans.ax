@@ -1,0 +1,71 @@
+# @name    Bilibili Fans
+# @desc    Displays the follower count of a Bilibili account
+# @author  Anthonyrr98
+# @version 1.0
+# @config  uid    text   "Bilibili UID" default="" help="The numeric UID from the space page"
+# @config  every  number "Refresh"      default=10 min=1 max=60 unit=min
+# @config  accent color  "Accent"       default=#FB7299
+
+class BilibiliFans
+  var url, period, ticks, in_flight
+  var fans, label, color
+
+  def init()
+    var uid = store.get("uid")
+    self.url = uid == "" ? nil : "https://api.bilibili.com/x/relation/stat?vmid=" + uid
+    self.period = store.get("every") * 60
+    self.ticks = 0
+    self.in_flight = false
+    self.fans = store.get("fans")
+    self.label = self.url == nil ? "UID?" : (self.fans == nil ? "..." : str(self.fans))
+    self.color = store.get("accent")
+    if self.color == nil self.color = settings.get("textColor") end
+  end
+
+  def on_body(body, status)
+    self.in_flight = false
+    if body == nil || status != 200
+      if self.fans == nil self.label = "NET" end
+      return
+    end
+    var m = re.search("\"follower\":([0-9]+)", body)
+    if m == nil
+      if self.fans == nil self.label = "API" end
+      return
+    end
+    var value = int(m[1])
+    self.fans = value
+    self.label = str(value)
+    store.set("fans", value)
+  end
+
+  def loop()
+    if self.url == nil return end
+    if self.ticks <= 0
+      self.ticks = self.period
+      if !self.in_flight
+        self.in_flight = true
+        http.get(self.url, / b, st -> self.on_body(b, st),
+                 {'find': "\"follower\":", 'keep': 48})
+      end
+    end
+    self.ticks -= 1
+  end
+
+  def draw()
+    clear()
+    line(1, 0, 3, 2, self.color)
+    line(6, 0, 4, 2, self.color)
+    rect(0, 2, 8, 6, self.color)
+    pixel(2, 4, self.color)
+    pixel(5, 4, self.color)
+    line(3, 6, 4, 6, self.color)
+    scroll_text(9, 6, width() - 9, self.label, self.color)
+  end
+
+  def on_button(btn)
+    if btn == "select" self.ticks = 0 end
+  end
+end
+
+return BilibiliFans()

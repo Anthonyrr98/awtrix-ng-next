@@ -163,6 +163,13 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
   std::vector<PushedAppEntry> pushedApps_;
   uint32_t nextArrival_ = 0;
   std::vector<std::string> scriptApps_;
+  struct AppScene {
+    std::string name;
+    std::vector<std::string> order;
+    std::vector<std::string> disabled;
+  };
+  std::vector<AppScene> scenes_;
+  std::string activeScene_;
   // The user's arrangement: order_ is the wanted sequence, disabled_ the apps kept out of the loop.
   // Both may name apps that do not exist at the moment, so a returning sender keeps its slot.
   std::vector<std::string> order_;

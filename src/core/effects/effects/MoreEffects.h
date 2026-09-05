@@ -108,14 +108,18 @@ inline void CheckerboardEffect::render(Canvas& c, int64_t f) {
 
 inline void FireworksEffect::render(Canvas& c, int64_t f) {
   c.clear(0);
-  // One burst per 20 frames: roll fixes its position and colour, age drives the expanding ring.
-  const int64_t burst = f / 20;
+  // Density controls how frequently a new burst starts; intensity controls its brightness.
+  const int density = settings_.hasDensity ? settings_.density : 50;
+  const int period = 30 - density * 20 / 100;
+  const int64_t burst = f / period;
   const uint32_t roll = noise::hash2(static_cast<uint32_t>(burst), 0x46495245u);
   const int cx = 2 + static_cast<int>(roll % static_cast<uint32_t>(c.width() - 4));
   const int cy = 1 + static_cast<int>((roll >> 8) % static_cast<uint32_t>(c.height() - 3));
-  const int age = static_cast<int>(f % 20);
+  const int age = static_cast<int>(f % period);
   const int r = age / 3;
-  uint32_t col = color::fromHsv(static_cast<int>((roll >> 16) % 360u), 100, age < 15 ? 80 : 20);
+  const int intensity = settings_.hasIntensity ? settings_.intensity : 100;
+  uint32_t col = color::fromHsv(static_cast<int>((roll >> 16) % 360u), 100,
+                                (age < 15 ? 80 : 20) * intensity / 100);
   col = paletteColor(static_cast<uint8_t>(roll >> 16), col);
   for (int deg = 0; deg < 360; deg += 45) {
     int x = cx + static_cast<int>(std::cos(deg * 3.14159f / 180) * r);
@@ -207,19 +211,22 @@ inline void MatrixEffect::render(Canvas& c, int64_t f) {
     const int64_t pos =
         (f * static_cast<int64_t>(2u + col % 2u)) / 2 + static_cast<int>(col % static_cast<uint32_t>(span));
     const uint32_t roll = noise::hash2(col, static_cast<uint32_t>(pos / span));
-    if (roll % 5u == 0) continue;
+    const int density = settings_.hasDensity ? settings_.density : 80;
+    if (static_cast<int>(roll % 100u) >= density) continue;
     const int head = static_cast<int>(pos % span);
-    const int len = 4 + static_cast<int>(roll % 4u);
+    const int len = settings_.hasTrail ? settings_.trail : 4 + static_cast<int>(roll % 4u);
+    const int intensity = settings_.hasIntensity ? settings_.intensity : 100;
     for (int tr = 0; tr < len; ++tr) {
       const int y = head - tr;
       if (y < 0 || y >= c.height()) continue;
       if (tr == 0) {
-        const uint8_t hs = (roll & 8u) ? 255 : 200;
+        const uint8_t hs = static_cast<uint8_t>(((roll & 8u) ? 255 : 200) * intensity / 100);
         c.setPixel(x, y, color::pack(color::scale8(kHeadR, hs), color::scale8(kHeadG, hs),
                                      color::scale8(kHeadB, hs)));
         continue;
       }
-      const uint8_t s = static_cast<uint8_t>(255u >> (tr - 1));
+      const int shift = std::min(tr - 1, 7);
+      const uint8_t s = static_cast<uint8_t>((255u >> shift) * intensity / 100);
       const uint32_t px = color::pack(color::scale8(kTrailR, s), color::scale8(kTrailG, s),
                                       color::scale8(kTrailB, s));
       if (px != color::kBlack) c.setPixel(x, y, px);
@@ -296,13 +303,16 @@ inline void LookingEyesEffect::render(Canvas& c, int64_t f) {
 
 inline void TwinklingStarsEffect::render(Canvas& c, int64_t f) {
   c.clear(0);
-  for (int i = 0; i < 22; ++i) {
+  const int density = settings_.hasDensity ? settings_.density : 35;
+  const int count = std::max(1, c.width() * c.height() * density / 400);
+  const int intensity = settings_.hasIntensity ? settings_.intensity : 100;
+  for (int i = 0; i < count; ++i) {
     const uint32_t star = noise::hash2(static_cast<uint32_t>(i), 0x53544152u);
     int x = static_cast<int>(star % static_cast<uint32_t>(c.width()));
     int y = static_cast<int>((star >> 8) % static_cast<uint32_t>(c.height()));
     int ph = static_cast<int>((f + (star >> 16) % 30u) % 30);
     int b = ph < 15 ? ph * 16 : (30 - ph) * 16;
-    const int bc = b > 255 ? 255 : b;
+    const int bc = (b > 255 ? 255 : b) * intensity / 100;
     if (b > 20) c.setPixel(x, y, paletteColor(static_cast<uint8_t>(bc), color::fromRgb(bc, bc, bc)));
   }
 }

@@ -729,6 +729,7 @@ const I18N={en:{
   radiolong:'name is too long (24 characters)',
 
   appsTab:'Apps',apploop:'App rotation',apploopH:'The apps AWTRIX shows one after another on the display. Drag ⠿ to reorder.',
+  scenes:'Rotation scenes',scenesH:'Save groups of apps and switch the complete rotation in one click.',sceneName:'Scene name',sceneSave:'Save scene',sceneApply:'Apply',sceneDelete:'Delete',sceneNone:'No saved scenes',
   background:'Background',backgroundH:'Run continuously, but never appear on the display.',
   disabledapps:'Disabled',disabledH:'Not in use. “Activate” puts an app back into the rotation or the background.',
   activate:'Activate',deactivate:'Deactivate',switchto:'Show now',more:'Actions',
@@ -768,7 +769,7 @@ const I18N={en:{
   bkSectionAp:'Restore',bkSectionApH:'Upload a previously created backup .zip.',
   bkTitle:'Create backup',bkDownload:'Download backup',bkDownloadH:'Pick what to include, then save a .zip.',
   bkWorking:'Collecting…',bkDone:'Backup downloaded',bkNone:'Select at least one category',
-  bkWifi:'WiFi',bkSettings:'Settings',bkIcons:'Icons',bkMelodies:'Melodies',bkPalettes:'Palettes',bkMp3:'MP3s',bkScripts:'Scripts',bkApporder:'App order',
+  bkWifi:'WiFi',bkSettings:'Settings',bkIcons:'Icons',bkMelodies:'Melodies',bkPalettes:'Palettes',bkMp3:'MP3s',bkScripts:'Scripts',bkApporder:'App order & scenes',bkRadio:'Radio stations',bkAll:'Select all',
   bkRestoreT:'Restore backup',bkRestore:'Choose backup…',
   bkRestoreH:'Upload a backup .zip.',
   bkCaptiveHint:'The Wi‑Fi sign‑in popup can’t upload files. To restore, open this page in a browser:',
@@ -879,6 +880,7 @@ const I18N={en:{
 
   dash:'Übersicht',display:'Anzeige',system:'System',icons:'Icons',palettes:'Paletten',log:'Log',
   appsTab:'Apps',apploop:'App-Rotation',apploopH:'Diese Apps zeigt AWTRIX nacheinander auf dem Display. Zum Umsortieren ⠿ ziehen.',
+  scenes:'Rotationsszenen',scenesH:'App-Gruppen speichern und die gesamte Rotation mit einem Klick wechseln.',sceneName:'Szenenname',sceneSave:'Szene speichern',sceneApply:'Anwenden',sceneDelete:'Löschen',sceneNone:'Keine gespeicherten Szenen',
   background:'Hintergrund',backgroundH:'Laufen dauerhaft mit, erscheinen aber nie auf dem Display.',
   disabledapps:'Deaktiviert',disabledH:'Nicht in Benutzung. „Aktivieren“ nimmt eine App wieder in die Rotation oder in den Hintergrund auf.',
   activate:'Aktivieren',deactivate:'Deaktivieren',switchto:'Jetzt anzeigen',more:'Aktionen',
@@ -919,7 +921,7 @@ const I18N={en:{
   bkSectionAp:'Wiederherstellen',bkSectionApH:'Ein zuvor erstelltes Backup-.zip einspielen.',
   bkTitle:'Sicherung erstellen',bkDownload:'Backup herunterladen',bkDownloadH:'Auswählen, was rein soll, dann .zip speichern.',
   bkWorking:'Sammle…',bkDone:'Backup heruntergeladen',bkNone:'Mindestens eine Kategorie wählen',
-  bkWifi:'WLAN',bkSettings:'Einstellungen',bkIcons:'Icons',bkMelodies:'Melodien',bkPalettes:'Paletten',bkMp3:'MP3s',bkScripts:'Skripte',bkApporder:'App-Reihenfolge',
+  bkWifi:'WLAN',bkSettings:'Einstellungen',bkIcons:'Icons',bkMelodies:'Melodien',bkPalettes:'Paletten',bkMp3:'MP3s',bkScripts:'Skripte',bkApporder:'App-Reihenfolge & Szenen',bkRadio:'Radiosender',bkAll:'Alle auswählen',
   bkRestoreT:'Sicherung wiederherstellen',bkRestore:'Sicherung wählen…',
   bkRestoreH:'Backup-.zip hochladen.',
   bkCaptiveHint:'Der WLAN-Anmelde-Dialog kann keine Dateien hochladen. Zum Wiederherstellen diese Seite im Browser öffnen:',
@@ -2023,7 +2025,7 @@ async function fillConfigPanel(name,box,saveError){
   return true;
 }
 async function viewApps(view){
-  let loop=[],background=[],disabled=[],modules=[],orig='[]',dragFrom=null;
+  let loop=[],background=[],disabled=[],modules=[],scenes=[],activeScene='',orig='[]',dragFrom=null;
   const panels=new Map();
   let panelTaken=new Set();
   const loopList=el('div',{class:'applist'});
@@ -2036,6 +2038,14 @@ async function viewApps(view){
     el('div',{class:'ghelp'},t('disabledH')),disabledList);
   const modCard=el('div',{class:'card wide'},el('h2',null,t('modules')),
     el('div',{class:'ghelp'},t('modulesH')),modList);
+  const sceneSelect=el('select');
+  const sceneName=el('input',{placeholder:t('sceneName'),maxlength:'32'});
+  const sceneSave=el('button',{class:'pri'},t('sceneSave'));
+  const sceneApply=el('button',null,t('sceneApply'));
+  const sceneDelete=el('button',{class:'danger'},t('sceneDelete'));
+  const sceneCard=el('div',{class:'card wide'},el('h2',null,t('scenes')),
+    el('div',{class:'ghelp'},t('scenesH')),
+    el('div',{class:'frow full'},sceneSelect,sceneName,sceneSave,sceneApply,sceneDelete));
   const{bar,saveBtn,discBtn,show:showBar}=saveBar();
   const names=()=>[...loop.map(a=>a.name),...background.map(a=>a.name)];
   const offNames=()=>disabled.map(a=>a.name);
@@ -2043,6 +2053,45 @@ async function viewApps(view){
   const dirty=()=>mark()!==orig;
   const offBanner=el('div',{class:'banner',style:'display:none'},'⏸ ',
     el('span',{class:'grow'},t('appsscroff')));
+
+  function paintScenes(){
+    sceneSelect.replaceChildren(el('option',{value:''},t('sceneNone')),
+      ...scenes.map(s=>el('option',{value:s.name},s.name)));
+    sceneSelect.value=scenes.some(s=>s.name===activeScene)?activeScene:'';
+    sceneApply.disabled=sceneDelete.disabled=!sceneSelect.value;
+  }
+
+  const saveOrder=body=>req('PUT','/api/v1/apps/order',body);
+  sceneSelect.addEventListener('change',()=>{
+    activeScene=sceneSelect.value;
+    sceneName.value=activeScene;
+    sceneApply.disabled=sceneDelete.disabled=!activeScene;
+  });
+  sceneSave.addEventListener('click',async()=>{
+    const name=sceneName.value.trim();
+    if(!name){sceneName.focus();return;}
+    const next={name,order:names(),disabled:offNames()};
+    const at=scenes.findIndex(s=>s.name===name);
+    if(at<0)scenes.push(next);else scenes[at]=next;
+    activeScene=name;sceneSave.disabled=true;
+    try{await saveOrder({order:names(),disabled:offNames(),scenes,activeScene});toast(t('saved'));await reload();}
+    catch(e){toast(e.message,false);}
+    sceneSave.disabled=false;
+  });
+  sceneApply.addEventListener('click',async()=>{
+    const s=scenes.find(x=>x.name===sceneSelect.value);if(!s)return;
+    sceneApply.disabled=true;
+    try{await saveOrder({order:s.order,disabled:s.disabled,scenes,activeScene:s.name});toast(t('saved'));await reload();}
+    catch(e){toast(e.message,false);}
+    sceneApply.disabled=false;
+  });
+  sceneDelete.addEventListener('click',async()=>{
+    const name=sceneSelect.value;if(!name)return;
+    scenes=scenes.filter(s=>s.name!==name);activeScene='';sceneDelete.disabled=true;
+    try{await saveOrder({order:names(),disabled:offNames(),scenes,activeScene});toast(t('deleted'));await reload();}
+    catch(e){toast(e.message,false);}
+    sceneDelete.disabled=false;
+  });
 
   function closeCfgBtn(box){
     const b=el('button',{class:'mbtn icon pri',title:t('cfgHide')},'✕');
@@ -2203,14 +2252,19 @@ async function viewApps(view){
     background=all.filter(a=>!a.inLoop&&a.enabled&&a.headless)
                   .sort((x,y)=>x.name<y.name?-1:1);
     disabled=all.filter(a=>!a.enabled);
+    try{
+      const r=await fetch('/apploop.json',{cache:'no-store'});
+      if(r.ok){const saved=await r.json();scenes=Array.isArray(saved.scenes)?saved.scenes:[];activeScene=saved.activeScene||'';}
+    }catch(_){scenes=[];activeScene='';}
     orig=mark();
+    paintScenes();
     render();
   }
 
   saveBtn.addEventListener('click',async()=>{
     saveBtn.disabled=true;
     try{
-      await req('PUT','/api/v1/apps/order',{order:names(),disabled:disabled.map(a=>a.name)});
+      await saveOrder({order:names(),disabled:offNames(),scenes,activeScene:''});
       toast(t('orderSaved'));
       await reload();
     }catch(e){toast(e.message,false);}
@@ -2220,6 +2274,7 @@ async function viewApps(view){
 
   view.append(offBanner);
   view.append(
+    sceneCard,
     el('div',{class:'card wide'},el('h2',null,t('apploop')),
       el('div',{class:'ghelp'},t('apploopH')),loopList),
     bgCard,
@@ -2316,6 +2371,11 @@ async function collectBackup(cats){
   if(cats.mp3){await grab('/MP3');included.push('mp3');}
   if(cats.scripts){await grab('/SCRIPTS');included.push('scripts');}
   if(cats.apporder){try{entries.unshift({name:'apploop.json',data:await text('/apploop.json')});included.push('apporder');}catch(e){}}
+  if(cats.radio){
+    const audio=(await api('/api/v1/audio')).data;
+    entries.push({name:'radio.json',data:JSON.stringify({stations:audio.stations||[]})});
+    included.push('radio');
+  }
   entries.unshift({name:'manifest.json',data:JSON.stringify(
     {app:'awtrix-ng',backupFormat:1,createdAt:new Date().toISOString(),
      device:{hostname:S.sysHost},categories:included})});
@@ -3188,17 +3248,21 @@ function maintenanceSection(page){
 }
 const BK_CATS=[['wifi','bkWifi'],['settings','bkSettings'],['icons','bkIcons'],
   ['melodies','bkMelodies'],['palettes','bkPalettes'],['mp3','bkMp3'],
-  ['scripts','bkScripts'],['apporder','bkApporder']];
+  ['scripts','bkScripts'],['apporder','bkApporder'],['radio','bkRadio']];
 function backupSection(page,allowBackup){
   const rows=[];
   if(allowBackup){
     const checks={};
     const avail=BK_CATS.filter(([id])=>
       (id!=='melodies'||hasSink('buzzer'))&&(id!=='mp3'||hasSink('mp3')));
+    const allCb=el('input',{type:'checkbox',checked:''});
     const boxes=avail.map(([id,lbl])=>{
-      const cb=el('input',{type:'checkbox'});checks[id]=cb;
+      const cb=el('input',{type:'checkbox',checked:''});checks[id]=cb;
+      cb.addEventListener('change',()=>{allCb.checked=avail.every(([x])=>checks[x].checked);});
       return el('label',{style:'display:inline-flex;align-items:center;gap:.3rem;margin-right:1rem'},cb,t(lbl));
     });
+    allCb.addEventListener('change',()=>avail.forEach(([id])=>{checks[id].checked=allCb.checked;}));
+    boxes.unshift(el('label',{style:'display:inline-flex;align-items:center;gap:.3rem;margin-right:1rem;font-weight:600'},allCb,t('bkAll')));
     const dl=el('button',{class:'pri'},t('bkDownload'));
     dl.addEventListener('click',async()=>{
       const cats={};let any=false;

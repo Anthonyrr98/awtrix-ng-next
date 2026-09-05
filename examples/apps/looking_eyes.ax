@@ -1,0 +1,21 @@
+# @name Looking Eyes
+# @desc Animated eyes watching the room
+# @author Anthonyrr98
+# @version 1.0
+# @config speed slider "Speed" default=100 min=25 max=300 step=5 unit=%
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class LookingEyesApp
+  var fx, dwell
+  def init()
+    self.fx = {"speed": store.get("speed") / 100.0}
+    self.dwell = store.get("show") * 1000
+  end
+  def draw()
+    effect("LookingEyes", self.fx)
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return LookingEyesApp()

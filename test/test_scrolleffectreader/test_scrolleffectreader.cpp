@@ -66,11 +66,13 @@ static void test_scroll_rejects() {
 }
 
 static std::string dumpFx(bool ok, const EffectSettings& s) {
-  char buf[64];
-  snprintf(buf, sizeof(buf), "%d|%d:%.4f|%d:%06X,%06X|%d", ok ? 1 : 0, s.hasSpeed ? 1 : 0,
+  char buf[128];
+  snprintf(buf, sizeof(buf), "%d|%d:%.4f|%d:%06X,%06X|%d|%d:%d|%d:%d|%d:%d", ok ? 1 : 0, s.hasSpeed ? 1 : 0,
            static_cast<double>(s.speed), s.ramp.valid() ? 1 : 0,
            s.ramp.valid() ? (s.ramp.palette().entries[0] & 0xFFFFFFu) : 0u,
-           s.ramp.valid() ? (s.ramp.palette().entries[15] & 0xFFFFFFu) : 0u, s.ramp.blend ? 1 : 0);
+           s.ramp.valid() ? (s.ramp.palette().entries[15] & 0xFFFFFFu) : 0u, s.ramp.blend ? 1 : 0,
+           s.hasDensity ? 1 : 0, s.density, s.hasTrail ? 1 : 0, s.trail,
+           s.hasIntensity ? 1 : 0, s.intensity);
   return buf;
 }
 
@@ -86,30 +88,37 @@ static void sameFx(const char* json, const char* expect) {
 }
 
 static void test_effect_speed() {
-  sameFx("{}", "1|0:1.0000|0:000000,000000|1");
-  sameFx("{\"speed\":2.5}", "1|1:2.5000|0:000000,000000|1");
-  sameFx("{\"speed\":0}", "1|1:0.1000|0:000000,000000|1");
-  sameFx("{\"speed\":-3}", "1|1:0.1000|0:000000,000000|1");
-  sameFx("{\"speed\":99}", "1|1:10.0000|0:000000,000000|1");
-  sameFx("{\"speed\":true}", "1|1:1.0000|0:000000,000000|1");
-  sameFx("{\"speed\":null}", "1|1:0.1000|0:000000,000000|1");
+  sameFx("{}", "1|0:1.0000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"speed\":2.5}", "1|1:2.5000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"speed\":0}", "1|1:0.1000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"speed\":-3}", "1|1:0.1000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"speed\":99}", "1|1:10.0000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"speed\":true}", "1|1:1.0000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"speed\":null}", "1|1:0.1000|0:000000,000000|1|0:100|0:0|0:100");
+}
+
+static void test_effect_detail_controls() {
+  sameFx("{\"density\":35,\"trail\":12,\"intensity\":70}",
+         "1|0:1.0000|0:000000,000000|1|1:35|1:12|1:70");
+  sameFx("{\"density\":-5,\"trail\":999,\"intensity\":120}",
+         "1|0:1.0000|0:000000,000000|1|1:0|1:64|1:100");
 }
 
 static void test_effect_palette() {
-  sameFx("{\"palette\":[\"#FF0000\",\"#00FF00\"]}", "1|0:1.0000|1:FF0000,00FF00|1");
-  sameFx("{\"palette\":[1,2,3]}", "1|0:1.0000|1:000001,000003|1");
-  sameFx("{\"palette\":\"Rainbow\"}", "1|0:1.0000|1:FF0000,D5002B|1");
-  sameFx("{\"palette\":null}", "1|0:1.0000|0:000000,000000|1");
-  sameFx("{\"palette\":[]}", "0|0:1.0000|0:000000,000000|1");
-  sameFx("{\"palette\":\"nosuchpalette\"}", "0|0:1.0000|0:000000,000000|1");
-  sameFx("{\"palette\":42}", "0|0:1.0000|0:000000,000000|1");
+  sameFx("{\"palette\":[\"#FF0000\",\"#00FF00\"]}", "1|0:1.0000|1:FF0000,00FF00|1|0:100|0:0|0:100");
+  sameFx("{\"palette\":[1,2,3]}", "1|0:1.0000|1:000001,000003|1|0:100|0:0|0:100");
+  sameFx("{\"palette\":\"Rainbow\"}", "1|0:1.0000|1:FF0000,D5002B|1|0:100|0:0|0:100");
+  sameFx("{\"palette\":null}", "1|0:1.0000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"palette\":[]}", "0|0:1.0000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"palette\":\"nosuchpalette\"}", "0|0:1.0000|0:000000,000000|1|0:100|0:0|0:100");
+  sameFx("{\"palette\":42}", "0|0:1.0000|0:000000,000000|1|0:100|0:0|0:100");
 }
 
 static void test_effect_blend() {
-  sameFx("{\"blend\":false}", "1|0:1.0000|0:000000,000000|0");
-  sameFx("{\"palette\":[\"#FF0000\"],\"blend\":true}", "1|0:1.0000|1:FF0000,FF0000|1");
-  sameFx("{\"blend\":false,\"palette\":[\"#FF0000\"]}", "1|0:1.0000|1:FF0000,FF0000|0");
-  sameFx("{\"palette\":[\"#FF0000\"],\"blend\":0}", "1|0:1.0000|1:FF0000,FF0000|0");
+  sameFx("{\"blend\":false}", "1|0:1.0000|0:000000,000000|0|0:100|0:0|0:100");
+  sameFx("{\"palette\":[\"#FF0000\"],\"blend\":true}", "1|0:1.0000|1:FF0000,FF0000|1|0:100|0:0|0:100");
+  sameFx("{\"blend\":false,\"palette\":[\"#FF0000\"]}", "1|0:1.0000|1:FF0000,FF0000|0|0:100|0:0|0:100");
+  sameFx("{\"palette\":[\"#FF0000\"],\"blend\":0}", "1|0:1.0000|1:FF0000,FF0000|0|0:100|0:0|0:100");
 }
 
 int main(int, char**) {
@@ -118,6 +127,7 @@ int main(int, char**) {
   RUN_TEST(test_scroll_object);
   RUN_TEST(test_scroll_rejects);
   RUN_TEST(test_effect_speed);
+  RUN_TEST(test_effect_detail_controls);
   RUN_TEST(test_effect_palette);
   RUN_TEST(test_effect_blend);
   return UNITY_END();

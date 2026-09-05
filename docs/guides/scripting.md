@@ -765,9 +765,12 @@ are shared. Both return `false` for an unknown name, so you can tell.
 | `effect(name)` / `effect(name, settings)` | animated background across the canvas |
 | `overlay(name)` / `overlay(name, settings)` | weather overlay, drawn on top |
 
-`settings` is an optional map: `{"speed": 0.5, "palette": "Lava", "blend": true}`,
+`settings` is an optional map: `{"speed": 0.5, "palette": "Lava", "blend": true,
+"density": 70, "trail": 10, "intensity": 80}`,
 where `palette` takes the [same names and colour stops](#palettes) as everywhere
-else. Because you call them in order, the layering is yours: run `effect()` first
+else. `density` and `intensity` are percentages; `trail` is a 1–64 pixel override.
+Effects that use a control today are Matrix, Fireworks and TwinklingStars; other effects safely
+ignore it. Because you call them in order, the layering is yours: run `effect()` first
 as the background, draw your content, then `overlay()` last.
 
 **Build that map once, in `init()`, and keep it in a member.** Written inside

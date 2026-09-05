@@ -301,6 +301,27 @@ EffectSettings argEffectSettings(bvm* vm, int i) {
     s.ramp.blend = be_tobool(vm, -1);
     be_pop(vm, 1);
   }
+  if (pushMapValue(vm, i, "density")) {
+    if (be_isint(vm, -1)) {
+      s.density = std::max(0, std::min(100, static_cast<int>(be_toint(vm, -1))));
+      s.hasDensity = true;
+    }
+    be_pop(vm, 1);
+  }
+  if (pushMapValue(vm, i, "trail")) {
+    if (be_isint(vm, -1)) {
+      s.trail = std::max(1, std::min(64, static_cast<int>(be_toint(vm, -1))));
+      s.hasTrail = true;
+    }
+    be_pop(vm, 1);
+  }
+  if (pushMapValue(vm, i, "intensity")) {
+    if (be_isint(vm, -1)) {
+      s.intensity = std::max(0, std::min(100, static_cast<int>(be_toint(vm, -1))));
+      s.hasIntensity = true;
+    }
+    be_pop(vm, 1);
+  }
   return s;
 }
 

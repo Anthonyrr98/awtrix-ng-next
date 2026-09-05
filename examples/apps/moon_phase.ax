@@ -1,0 +1,55 @@
+# @name Moon Phase
+# @desc Approximate current lunar phase
+# @author Anthonyrr98
+# @version 1.0
+# @config moon color "Moon colour" default=#FFF0A0
+# @config dim color "New moon colour" default=#202018
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class MoonPhaseApp
+  var phase, moon, dim, dwell
+  def init()
+    self.phase = 0
+    self.moon = store.get("moon")
+    self.dim = store.get("dim")
+    self.dwell = store.get("show") * 1000
+  end
+  def loop()
+    var e = epoch_ms()
+    if e >= 0
+      var days = e / 86400000.0 - 10962.0
+      var cycle = days - int(days / 29.530588) * 29.530588
+      self.phase = int(cycle * 8 / 29.530588)
+    end
+  end
+  def draw()
+    clear()
+    if self.phase == 0
+      circle(15, 3, 3, self.dim)
+    elif self.phase == 4
+      circle_fill(15, 3, 3, self.moon)
+    elif self.phase == 1
+      circle_fill(15, 3, 3, self.moon)
+      circle_fill(14, 3, 3, 0x000000)
+    elif self.phase == 2
+      circle_fill(15, 3, 3, self.moon)
+      rect_fill(12, 0, 3, 7, 0x000000)
+    elif self.phase == 3
+      circle_fill(15, 3, 3, self.moon)
+      circle_fill(12, 3, 3, 0x000000)
+    elif self.phase == 5
+      circle_fill(15, 3, 3, self.moon)
+      circle_fill(18, 3, 3, 0x000000)
+    elif self.phase == 6
+      circle_fill(15, 3, 3, self.moon)
+      rect_fill(16, 0, 3, 7, 0x000000)
+    else
+      circle_fill(15, 3, 3, self.moon)
+      circle_fill(17, 3, 3, 0x000000)
+    end
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return MoonPhaseApp()

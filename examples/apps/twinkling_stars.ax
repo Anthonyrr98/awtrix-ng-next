@@ -1,0 +1,24 @@
+# @name Twinkling Stars
+# @desc A field of softly twinkling stars
+# @author Anthonyrr98
+# @version 1.0
+# @config speed slider "Speed" default=70 min=10 max=200 step=5 unit=%
+# @config density slider "Star density" default=60 min=5 max=100 step=5 unit=%
+# @config intensity slider "Brightness" default=100 min=10 max=100 step=5 unit=%
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class TwinklingStarsApp
+  var fx, dwell
+  def init()
+    self.fx = {"speed": store.get("speed") / 100.0,
+               "density": store.get("density"), "intensity": store.get("intensity")}
+    self.dwell = store.get("show") * 1000
+  end
+  def draw()
+    effect("TwinklingStars", self.fx)
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return TwinklingStarsApp()

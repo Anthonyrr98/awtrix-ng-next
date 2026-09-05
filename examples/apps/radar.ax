@@ -1,0 +1,21 @@
+# @name Radar
+# @desc Rotating green radar sweep
+# @author Anthonyrr98
+# @version 1.0
+# @config speed slider "Speed" default=100 min=25 max=300 step=5 unit=%
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class RadarApp
+  var fx, dwell
+  def init()
+    self.fx = {"speed": store.get("speed") / 100.0}
+    self.dwell = store.get("show") * 1000
+  end
+  def draw()
+    effect("Radar", self.fx)
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return RadarApp()

@@ -1,0 +1,52 @@
+# @name Dice
+# @desc Press select to roll a pixel die
+# @author Anthonyrr98
+# @version 1.0
+# @config face color "Face colour" default=#E8E8E8
+# @config pip color "Pip colour" default=#202020
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+import math
+
+class DiceApp
+  var value, face, pip, dwell
+  def init()
+    self.value = 1 + math.rand() % 6
+    self.face = store.get("face")
+    self.pip = store.get("pip")
+    self.dwell = store.get("show") * 1000
+  end
+  def draw()
+    clear()
+    rect_fill(12, 0, 8, 8, self.face)
+    if self.value == 1 || self.value == 3 || self.value == 5
+      pixel(15, 3, self.pip)
+      pixel(16, 4, self.pip)
+    end
+    if self.value >= 2
+      pixel(13, 1, self.pip)
+      pixel(14, 2, self.pip)
+      pixel(18, 5, self.pip)
+      pixel(19, 6, self.pip)
+    end
+    if self.value >= 4
+      pixel(18, 1, self.pip)
+      pixel(19, 2, self.pip)
+      pixel(13, 5, self.pip)
+      pixel(14, 6, self.pip)
+    end
+    if self.value == 6
+      pixel(13, 3, self.pip)
+      pixel(14, 4, self.pip)
+      pixel(18, 3, self.pip)
+      pixel(19, 4, self.pip)
+    end
+  end
+  def on_button(btn)
+    if btn == "select" self.value = 1 + math.rand() % 6 end
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return DiceApp()

@@ -13,6 +13,13 @@ namespace awtrix {
 struct EffectSettings {
   float speed = 1.0f;
   bool hasSpeed = false;
+  // Optional effect-specific controls. Effects that do not use one simply ignore it.
+  int density = 100;       // 0..100 percent
+  int trail = 0;           // pixels; 0 keeps the effect default
+  int intensity = 100;     // 0..100 percent
+  bool hasDensity = false;
+  bool hasTrail = false;
+  bool hasIntensity = false;
   render::ColorRamp ramp;
 };
 

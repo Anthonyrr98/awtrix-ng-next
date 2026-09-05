@@ -1,0 +1,21 @@
+# @name Pacifica
+# @desc Calm animated ocean waves
+# @author Anthonyrr98
+# @version 1.0
+# @config speed slider "Speed" default=70 min=10 max=200 step=5 unit=%
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class PacificaApp
+  var fx, dwell
+  def init()
+    self.fx = {"speed": store.get("speed") / 100.0}
+    self.dwell = store.get("show") * 1000
+  end
+  def draw()
+    effect("Pacifica", self.fx)
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return PacificaApp()

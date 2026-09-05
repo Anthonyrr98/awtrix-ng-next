@@ -1,0 +1,52 @@
+# @name Pomodoro
+# @desc A select-button focus timer
+# @author Anthonyrr98
+# @version 1.0
+# @config minutes number "Focus time" default=25 min=1 max=120 unit=min
+# @config active color "Active colour" default=#FF4040
+# @config paused color "Paused colour" default=#FFAA00
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class PomodoroApp
+  var left, total, running, label, active, paused, dwell
+  def init()
+    self.total = store.get("minutes") * 60
+    self.left = self.total
+    self.running = false
+    self.label = str(store.get("minutes")) + "m"
+    self.active = store.get("active")
+    self.paused = store.get("paused")
+    self.dwell = store.get("show") * 1000
+  end
+  def loop()
+    if self.running && self.left > 0
+      self.left -= 1
+      var mins = (self.left + 59) / 60
+      self.label = str(mins) + "m"
+      if self.left == 0
+        self.running = false
+        self.label = "DONE"
+        notify({"text": "Pomodoro finished", "textColor": self.active})
+      end
+    end
+  end
+  def draw()
+    clear()
+    var c = self.running ? self.active : self.paused
+    text((width() - text_ink_width(self.label)) / 2, 6, self.label, c)
+    progress(self.left * 100 / self.total, c, 0x101010)
+  end
+  def on_button(btn)
+    if btn == "select"
+      if self.left == 0
+        self.left = self.total
+        self.label = str(self.total / 60) + "m"
+      end
+      self.running = !self.running
+    end
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return PomodoroApp()

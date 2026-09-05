@@ -907,6 +907,23 @@ static void test_nothing_is_switched_off_unless_it_is_named() {
   TEST_ASSERT_TRUE(e.isEnabled("Battery"));
 }
 
+static void test_rotation_scenes_round_trip_with_the_app_order() {
+  sound::AudioRouter so; FDisplay di; FSystem sy;
+  CoreEngine e(so, di, sy);
+  const char* body =
+      "{\"order\":[\"Time\",\"Date\"],\"disabled\":[\"Battery\"],"
+      "\"scenes\":[{\"name\":\"Night\",\"order\":[\"Time\"],"
+      "\"disabled\":[\"Date\",\"Battery\"]}],\"activeScene\":\"Night\"}";
+  TEST_ASSERT_TRUE(e.setAppOrder(body));
+  const std::string saved = e.appOrderJson();
+  TEST_ASSERT_TRUE(saved.find("\"scenes\":[{\"name\":\"Night\"") != std::string::npos);
+  TEST_ASSERT_TRUE(saved.find("\"activeScene\":\"Night\"") != std::string::npos);
+
+  CoreEngine restored(so, di, sy);
+  TEST_ASSERT_TRUE(restored.setAppOrder(saved));
+  TEST_ASSERT_EQUAL_STRING(saved.c_str(), restored.appOrderJson().c_str());
+}
+
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_a_body_the_engine_cannot_read_leaves_the_arrangement_alone);
@@ -917,6 +934,7 @@ int main(int, char**) {
   RUN_TEST(test_a_reserved_slot_is_listed_while_its_app_is_away);
   RUN_TEST(test_disabled_alone_switches_off_without_resending_the_order);
   RUN_TEST(test_an_object_body_with_neither_key_is_rejected);
+  RUN_TEST(test_rotation_scenes_round_trip_with_the_app_order);
   RUN_TEST(test_a_disabled_pushed_app_stays_disabled_across_a_reboot);
   RUN_TEST(test_an_explicit_disabled_list_leaves_unmentioned_apps_alone);
   RUN_TEST(test_the_apps_inventory_keeps_a_disabled_app_that_is_gone);

@@ -155,6 +155,29 @@ std::string CoreEngine::appOrderJson() const {
     api::appendJsonString(out, disabled_[i]);
   }
   out += "]}";
+  if (!scenes_.empty() || !activeScene_.empty()) {
+    out.pop_back();
+    out += ",\"scenes\":[";
+    for (std::size_t s = 0; s < scenes_.size(); ++s) {
+      if (s) out += ',';
+      out += "{\"name\":";
+      api::appendJsonString(out, scenes_[s].name);
+      out += ",\"order\":[";
+      for (std::size_t i = 0; i < scenes_[s].order.size(); ++i) {
+        if (i) out += ',';
+        api::appendJsonString(out, scenes_[s].order[i]);
+      }
+      out += "],\"disabled\":[";
+      for (std::size_t i = 0; i < scenes_[s].disabled.size(); ++i) {
+        if (i) out += ',';
+        api::appendJsonString(out, scenes_[s].disabled[i]);
+      }
+      out += "]}";
+    }
+    out += "],\"activeScene\":";
+    api::appendJsonString(out, activeScene_);
+    out += '}';
+  }
   return out;
 }
 
@@ -319,7 +342,9 @@ bool CoreEngine::setAppOrder(const std::string& json) {
 
   api::JsonReader on{std::string_view(json)};
   api::JsonReader off{std::string_view(json)};
-  bool namedOrder = false, namedHidden = false;
+  api::JsonReader sceneRows{std::string_view(json)};
+  bool namedOrder = false, namedHidden = false, namedScenes = false, namedActive = false;
+  std::string activeScene;
   api::JsonReader o = root;
   if (!o.enterObject()) return false;
   while (o.nextMember()) {
@@ -331,6 +356,13 @@ bool CoreEngine::setAppOrder(const std::string& json) {
       if (!o.isArray()) return false;
       off = o;
       namedHidden = true;
+    } else if (o.keyEquals("scenes")) {
+      if (!o.isArray()) return false;
+      sceneRows = o;
+      namedScenes = true;
+    } else if (o.keyEquals("activeScene")) {
+      if (!o.isString() || !o.appendString(activeScene)) return false;
+      namedActive = true;
     }
     if (!o.skipValue()) return false;
   }
@@ -345,8 +377,47 @@ bool CoreEngine::setAppOrder(const std::string& json) {
   std::vector<std::string> disabled;
   if (!readNames(off, disabled, true)) return false;
 
+  std::vector<AppScene> scenes = scenes_;
+  if (namedScenes) {
+    scenes.clear();
+    if (!sceneRows.enterArray()) return false;
+    while (sceneRows.nextElement()) {
+      if (!sceneRows.isObject() || scenes.size() >= 16) return false;
+      AppScene scene;
+      api::JsonReader row = sceneRows;
+      api::JsonReader so = row, sd = row;
+      bool hasName = false, hasOrder = false, hasDisabled = false;
+      if (!row.enterObject()) return false;
+      while (row.nextMember()) {
+        if (row.keyEquals("name")) {
+          if (!row.isString() || !row.appendString(scene.name) || scene.name.empty() || scene.name.size() > 32)
+            return false;
+          hasName = true;
+        } else if (row.keyEquals("order")) {
+          if (!row.isArray()) return false;
+          so = row;
+          hasOrder = true;
+        } else if (row.keyEquals("disabled")) {
+          if (!row.isArray()) return false;
+          sd = row;
+          hasDisabled = true;
+        }
+        if (!row.skipValue()) return false;
+      }
+      if (!hasName || !hasOrder || !hasDisabled ||
+          !readNames(so, scene.order, false) || !readNames(sd, scene.disabled, true)) return false;
+      if (std::find_if(scenes.begin(), scenes.end(), [&](const AppScene& s) { return s.name == scene.name; }) != scenes.end())
+        return false;
+      scenes.push_back(std::move(scene));
+      if (!sceneRows.skipValue()) return false;
+    }
+  }
+
   order_ = std::move(order);
   disabled_ = std::move(disabled);
+  scenes_ = std::move(scenes);
+  if (namedActive) activeScene_ = std::move(activeScene);
+  else if (namedOrder || namedHidden) activeScene_.clear();
   rebuildAppList();
   if (orderSaveFn_) orderSaveFn_(appOrderJson());
   return true;

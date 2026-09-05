@@ -8,6 +8,20 @@
 namespace awtrix {
 namespace payload {
 
+namespace {
+bool readClampedInt(api::JsonReader r, int lo, int hi, int& out) {
+  double d = 0.0;
+  if (r.isNumber()) r.asDouble(d);
+  else if (r.isString()) api::stringAsNumber(r, d);
+  else return false;
+  int v = static_cast<int>(d);
+  if (v < lo) v = lo;
+  if (v > hi) v = hi;
+  out = v;
+  return true;
+}
+}
+
 // Lenient on types: "speed" takes a number, a bool or a numeric string. Unknown keys are ignored.
 bool readEffectSettings(api::JsonReader r, EffectSettings& out) {
   bool sawBlend = false;
@@ -33,6 +47,12 @@ bool readEffectSettings(api::JsonReader r, EffectSettings& out) {
       out.hasSpeed = true;
     } else if (key == "palette") {
       if (!readPalette(r, out.ramp)) return false;
+    } else if (key == "density") {
+      out.hasDensity = readClampedInt(r, 0, 100, out.density);
+    } else if (key == "trail") {
+      out.hasTrail = readClampedInt(r, 1, 64, out.trail);
+    } else if (key == "intensity") {
+      out.hasIntensity = readClampedInt(r, 0, 100, out.intensity);
     } else if (key == "blend") {
       sawBlend = true;
       if (r.isBool()) {

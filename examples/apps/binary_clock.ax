@@ -1,0 +1,38 @@
+# @name Binary Clock
+# @desc Six-digit binary clock
+# @author Anthonyrr98
+# @version 1.0
+# @config on color "Lit colour" default=#00AAFF
+# @config off color "Unlit colour" default=#101820
+# @config show number "Duration" default=12 min=3 max=120 unit=s
+
+class BinaryClockApp
+  var lit, dim, dwell, vals
+  def init()
+    self.lit = store.get("on")
+    self.dim = store.get("off")
+    self.dwell = store.get("show") * 1000
+    self.vals = [0, 0, 0, 0, 0, 0]
+  end
+  def loop()
+    self.vals[0] = hour() / 10
+    self.vals[1] = hour() % 10
+    self.vals[2] = minute() / 10
+    self.vals[3] = minute() % 10
+    self.vals[4] = second() / 10
+    self.vals[5] = second() % 10
+  end
+  def draw()
+    clear()
+    for i : 0 .. 5
+      for b : 0 .. 3
+        var c = ((self.vals[i] / (1 << b)) % 2) == 1 ? self.lit : self.dim
+        rect_fill(1 + i * 5, 6 - b * 2, 2, 2, c)
+      end
+    end
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return BinaryClockApp()

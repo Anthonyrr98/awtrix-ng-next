@@ -1,0 +1,62 @@
+# @name    Matrix Rain
+# @desc    Falling digital rain with configurable trails
+# @author  Anthonyrr98
+# @version 1.1
+# @config  speed slider "Speed"        default=100 min=25 max=300 step=5 unit=%
+# @config  trail slider "Trail length" default=7 min=3 max=12 step=1 unit=px
+# @config  hue   slider "Colour hue"   default=120 min=0 max=360 step=5
+# @config  show  number "Duration"     default=15 min=3 max=120 unit=s
+
+import math
+
+class MatrixRain
+  var heads, interval, last_step
+  var trail, hue, dwell
+
+  def init()
+    self.heads = []
+    for x : 0 .. width() - 1
+      self.heads.push(-(math.rand() % (height() + 8)))
+    end
+    self.interval = 10000 / store.get("speed")
+    self.last_step = now_ms()
+    self.trail = store.get("trail")
+    self.hue = store.get("hue")
+    self.dwell = store.get("show") * 1000
+  end
+
+  def draw()
+    clear()
+    var now = now_ms()
+    if now - self.last_step >= self.interval
+      self.last_step = now
+      for x : 0 .. width() - 1
+        self.heads[x] += 1
+        if self.heads[x] - self.trail >= height()
+          self.heads[x] = -(math.rand() % (height() + 8))
+        end
+      end
+    end
+
+    for x : 0 .. width() - 1
+      for t : 0 .. self.trail - 1
+        var y = self.heads[x] - t
+        if y >= 0 && y < height()
+          if t == 0
+            pixel(x, y, hsv(self.hue, 25, 100))
+          else
+            var value = 72 - (t * 64 / self.trail)
+            if value < 8 value = 8 end
+            pixel(x, y, hsv(self.hue, 100, value))
+          end
+        end
+      end
+    end
+  end
+
+  def duration()
+    return self.dwell
+  end
+end
+
+return MatrixRain()

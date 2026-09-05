@@ -110,6 +110,18 @@ error, so an animation can neither freeze nor run away.
 Palette-painted text is the exception: it moves on its own `paletteSpeed`, so `effectSpeed` does
 not affect it.
 
+### Tune density, trails and intensity
+
+The structured `effectSettings` object also accepts `density` and `intensity` from 0–100, plus a
+`trail` length from 1–64 pixels. Matrix uses all three; Fireworks and TwinklingStars use density
+and intensity. Effects that do not implement one of these controls simply keep their normal look.
+
+```bash
+curl -X PUT http://<awtrix-ip>/api/v1/apps/pushed/demo \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"CODE","effect":"Matrix","effectSettings":{"speed":0.7,"density":65,"trail":12,"intensity":80}}'
+```
+
 ---
 
 ## Recolour an effect with a palette

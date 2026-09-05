@@ -1,0 +1,58 @@
+# @name Game of Life
+# @desc Conway cellular automaton
+# @author Anthonyrr98
+# @version 1.0
+# @config speed slider "Speed" default=5 min=1 max=20 step=1 unit=fps
+# @config density slider "Start density" default=32 min=10 max=70 step=1 unit=%
+# @config alive color "Cell colour" default=#00FF66
+# @config show number "Duration" default=15 min=3 max=120 unit=s
+
+import math
+
+class GameOfLifeApp
+  var cells, next, interval, last_step, alive, dwell
+  def init()
+    self.cells = []
+    self.next = []
+    for i : 0 .. width() * height() - 1
+      self.cells.push((math.rand() % 100) < store.get("density") ? 1 : 0)
+      self.next.push(0)
+    end
+    self.interval = 1000 / store.get("speed")
+    self.last_step = now_ms()
+    self.alive = store.get("alive")
+    self.dwell = store.get("show") * 1000
+  end
+  def draw()
+    clear()
+    var w = width()
+    var h = height()
+    if now_ms() - self.last_step >= self.interval
+      self.last_step = now_ms()
+      for y : 0 .. h - 1
+        for x : 0 .. w - 1
+          var n = 0
+          for dy : -1 .. 1
+            for dx : -1 .. 1
+              if dx != 0 || dy != 0
+                n += self.cells[((y + dy + h) % h) * w + ((x + dx + w) % w)]
+              end
+            end
+          end
+          var here = self.cells[y * w + x]
+          self.next[y * w + x] = (n == 3 || (here == 1 && n == 2)) ? 1 : 0
+        end
+      end
+      var swap = self.cells
+      self.cells = self.next
+      self.next = swap
+    end
+    for i : 0 .. w * h - 1
+      if self.cells[i] == 1 pixel(i % w, i / w, self.alive) end
+    end
+  end
+  def duration()
+    return self.dwell
+  end
+end
+return GameOfLifeApp()
