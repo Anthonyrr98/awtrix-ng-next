@@ -1,3 +1,19 @@
+## AWTRIX NG 1.2.1
+
+**Fixed**
+
+- App order, rotation scenes and radio station changes report persistence failures and retain the previous live configuration.
+- Scene and station backup restore reports failed writes.
+- Scene, station and script files are written to a temporary file, read back and verified before replacing the previous file.
+- Failed script state writes remain queued for retry.
+- Interrupted firmware uploads abort the updater; a new upload clears previous image errors before size checks.
+- App order requests reject an active scene that does not exist.
+
+This is a drop-in update for AWTRIX NG 1.2.0. Existing settings, apps, scripts,
+radio stations and backup archives remain compatible.
+
+---
+
 ## AWTRIX NG 1.2.0
 
 This release expands the on-device app system, animation controls, rotation management and

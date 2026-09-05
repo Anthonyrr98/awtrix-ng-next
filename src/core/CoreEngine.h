@@ -33,7 +33,7 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
   void tick(int64_t nowMs);
   const DispatchDetail& lastDetail() const { return lastDetail_; }
 
-  void setOrderPersist(std::function<void(const std::string& json)> cb) {
+  void setOrderPersist(std::function<bool(const std::string& json)> cb) {
     orderSaveFn_ = std::move(cb);
   }
 
@@ -46,7 +46,7 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
   uint32_t radioStarvedMs() const { return pcm_ ? pcm_->starvedMs() : 0; }
   uint32_t radioBufferBytes() const { return pcm_ ? pcm_->bufferBytes() : 0; }
 
-  void setStationPersist(std::function<void(const std::string& json)> cb) {
+  void setStationPersist(std::function<bool(const std::string& json)> cb) {
     stationSaveFn_ = std::move(cb);
   }
   const std::vector<radio::Station>& stations() const { return stations_; }
@@ -120,6 +120,7 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
                               DispatchDetail& detail) override;
   void deletePushedApp(const std::string& name) override;
   bool setAppOrder(const std::string& json) override;
+  DispatchResult applyAppOrder(const std::string& json) override;
   bool switchApp(const std::string& nameOrJson) override;
   void nextApp() override;
   void previousApp() override;
@@ -139,7 +140,7 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
   bool validateSpecNames(const AppSpec& spec, DispatchDetail& detail) const;
 
   std::vector<radio::Station> stations_;
-  std::function<void(const std::string&)> stationSaveFn_;
+  std::function<bool(const std::string&)> stationSaveFn_;
   sound::IPcmSink* pcm_ = nullptr;
 
   struct PushedAppEntry {
@@ -174,7 +175,7 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
   // Both may name apps that do not exist at the moment, so a returning sender keeps its slot.
   std::vector<std::string> order_;
   std::vector<std::string> disabled_;
-  std::function<void(const std::string&)> orderSaveFn_;
+  std::function<bool(const std::string&)> orderSaveFn_;
   IScriptService* scripts_ = nullptr;
   const EffectRegistry* overlays_ = nullptr;
   const EffectRegistry* effects_ = nullptr;

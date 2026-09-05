@@ -474,12 +474,12 @@ void HttpApiServer::handleUpdateUpload() {
   if (apMode_) return;
   if (up.status == UPLOAD_FILE_START) {
     uploadWriteOk_ = false;
+    updateImageError_.clear();
     uploadAuthed_ = !cfg_->authEnabled ||
                     server_->authenticate(cfg_->authUser.c_str(), cfg_->authPass.c_str());
     if (!uploadAuthed_) return;
     const size_t contentLen = server_->clientContentLength();
     if (contentLen > 0 && contentLen > ESP.getFreeSketchSpace()) return;
-    updateImageError_.clear();
     uploadContentChecked_ = false;
     markerMatched_ = 0;
     markerCapturing_ = false;
@@ -535,6 +535,9 @@ void HttpApiServer::handleUpdateUpload() {
     if (uploadWriteOk_ && Update.write(up.buf, up.currentSize) != up.currentSize) {
       uploadWriteOk_ = false;
     }
+  } else if (up.status == UPLOAD_FILE_ABORTED) {
+    Update.abort();
+    uploadWriteOk_ = false;
   } else if (up.status == UPLOAD_FILE_END) {
     if (uploadWriteOk_) {
       if (!Update.end(true)) uploadWriteOk_ = false;

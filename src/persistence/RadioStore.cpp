@@ -1,6 +1,7 @@
 #include "persistence/RadioStore.h"
 
 #include <LittleFS.h>
+#include "persistence/AtomicFile.h"
 
 #include "core/Command.h"
 #include "core/CoreEngine.h"
@@ -12,11 +13,8 @@ namespace {
 constexpr const char* kPath = "/radio.json";
 }
 
-void save(const std::string& json) {
-  File f = LittleFS.open(kPath, "w");
-  if (!f) return;
-  f.print(json.c_str());
-  f.close();
+bool save(const std::string& json) {
+  return atomicfile::write(kPath, json);
 }
 
 void load(CoreEngine& engine) {

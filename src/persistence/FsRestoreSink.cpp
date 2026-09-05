@@ -60,14 +60,16 @@ bool FsRestoreSink::applySettings(const std::string& json, std::string& err) {
   return true;
 }
 
-bool FsRestoreSink::applyAppLoop(const std::string& json, std::string&) {
-  apporder::save(json);
-  return true;
+bool FsRestoreSink::applyAppLoop(const std::string& json, std::string& err) {
+  if (apporder::save(json)) return true;
+  err = "could not save restored file";
+  return false;
 }
 
-bool FsRestoreSink::applyRadioStations(const std::string& json, std::string&) {
-  radiostore::save(json);
-  return true;
+bool FsRestoreSink::applyRadioStations(const std::string& json, std::string& err) {
+  if (radiostore::save(json)) return true;
+  err = "could not save restored file";
+  return false;
 }
 
 void FsRestoreSink::commit() {

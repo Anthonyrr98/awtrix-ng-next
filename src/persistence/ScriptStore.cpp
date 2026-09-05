@@ -1,6 +1,7 @@
 #include "persistence/ScriptStore.h"
 
 #include <LittleFS.h>
+#include "persistence/AtomicFile.h"
 
 #include <cstring>
 #include <utility>
@@ -32,19 +33,9 @@ String storePath(const std::string& name) {
 }
 
 bool writeFile(const String& path, const std::string& body) {
-  File f = LittleFS.open(path, "w");
-  if (!f) {
-    logf("scripts: cannot write %s", path.c_str());
-    return false;
-  }
-  const std::size_t n = f.write(reinterpret_cast<const uint8_t*>(body.data()), body.size());
-  f.close();
-  if (n != body.size()) {
-    logf("scripts: short write on %s (%u/%u)", path.c_str(), static_cast<unsigned>(n),
-         static_cast<unsigned>(body.size()));
-    return false;
-  }
-  return true;
+  const bool ok = atomicfile::write(path.c_str(), body);
+  if (!ok) logf("scripts: could not save %s", path.c_str());
+  return ok;
 }
 
 std::string readFile(const String& path) {
@@ -102,7 +93,9 @@ void ScriptStore::flush() {
   if (dirty_.empty()) return;
   const std::map<std::string, std::string> pending = std::move(dirty_);
   dirty_.clear();
-  for (const auto& kv : pending) writeFile(storePath(kv.first), kv.second);
+  for (const auto& kv : pending) {
+    if (!writeFile(storePath(kv.first), kv.second)) dirty_[kv.first] = kv.second;
+  }
 }
 
 bool ScriptStore::readSource(const std::string& name, std::string& out) const {

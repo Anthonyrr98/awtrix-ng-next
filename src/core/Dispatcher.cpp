@@ -258,7 +258,7 @@ DispatchResult Dispatcher::dispatch(const Command& cmd, CommandContext& ctx) {
       }
       return ctx.apps.setPushedApp(cmd.name, cmd.payload, ctx.detail);
     case CommandType::SetAppOrder:
-      return ctx.apps.setAppOrder(cmd.payload) ? DispatchResult::Ok : DispatchResult::ParseError;
+      return ctx.apps.applyAppOrder(cmd.payload);
     case CommandType::SwitchApp:
       return ctx.apps.switchApp(cmd.name.empty() ? cmd.payload : cmd.name)
                  ? DispatchResult::Ok

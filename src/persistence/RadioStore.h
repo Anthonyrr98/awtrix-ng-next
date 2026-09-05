@@ -8,7 +8,7 @@ class CoreEngine;
 
 namespace radiostore {
 
-void save(const std::string& json);
+bool save(const std::string& json);
 void load(CoreEngine& engine);
 
 }

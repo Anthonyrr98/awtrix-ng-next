@@ -732,7 +732,7 @@ static void test_a_disabled_pushed_app_stays_disabled_across_a_reboot() {
   sound::AudioRouter so; FDisplay di; FSystem sy;
   std::string persisted;
   CoreEngine e(so, di, sy);
-  e.setOrderPersist([&](const std::string& j) { persisted = j; });
+  e.setOrderPersist([&](const std::string& j) { persisted = j; return true; });
   e.execute(cmd(CommandType::SetPushedApp, "wetter", "{\"text\":\"x\"}"));
   e.execute(cmd(CommandType::SetAppOrder, "",
                 "{\"order\":[\"Time\",\"Date\",\"Temperature\",\"Humidity\",\"Battery\"],\"disabled\":[\"wetter\"]}"));
@@ -829,7 +829,7 @@ static void test_deleting_a_script_takes_its_name_out_of_the_arrangement() {
   sound::AudioRouter so; FDisplay di; FSystem sy;
   CoreEngine e(so, di, sy);
   std::string persisted;
-  e.setOrderPersist([&](const std::string& j) { persisted = j; });
+  e.setOrderPersist([&](const std::string& j) { persisted = j; return true; });
   e.syncScriptApp("Nightmode");
   e.execute(cmd(CommandType::SetAppOrder, "", "{\"order\":[\"Time\",\"Nightmode\"],\"disabled\":[]}"));
   TEST_ASSERT_TRUE(e.isInLoop("Nightmode"));
@@ -924,8 +924,38 @@ static void test_rotation_scenes_round_trip_with_the_app_order() {
   TEST_ASSERT_EQUAL_STRING(saved.c_str(), restored.appOrderJson().c_str());
 }
 
+static void test_failed_persistence_keeps_live_configuration() {
+  sound::AudioRouter so; FDisplay di; FSystem sy;
+  CoreEngine e(so, di, sy);
+  const auto before = e.appOrderJson();
+  e.setOrderPersist([](const std::string&) { return false; });
+  TEST_ASSERT_EQUAL(rc(DispatchResult::Failed), rc(e.execute(cmd(
+      CommandType::SetAppOrder, "", "{\"order\":[\"Date\"],\"disabled\":[\"Time\"]}"))));
+  TEST_ASSERT_EQUAL_STRING(before.c_str(), e.appOrderJson().c_str());
+  TEST_ASSERT_TRUE(e.isInLoop("Time"));
+  DispatchDetail detail;
+  e.setStationPersist([](const std::string&) { return false; });
+  TEST_ASSERT_EQUAL(rc(DispatchResult::Failed), rc(e.setStations(
+      "[{\"name\":\"Test\",\"url\":\"http://example.com/live\"}]", detail)));
+  TEST_ASSERT_TRUE(e.stations().empty());
+  e.setOrderPersist([](const std::string&) { return true; });
+  TEST_ASSERT_TRUE(e.setAppOrder("{\"disabled\":[\"Time\"]}"));
+  TEST_ASSERT_FALSE(e.isInLoop("Time"));
+}
+
+static void test_unknown_active_scene_is_rejected() {
+  sound::AudioRouter so; FDisplay di; FSystem sy;
+  CoreEngine e(so, di, sy);
+  const auto before = e.appOrderJson();
+  TEST_ASSERT_EQUAL(rc(DispatchResult::ValidationError), rc(e.execute(cmd(
+      CommandType::SetAppOrder, "", "{\"disabled\":[],\"activeScene\":\"Missing\"}"))));
+  TEST_ASSERT_EQUAL_STRING(before.c_str(), e.appOrderJson().c_str());
+}
+
 int main(int, char**) {
   UNITY_BEGIN();
+  RUN_TEST(test_failed_persistence_keeps_live_configuration);
+  RUN_TEST(test_unknown_active_scene_is_rejected);
   RUN_TEST(test_a_body_the_engine_cannot_read_leaves_the_arrangement_alone);
   RUN_TEST(test_nothing_is_switched_off_unless_it_is_named);
   RUN_TEST(test_an_arranged_app_reports_its_slot_while_it_is_away);

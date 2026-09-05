@@ -336,9 +336,13 @@ bool readNames(api::JsonReader r, std::vector<std::string>& out, bool once) {
 }
 
 bool CoreEngine::setAppOrder(const std::string& json) {
-  if (!api::isWellFormed(json)) return false;
+  return applyAppOrder(json) == DispatchResult::Ok;
+}
+
+DispatchResult CoreEngine::applyAppOrder(const std::string& json) {
+  if (!api::isWellFormed(json)) return DispatchResult::ParseError;
   api::JsonReader root{std::string_view(json)};
-  if (!root.isObject()) return false;
+  if (!root.isObject()) return DispatchResult::ParseError;
 
   api::JsonReader on{std::string_view(json)};
   api::JsonReader off{std::string_view(json)};
@@ -346,81 +350,94 @@ bool CoreEngine::setAppOrder(const std::string& json) {
   bool namedOrder = false, namedHidden = false, namedScenes = false, namedActive = false;
   std::string activeScene;
   api::JsonReader o = root;
-  if (!o.enterObject()) return false;
+  if (!o.enterObject()) return DispatchResult::ParseError;
   while (o.nextMember()) {
     if (o.keyEquals("order")) {
-      if (!o.isArray()) return false;
+      if (!o.isArray()) return DispatchResult::ParseError;
       on = o;
       namedOrder = true;
     } else if (o.keyEquals("disabled")) {
-      if (!o.isArray()) return false;
+      if (!o.isArray()) return DispatchResult::ParseError;
       off = o;
       namedHidden = true;
     } else if (o.keyEquals("scenes")) {
-      if (!o.isArray()) return false;
+      if (!o.isArray()) return DispatchResult::ParseError;
       sceneRows = o;
       namedScenes = true;
     } else if (o.keyEquals("activeScene")) {
-      if (!o.isString() || !o.appendString(activeScene)) return false;
+      if (!o.isString() || !o.appendString(activeScene)) return DispatchResult::ParseError;
       namedActive = true;
     }
-    if (!o.skipValue()) return false;
+    if (!o.skipValue()) return DispatchResult::ParseError;
   }
   // "disabled" has to be there, "order" is optional — leaving it out keeps the current sequence.
-  if (!o.ok() || !namedHidden) return false;
+  if (!o.ok() || !namedHidden) return DispatchResult::ParseError;
 
   std::vector<std::string> order = order_;
   if (namedOrder) {
     order.clear();
-    if (!readNames(on, order, false)) return false;
+    if (!readNames(on, order, false)) return DispatchResult::ParseError;
   }
   std::vector<std::string> disabled;
-  if (!readNames(off, disabled, true)) return false;
+  if (!readNames(off, disabled, true)) return DispatchResult::ParseError;
 
   std::vector<AppScene> scenes = scenes_;
   if (namedScenes) {
     scenes.clear();
-    if (!sceneRows.enterArray()) return false;
+    if (!sceneRows.enterArray()) return DispatchResult::ParseError;
     while (sceneRows.nextElement()) {
-      if (!sceneRows.isObject() || scenes.size() >= 16) return false;
+      if (!sceneRows.isObject() || scenes.size() >= 16) return DispatchResult::ParseError;
       AppScene scene;
       api::JsonReader row = sceneRows;
       api::JsonReader so = row, sd = row;
       bool hasName = false, hasOrder = false, hasDisabled = false;
-      if (!row.enterObject()) return false;
+      if (!row.enterObject()) return DispatchResult::ParseError;
       while (row.nextMember()) {
         if (row.keyEquals("name")) {
           if (!row.isString() || !row.appendString(scene.name) || scene.name.empty() || scene.name.size() > 32)
-            return false;
+            return DispatchResult::ParseError;
           hasName = true;
         } else if (row.keyEquals("order")) {
-          if (!row.isArray()) return false;
+          if (!row.isArray()) return DispatchResult::ParseError;
           so = row;
           hasOrder = true;
         } else if (row.keyEquals("disabled")) {
-          if (!row.isArray()) return false;
+          if (!row.isArray()) return DispatchResult::ParseError;
           sd = row;
           hasDisabled = true;
         }
-        if (!row.skipValue()) return false;
+        if (!row.skipValue()) return DispatchResult::ParseError;
       }
       if (!hasName || !hasOrder || !hasDisabled ||
-          !readNames(so, scene.order, false) || !readNames(sd, scene.disabled, true)) return false;
+          !readNames(so, scene.order, false) || !readNames(sd, scene.disabled, true)) return DispatchResult::ParseError;
       if (std::find_if(scenes.begin(), scenes.end(), [&](const AppScene& s) { return s.name == scene.name; }) != scenes.end())
-        return false;
+        return DispatchResult::ParseError;
       scenes.push_back(std::move(scene));
-      if (!sceneRows.skipValue()) return false;
+      if (!sceneRows.skipValue()) return DispatchResult::ParseError;
     }
   }
 
+  if (namedActive && !activeScene.empty() &&
+      std::none_of(scenes.begin(), scenes.end(), [&](const AppScene& s) { return s.name == activeScene; }))
+    return DispatchResult::ValidationError;
+  auto oldOrder = std::move(order_);
+  auto oldDisabled = std::move(disabled_);
+  auto oldScenes = std::move(scenes_);
+  auto oldActive = std::move(activeScene_);
   order_ = std::move(order);
   disabled_ = std::move(disabled);
   scenes_ = std::move(scenes);
   if (namedActive) activeScene_ = std::move(activeScene);
   else if (namedOrder || namedHidden) activeScene_.clear();
+  if (orderSaveFn_ && !orderSaveFn_(appOrderJson())) {
+    order_ = std::move(oldOrder);
+    disabled_ = std::move(oldDisabled);
+    scenes_ = std::move(oldScenes);
+    activeScene_ = std::move(oldActive);
+    return DispatchResult::Failed;
+  }
   rebuildAppList();
-  if (orderSaveFn_) orderSaveFn_(appOrderJson());
-  return true;
+  return DispatchResult::Ok;
 }
 
 // Takes a bare app name or {"name":..,"fast":true}, where fast skips the transition animation.
@@ -489,8 +506,11 @@ DispatchResult CoreEngine::setStations(const std::string& json, DispatchDetail& 
     return error.message == "invalid JSON" ? DispatchResult::ParseError
                                            : DispatchResult::ValidationError;
   }
+  if (stationSaveFn_ && !stationSaveFn_(radio::stationsToJson(parsed))) {
+    detail.message = "could not save radio stations";
+    return DispatchResult::Failed;
+  }
   stations_.swap(parsed);
-  if (stationSaveFn_) stationSaveFn_(radio::stationsToJson(stations_));
   return DispatchResult::Ok;
 }
 

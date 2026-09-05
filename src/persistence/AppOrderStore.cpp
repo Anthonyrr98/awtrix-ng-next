@@ -1,17 +1,15 @@
 #include "persistence/AppOrderStore.h"
 
 #include <LittleFS.h>
+#include "persistence/AtomicFile.h"
 
 #include "core/CoreEngine.h"
 
 namespace awtrix {
 namespace apporder {
 
-void save(const std::string& json) {
-  File f = LittleFS.open("/apploop.json", "w");
-  if (!f) return;
-  f.print(json.c_str());
-  f.close();
+bool save(const std::string& json) {
+  return atomicfile::write("/apploop.json", json);
 }
 
 void load(CoreEngine& engine) {

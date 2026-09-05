@@ -53,7 +53,7 @@ void DeviceConfig::save() const {
 
 namespace apporder {
 
-void save(const std::string& json) { sim::writeFile(sim::hostPath("/apploop.json"), json); }
+bool save(const std::string& json) { return sim::writeFile(sim::hostPath("/apploop.json"), json); }
 
 void load(CoreEngine& engine) {
   std::string content;
@@ -65,7 +65,7 @@ void load(CoreEngine& engine) {
 
 namespace radiostore {
 
-void save(const std::string& json) { sim::writeFile(sim::hostPath("/radio.json"), json); }
+bool save(const std::string& json) { return sim::writeFile(sim::hostPath("/radio.json"), json); }
 
 void load(CoreEngine& engine) {
   std::string content;

@@ -19,6 +19,9 @@ class IAppService {
                                       DispatchDetail& detail) = 0;
   virtual void deletePushedApp(const std::string& name) = 0;
   virtual bool setAppOrder(const std::string& json) = 0;
+  virtual DispatchResult applyAppOrder(const std::string& json) {
+    return setAppOrder(json) ? DispatchResult::Ok : DispatchResult::ParseError;
+  }
   virtual bool switchApp(const std::string& nameOrJson) = 0;
   virtual void nextApp() = 0;
   virtual void previousApp() = 0;
