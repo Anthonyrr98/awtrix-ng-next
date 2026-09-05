@@ -1,15 +1,14 @@
-## AWTRIX NG 1.3.0
+## AWTRIX NG 1.3.1
 
-**Added**
+**Fixed**
 
-- Certificate-verified MQTT over TLS for secure cloud brokers.
-- A **TLS encryption** switch in System → MQTT. HiveMQ Cloud users can enable it with port `8883`.
-- Built-in trust for the long-lived Let's Encrypt ISRG Root X1 certificate; TLS never falls back to an unverified connection.
+- MQTT over TLS now connects using the broker hostname instead of its resolved IP address, preserving SNI and certificate hostname verification.
+- HiveMQ Cloud connections on port `8883` no longer fail repeatedly with `Not connected · Refused` after DNS resolution succeeds.
 
 **Compatibility**
 
-- Existing MQTT configurations remain unchanged because TLS defaults to off.
-- Settings, apps, scripts, radio stations and backup archives from 1.2.x remain compatible.
+- Existing MQTT settings and credentials are preserved; no migration is required.
+- Plain MQTT connections and non-TLS brokers are unchanged.
 
 ---
 

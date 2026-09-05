@@ -149,7 +149,14 @@ bool MqttLink::tick(uint32_t nowMs) {
       return false;
     }
     address_ = resolver_->address();
-    client_->setServer(address_, port_);
+    // TLS brokers rely on the hostname for SNI and certificate verification.
+    // Keep the resolved address for diagnostics, but let the secure client
+    // connect with the original hostname.
+    if (tls_) {
+      client_->setServer(host_.c_str(), port_);
+    } else {
+      client_->setServer(address_, port_);
+    }
     status_->endpoint = endpointOf(address_, port_);
     haveServer_ = true;
   }
