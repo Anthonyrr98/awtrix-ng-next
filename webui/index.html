@@ -2274,12 +2274,12 @@ async function viewApps(view){
 
   view.append(offBanner);
   view.append(
-    sceneCard,
     el('div',{class:'card wide'},el('h2',null,t('apploop')),
       el('div',{class:'ghelp'},t('apploopH')),loopList),
     bgCard,
     disabledCard,
     modCard,
+    sceneCard,
     bar);
   try{await reload();}
   catch(e){view.replaceChildren(el('div',{class:'card wide'},t('neterr')));}
