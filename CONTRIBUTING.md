@@ -64,6 +64,7 @@ pio run -e awtrix                      # both firmware images build
 pio run -e awtrix_s3_octal
 python tools/check_docs_sync.py        # docs match the firmware's real fields
 python tools/check_berry_api.py        # editor's Berry API table is current
+python scripts/webui_modules.py --check # inlined Web UI modules are current
 python tools/gen_agent_skill.py --check
 python tools/check_prelude_solidified.py
 python tools/check_font_sync.py

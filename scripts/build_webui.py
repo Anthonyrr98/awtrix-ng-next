@@ -9,8 +9,11 @@ import tempfile
 
 Import("env")
 
-BUDGET = 80 * 1024
+# Three complete built-in languages still leave ample room in every OTA slot.
+# Keep a hard ceiling so further locale or UI growth remains an explicit choice.
+BUDGET = 84 * 1024
 SRC = os.path.join(env["PROJECT_DIR"], "webui", "index.html")
+SCRIPTS_SRC = os.path.join(env["PROJECT_DIR"], "webui", "src", "page-scripts.js")
 OUT = os.path.join(env["PROJECT_DIR"], "src", "transport", "http", "WebUiAsset.h")
 
 MINIFIER = "html-minifier-terser@7.2.0"
@@ -27,16 +30,22 @@ MINIFY_ARGS = [
 sys.path.insert(0, os.path.join(env["PROJECT_DIR"], "scripts"))
 import berry_api
 import example_catalog
+import webui_modules
 
 
 def refresh_berry_api():
-    if berry_api.inject(env["PROJECT_DIR"], SRC):
-        print("webui: regenerated the Berry API table in webui/index.html")
+    if berry_api.inject(env["PROJECT_DIR"], SCRIPTS_SRC):
+        print("webui: regenerated the Berry API table in webui/src/page-scripts.js")
 
 
 def refresh_example_catalog():
-    if example_catalog.inject(env["PROJECT_DIR"], SRC):
-        print("webui: regenerated the example catalog in webui/index.html")
+    if example_catalog.inject(env["PROJECT_DIR"], SCRIPTS_SRC):
+        print("webui: regenerated the example catalog in webui/src/page-scripts.js")
+
+
+def refresh_modules():
+    if webui_modules.inject(env["PROJECT_DIR"], SRC):
+        print("webui: regenerated source modules in webui/index.html")
 
 
 def minify(src_path):
@@ -67,7 +76,9 @@ def minify(src_path):
 
 
 def build_webui_asset():
+    refresh_berry_api()
     refresh_example_catalog()
+    refresh_modules()
     with open(SRC, "rb") as f:
         raw = f.read()
     src_md5 = hashlib.md5(raw).hexdigest()

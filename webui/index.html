@@ -606,6 +606,7 @@ canvas#screen{display:block;width:100%;aspect-ratio:4/1;image-rendering:pixelate
 <div id="toasts"></div>
 <script>
 'use strict';
+/* WEBUI-MODULE:core BEGIN */
 const $=s=>document.querySelector(s);
 function el(tag,attrs,...kids){
   const n=document.createElement(tag);
@@ -727,6 +728,8 @@ function armable(btn,fn){
   });
   return btn;
 }
+/* WEBUI-MODULE:core END */
+/* WEBUI-MODULE:i18n BEGIN */
 const I18N={en:{
   dash:'Dashboard',display:'Display',system:'System',icons:'Icons',palettes:'Palettes',log:'Log',
   audioTab:'Audio',
@@ -1064,9 +1067,48 @@ const I18N={en:{
   grpScript:'Skripte',grpScriptH:'Berry-Skripte auf AWTRIX.',
   grpMisc:'Sonstiges',grpMiscH:'Alles andere.',
 }};
-let LANG=localStorage.awtrixLang||(navigator.language&&navigator.language.toLowerCase().startsWith('de')?'de':'en');
-const t=k=>(I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;
-const tt=s=>{const p=String(s).split('|');return LANG==='de'&&p[1]?p[1]:p[0];};
+const LANGUAGES={
+  en:{label:'English',slot:0},
+  de:{label:'Deutsch',slot:1},
+  zh:{label:'简体中文',slot:2},
+};
+const ZH={
+  dash:'仪表盘',display:'显示',system:'系统',icons:'图标',palettes:'调色板',log:'日志',audioTab:'音频',mp3s:'MP3',mp3shelp:'用于通知和脚本的自定义 MP3 文件。',
+  radioTab:'电台',radioH:'网络电台。',radionone:'还没有电台，请在下方添加。',radioname:'名称',radiourl:'音频流地址',radioadd:'添加电台',radioplaying:'正在播放',radiostopped:'未播放',radiodupe:'名称已被使用',radiobadurl:'必须以 http:// 或 https:// 开头',radiolong:'名称不能超过 24 个字符',
+  appsTab:'应用',apploop:'应用轮播',apploopH:'AWTRIX 将依次显示这些应用。拖动 ⠿ 可调整顺序。',scenes:'轮播场景',scenesH:'保存应用组合，一键切换整套轮播。',sceneName:'场景名称',sceneSave:'保存场景',sceneApply:'应用',sceneDelete:'删除',sceneNone:'没有已保存的场景',background:'后台运行',backgroundH:'持续运行，但不会显示在屏幕上。',disabledapps:'已禁用',disabledH:'当前未使用。“启用”可将应用放回轮播或后台。',activate:'启用',deactivate:'禁用',switchto:'立即显示',more:'操作',dupapp:'复制',nobackground:'没有后台脚本',noapps:'没有应用',dragord:'顺序',chipPushed:'推送',chipScript:'脚本',chipModule:'模块',modules:'模块',modulesH:'供其他脚本通过 import 复用的组件。',modimport:'导入',modnone:'还没有模块',chipSkip:'已跳过',chipSkipH:'脚本跳过了本轮，但仍保留在轮播中。',chipGone:'无数据',chipGoneH:'应用已启用并保留位置，但尚未收到数据；下次推送时会重新绘制。',orderSaved:'应用顺序已保存',
+  cfgTitle:'设置',cfgHide:'关闭设置',cfgLoading:'正在加载设置…',cfgNone:'此脚本没有可配置项。',cfgSaved:'设置已保存，应用已重启',cfgDefaults:'使用默认值',cfgWarnH:'脚本的设置头有问题，请在编辑器中修复。',save:'保存',saved:'已保存',sure:'确定？',cancel:'取消',del:'删除',edit:'编辑',discard:'放弃',unsaved:'未保存的更改',choose:'选择文件…',preview:'在 AWTRIX 上显示',upload:'上传',uploaded:'已上传',neterr:'无法连接设备',power:'电源',brightness:'亮度',prevapp:'上一个应用',nextapp:'下一个应用',dismiss:'关闭通知',dismissed:'通知已关闭',snap:'保存截图',rec:'录制 GIF',recstop:'停止录制并保存 GIF',livepre:'实时预览',version:'版本',host:'主机名',ip:'IP 地址',wifi:'WiFi',uptime:'运行时间',ram:'可用内存',psram:'PSRAM',psramnone:'无——如果开发板带 PSRAM，请刷写 -s3-quad- 镜像',
+  health:'设备健康',healthH:'本次启动的供电、内存和连接状态。',healthGood:'健康',healthAttention:'需要注意',healthReset:'最近复位',healthHeap:'内部内存',healthBlock:'最大连续空闲块',healthNet:'连接',healthFps:'渲染',healthResetOk:'正常启动',healthResetBad:'请检查供电和设备日志',healthHeapOk:'余量充足',healthHeapLow:'内存余量较低',healthBlockLow:'内存碎片较多，安装脚本前请重启',healthNetOk:'WiFi 和已启用服务均在线',healthNetBad:'某个连接正在重试或已失败',healthFpsOk:'显示循环响应正常',healthFpsLow:'显示循环运行较慢',diagDownload:'下载诊断报告',battery:'电池',light:'光照',temp:'温度',hum:'湿度',curapp:'当前应用',excellent:'极佳',good:'良好',fair:'一般',weak:'较弱',
+  advanced:'高级',advhelp:'固件已返回但本页没有表单的字段。以下为原始值，请谨慎修改。',rebootreq:'已保存，需要重启才能应用新配置。',rebootnow:'立即重启',rbclose:'关闭提醒',rebooting:'正在重启，页面将自动重新加载…',reboot:'重启',apbanner:'配网模式：请在下方将 AWTRIX 连接到 WiFi。',scan:'扫描',scanning:'正在扫描…',networks:'个网络',maint:'维护',mainthelp:'固件更新和重置。',apmaintH:'重启 AWTRIX 以应用已保存的 WiFi 设置。',fwfile:'上传固件（.bin）',fwOnline:'稳定版更新',fwOnlineH:'检查已验证的 GitHub Release，并安装与本开发板匹配的固件。',fwCheck:'检查更新',fwChecking:'正在检查…',fwCurrent:'已是最新版',fwAvailable:'可用',fwInstall:'安装更新',fwDownloading:'正在下载固件…',fwRelease:'发行说明',fwBackingUp:'正在下载安全备份…',fwVerifying:'正在验证发布清单…',fwUploading:'正在安装已验证固件…',fwVerified:'SHA-256 已验证',fwNoAsset:'该版本没有与此开发板匹配的固件。',fwCheckFail:'无法检查 GitHub Release。',
+  resetset:'重置设置',resetsetH:'将显示设置恢复默认值（保留网络配置）。',factory:'恢复出厂设置',factoryH:'清除全部内容（WiFi、文件和设置）。请输入主机名确认。',erase:'清除全部内容',eraseNo:'主机名不匹配',bkSection:'备份与恢复',bkSectionH:'将所选内容下载为 ZIP，或恢复已有备份。',bkSectionAp:'恢复',bkSectionApH:'上传以前创建的备份 .zip。',bkTitle:'创建备份',bkDownload:'下载备份',bkDownloadH:'选择要包含的内容，然后保存 .zip。',bkWorking:'正在收集…',bkDone:'备份已下载',bkNone:'请至少选择一项',bkWifi:'WiFi',bkSettings:'设置',bkIcons:'图标',bkMelodies:'旋律',bkPalettes:'调色板',bkMp3:'MP3',bkScripts:'脚本',bkApporder:'应用顺序与场景',bkRadio:'电台',bkAll:'全选',bkRestoreT:'恢复备份',bkRestore:'选择备份…',bkRestoreH:'上传备份 .zip。',bkCaptiveHint:'WiFi 登录弹窗无法上传文件。请在浏览器中打开此页面进行恢复：',bkRestored:'备份已恢复',bkWarnings:'条警告',bkRebootQ:'恢复已应用。是否立即重启？',storage:'存储空间',of:'共',free:'可用',
+  iconshelp:'支持 8×8 至 32×8 的 PNG、JPG 或动态 GIF。拖放到此处或点击选择。',editorTab:'图标编辑器',edLoading:'正在加载编辑器…',edUnreachable:'编辑器加载失败。',melodies:'旋律',melodieshelp:'用于通知和脚本的短铃声。',newmelo:'新建旋律',meloname:'名称',melortttl:'d=4,o=5,b=120:c,e,g',melopre:'本地预览',meloplay:'在 AWTRIX 上播放',melostop:'停止',melomuted:'声音已关闭，在 AWTRIX 上播放将保持静音。请前往“系统 › 音频”开启。',audnone:'没有声音输出。请在“系统 › GPIO”中设置蜂鸣器或扬声器引脚。',melonone:'还没有旋律',melonotes:'音符',melobroken:'无法解析，请修复后保存',meloexists:'已存在同名旋律',melobadname:'名称只能包含字母、数字、_ 和 -，最多 24 个字符',lametric:'下载 LaMetric 图标',lamhelp:'从 LaMetric 图库获取图标。',lamid:'图标 ID，例如 2867',fetch:'获取',lamneed:'浏览器需要联网；配网模式下不可用。',lamsave:'保存到 AWTRIX',
+  scriptsTab:'脚本',scrnone:'未打开任何内容',scrkeys:'Ctrl-. API · Ctrl-S 保存 · Ctrl-/ 注释',newscr:'从模板新建',import:'导入',export:'导出',library:'示例库',libraryH:'固件内置的即用型应用。',install:'安装',installed:'已安装',libFull:'已达上限',libDone:'安装完成',newmod:'从模板新建模块',scrbadname:'名称只能包含字母、数字、_ 和 -，最多 32 个字符',rename:'重命名',renamed:'已重命名',scrnolist:'还没有脚本',sharedHead:'共享数据',shnone:'还没有数据',shhelp:'脚本通过 shared.set() 发布的值，重启后清除。',scrclash:'已存在同名脚本',scrunsaved:'未保存的更改',scrempty:'编辑器为空',scrok:'运行中',scrbroken:'已保存，但脚本未运行',scrsaved:'已保存',scrcapacity:'已安装（脚本和模块共用此上限）',scrfull:'已达到脚本上限，模块也会计数。请删除一个项目或在“系统 › 脚本”中提高上限。',scroffTitle:'脚本功能已关闭',scroffGo:'开启',appsscroff:'脚本功能已关闭。',scrimported:'已导入编辑器',scrpreview:'在 AWTRIX 上显示',scrpreviewed:'屏幕已切换到此应用',scrline:'行',scrreload:'已重新加载',scrinhook:'运行时错误，位置：',scrtoobig:'超出 AWTRIX 可接受大小，请缩短脚本后保存。',
+  palhelp:'用于效果、文字、图表和进度条的颜色渐变。',paledit:'调色板编辑器',name:'名称',tryit:'在 AWTRIX 上试用',newpal:'新建调色板',palsaved:'调色板已保存',palname:'只能使用字母和数字',palbuiltin:'内置',palyours:'自定义',palnone:'还没有自定义调色板',paloverr:'已修改',paldup:'复制',palreset:'恢复内置版本',palrestored:'已恢复内置版本',palstops:'色标',palstop:'色标',paladd:'添加色标',palrmstop:'删除色标',palfull:'每个调色板最多 16 个色标。',palstopcol:'色标颜色',palstoppos:'位置',paleven:'均匀分布',palbad:'无法读取，AWTRIX 不会加载此调色板。',palblend:'渐变',palblendh:'仅影响预览；每个应用自行设置 paletteBlend。',palsaveas:'另存为新调色板',paloverride:'替换内置版本',palunsaved:'此调色板有未保存的更改。',palwillover:'该名称属于内置调色板，保存会替换它。',palownhelp:'修改名称可保留当前版本，并以新名称保存副本。',loghelp:'设备日志，每秒更新。',clear:'清除',copy:'复制',copied:'已复制',autoscroll:'自动滚动',deleted:'已删除',playing:'正在播放',shown:'已显示在 AWTRIX 上',nofiles:'还没有文件',
+  grpBright:'亮度',grpBrightH:'矩阵屏的显示亮度。',grpApps:'应用轮播',grpAppsH:'轮播的运行方式；参与轮播的应用请在“应用”页管理。',grpClock:'时钟与日期',grpClockH:'时间和日期应用的布局与颜色。',grpText:'文字',grpTextH:'全局文字渲染。',grpOverlay:'天气叠加效果',grpOverlayH:'绘制在所有应用上方的天气效果。',grpSensors:'传感器',grpSensorsH:'传感器应用的单位与颜色。',grpColor:'颜色',grpColorH:'矩阵屏的色彩呈现方式，应用于整个屏幕。',grpWifi:'WiFi',grpWifiH:'网络连接，更改后需要重启。',grpWeb:'Web 服务器',grpWebH:'此 Web 界面的端口和登录设置。',grpMqtt:'MQTT',grpMqttH:'消息代理连接。',mqStatus:'连接状态',mqStatusH:'消息代理的实时连接状态。',mqoff:'关闭',mqdown:'未连接',mqbusy:'正在连接…',mqup:'已连接',mqRetry:'重试倒计时',mqeNoWifi:'没有 WiFi',mqeHost:'找不到主机',mqeRefused:'连接被拒绝',mqeAuth:'登录信息错误',mqeRejected:'代理拒绝连接',mqeTimeout:'无响应',mqeLost:'连接中断',mqTest:'往返测试',mqTestH:'通过代理发布通知，并从命令主题接收回来。',mqTestRun:'运行测试',mqTestBusy:'正在发布…',mqTestOk:'已通过 MQTT 发送',mqTestFail:'测试失败',
+  grpTime:'时间',grpTimeH:'NTP 服务器和时区。',tzDetect:'使用浏览器时区',tzDetectH:'采用当前浏览器设置的时区。',tzDstOn:'夏令时生效',tzDstOff:'标准时间',tzNoDst:'无夏令时',tzNext:'下次切换',tzUnknown:'浏览器返回了 AWTRIX 不认识的时区：',grpPanel:'面板',grpPanelH:'LED 面板的组成和接线。除总宽度外，其余设置立即生效。',pnSize:'矩阵尺寸',pnSizeH:'根据下方字段计算。',pnLeds:'LED',pnPanelsOf:'块面板，每块',pnOne:'一块面板',pnBadWidth:'总宽度必须在 32 到 128 之间。',grpHw:'亮度与传感器',grpHwH:'自动亮度范围和传感器校准。',grpGpio:'GPIO',grpGpioH:'各引脚的用途，重启后生效。',preset:'接线预设',presetH:'使用已知开发板的接线填充字段。',presetUlanzi:'Ulanzi TC001',presetAwtrix2:'AWTRIX 2 主板',presetApplied:'已填入预设，请检查字段后保存',pinUsed:'已占用',optStored:'已保存值',wakeNo:'无法通过此设置唤醒深度睡眠中的 AWTRIX，只能由睡眠计时器唤醒。',grpBtn:'按键',grpBtnH:'物理按键行为。',grpSndHw:'音频',grpSndHwH:'声音输出、音量和音频硬件。',grpScript:'脚本',grpScriptH:'AWTRIX 上的 Berry 脚本。',grpMisc:'其他',grpMiscH:'其他设置。'
+};
+I18N.zh=ZH;
+const browserLanguage=(navigator.language||'en').toLowerCase();
+const detectedLanguage=browserLanguage.startsWith('zh')?'zh':browserLanguage.startsWith('de')?'de':'en';
+let LANG=LANGUAGES[localStorage.awtrixLang]?localStorage.awtrixLang:detectedLanguage;
+const t=k=>(I18N[LANG]&&I18N[LANG][k])??I18N.en[k]??k;
+const ZH_FIELDS={
+  'Black = use the global text colour.':'黑色表示使用全局文字颜色。','Brightness':'亮度','Ignored while auto brightness is on.':'开启自动亮度时忽略此项。','Auto brightness':'自动亮度','Follows the ambient light sensor.':'跟随环境光传感器。','Display on':'开启显示','Turns the matrix off without cutting power.':'关闭矩阵屏但不切断电源。',
+  'Time per app':'每个应用的显示时间','How long each app stays.':'每个应用停留的时长。','Auto rotation':'自动轮播','Moves to the next app on its own.':'自动切换到下一个应用。','Transition duration':'过渡时长','Length of the switch. 0 = instant.':'切换动画时长，0 表示立即切换。','Transition effect':'过渡效果','Animation between two apps.':'两个应用之间的切换动画。','Block buttons':'禁止切换','Ignore buttons and API for app switching.':'忽略按键和 API 的应用切换请求。',
+  'Clock layout':'时钟布局','What the clock app draws.':'时钟应用的显示方式。','Time only':'仅时间','Calendar, weekday bar below':'日历，星期栏在下方','Calendar, weekday bar on top':'日历，星期栏在上方','Spiral calendar, weekday below':'环形日历，星期在下方','Spiral calendar, weekday on top':'环形日历，星期在上方','Big clock':'大号时钟','Binary clock':'二进制时钟','24-hour clock':'24 小时制','Off = 12-hour clock.':'关闭则使用 12 小时制。','Leading zero':'补前导零','Show 07:05 instead of 7:05.':'显示 07:05，而不是 7:05。','Show seconds':'显示秒','Plain clock layout only.':'仅适用于普通时钟布局。','AM/PM indicator':'上午/下午标记','12-hour clock only; hidden while seconds show.':'仅用于 12 小时制；显示秒时隐藏。','Colon between hours and minutes':'小时与分钟间的冒号','Blinking shows the seconds without digits.':'闪烁可在不显示秒数时表示秒。','Steady on':'常亮','Blinking every second':'每秒闪烁','Pulsing (soft fade)':'呼吸（柔和渐变）',
+  'Date order':'日期顺序','Applies everywhere a date is shown.':'应用于所有日期显示。','Day, month, year (31.12.25)':'日、月、年（31.12.25）','Month, day, year (12/31/25)':'月、日、年（12/31/25）','Year, month, day (25-12-31)':'年、月、日（25-12-31）','Date separator':'日期分隔符','Character between day and month.':'日期各部分之间的字符。','Dot (31.12.)':'点（31.12.）','Slash (31/12)':'斜杠（31/12）','Dash (31-12)':'短横线（31-12）','Year in the date':'日期中的年份','Hiding it leaves more room on the panel.':'隐藏后可为面板留出更多空间。','Hidden':'隐藏','2 digits (25)':'2 位（25）','4 digits (2025)':'4 位（2025）','Weekday prefix':'星期前缀','Short weekday name before the date (Wed 31.12.).':'在日期前显示星期简称。','Month as name':'月份使用名称','Show “31 Dec” instead of “31.12”.':'显示“31 Dec”而不是“31.12”。','Weekday bar':'星期栏','Row of seven marks for the days of the week.':'用七个标记表示一周。','Week starts Monday':'每周从星期一开始','Display order only.':'仅影响显示顺序。','Weekend days':'周末','Days that use the weekend colours.':'使用周末颜色的日期。','Today':'今天','Mark of the current day.':'当天的标记。','Other workdays':'其他工作日','Marks of the remaining days.':'其他日期的标记。','Today on a weekend':'周末的今天','Used when today is a weekend day.':'今天是周末时使用。','Other weekend days':'其他周末','The rest of the weekend list.':'其余周末日期。','Time colour':'时间颜色','Date colour':'日期颜色','Calendar header':'日历标题','Only in the calendar layouts.':'仅用于日历布局。','Calendar text':'日历文字','Day number.':'日期数字。','Calendar body':'日历背景','Background.':'背景。',
+  'Text colour':'文字颜色','Applies to all text.':'应用于所有文字。','Uppercase':'全大写','Shows every text in capitals.':'将所有文字显示为大写。','Scroll mode':'滚动模式','What text does when it is too long for the panel.':'文字超出面板宽度时的行为。','Stand still, clip the rest':'静止并裁切','Start over after each pass':'每次滚完后重新开始','Run continuously':'连续滚动','Sweep back and forth':'往返滚动','Scroll direction':'滚动方向','Which way the text moves.':'文字移动方向。','Right to left':'从右向左','Left to right':'从左向右','Text entry':'文字进入方式','Where a text starts its first pass.':'文字首次滚动的起始位置。','Visible right away':'立即可见','Run in from off-panel':'从面板外进入','Text that fits':'未超宽的文字','Only affects text short enough for the panel.':'仅影响能完整显示的短文字。','Stays still':'保持静止','Moves anyway':'仍然滚动','Scroll speed':'滚动速度','100 % = normal, 0 stops.':'100% 为正常速度，0 为停止。','Loop gap':'循环间隔','Space between repetitions.':'两次重复之间的空白。','Pause':'暂停','Before the text starts, and at each bounce turn.':'开始滚动前及每次折返时暂停。',
+  'Overlay':'叠加效果','Set by hand, not from real weather data.':'手动设置，不读取真实天气。','- none -':'— 无 —','Overlay speed':'效果速度','100 % is the overlay’s own pace.':'100% 为效果默认速度。','Celsius':'摄氏度','Off = Fahrenheit.':'关闭则使用华氏度。','Temperature colour':'温度颜色','Humidity colour':'湿度颜色','Battery colour':'电池颜色','Saturation':'饱和度','0 % = grayscale.':'0% 为灰度。','Gamma':'伽马','Higher = darker mid-tones.':'值越高，中间色调越暗。','Colour correction':'色彩校正','Fixes a colour cast. White = off.':'校正偏色，白色表示关闭。','Colour tint':'整体色调','Tints the whole panel. White = off.':'为整个面板着色，白色表示关闭。',
+  'WiFi network':'WiFi 网络','Pick a network or type its name.':'选择网络或输入名称。','WiFi password':'WiFi 密码','Leave empty to keep the saved password.':'留空以保留已保存密码。','Hostname':'主机名','Name on the network (mDNS). Empty = derived from the MAC address.':'网络中的名称（mDNS），留空则根据 MAC 地址生成。','Static IP':'静态 IP','Off = DHCP (recommended).':'关闭则使用 DHCP（推荐）。','IP address':'IP 地址','With the mask as a prefix, e.g. 192.168.1.50/24.':'包含 CIDR 前缀，例如 192.168.1.50/24。','Gateway':'网关','Usually your router.':'通常为路由器地址。','Subnet mask':'子网掩码','DNS 1':'DNS 1','Name server, usually your router.':'域名服务器，通常为路由器。','DNS 2':'DNS 2','Fallback if the first one does not answer.':'首选 DNS 无响应时使用。','Connect timeout':'连接超时','How long to wait for WiFi at boot before opening the setup hotspot.':'启动时等待 WiFi 的时长，超时后开启配网热点。','Roam below':'漫游阈值','Switch access point when the signal stays this weak. 0 = off.':'信号持续低于此值时切换接入点，0 表示关闭。',
+  'Port':'端口','HTTP port of this interface (default 80).':'此界面的 HTTP 端口（默认 80）。','Enable login':'启用登录','Require a login for the UI and API.':'访问界面和 API 时要求登录。','Username':'用户名','Needed once a login is required.':'启用登录后必填。','Password':'密码','Enable MQTT':'启用 MQTT','Connect to the broker below.':'连接下方的消息代理。','TLS encryption':'TLS 加密','Verify the broker certificate and encrypt the connection (usually port 8883).':'验证代理证书并加密连接（通常使用 8883 端口）。','Broker host':'代理主机','IP or hostname.':'IP 或主机名。','Broker port':'代理端口','1883 on most brokers.':'多数代理使用 1883。','Leave empty if the broker allows anonymous access.':'代理允许匿名访问时可留空。','Topic prefix':'主题前缀','Empty = device ID.':'留空则使用设备 ID。','HA discovery':'HA 自动发现','Announce the device to Home Assistant.':'向 Home Assistant 发布设备信息。','HA prefix':'HA 前缀','Empty = homeassistant.':'留空则使用 homeassistant。','NTP server':'NTP 服务器','Time source. Default: pool.ntp.org.':'时间源，默认为 pool.ntp.org。','Timezone':'时区','Local time of AWTRIX. Daylight saving switches automatically.':'AWTRIX 的本地时间，自动切换夏令时。','Timezone rule':'时区规则',
+  'Panel width':'面板宽度','Pixels across one panel.':'单块面板的横向像素数。','Panels':'面板数量','How many panels are chained.':'串联的面板数量。','First LED':'首个 LED','Corner the data cable arrives at.':'数据线进入面板的角。','Top left':'左上','Top right':'右上','Bottom left':'左下','Bottom right':'右下','Wiring direction':'走线方向','How the strip runs in a panel.':'灯带在面板内的走向。','Along the rows':'沿行','Along the columns':'沿列','Serpentine':'蛇形走线','Every second run goes backwards (zigzag).':'每隔一行或一列反向（之字形）。','Reverse chain':'反转面板链','The cable enters the panels at the other end.':'数据线从面板链另一端进入。','Alternating panels':'交替旋转面板','Every second panel is mounted rotated 180°.':'每隔一块面板旋转 180° 安装。','Mirror':'镜像','Flips the picture left to right.':'左右翻转画面。','Rotate 180°':'旋转 180°','Upside down, and swaps the left and right button.':'上下翻转，并交换左右按键。',
+  'Min brightness':'最低亮度','Lower limit for auto brightness.':'自动亮度下限。','Max brightness':'最高亮度','Upper limit for auto brightness.':'自动亮度上限。','LDR factor':'光敏系数','Scales the light sensor reading.':'缩放光照传感器读数。','LDR gamma':'光敏伽马','Higher = dimmer at moderate light. 1.0 = off.':'值越高，中等光线下越暗；1.0 表示关闭。','LDR on GND':'光敏接地','Set if the light sensor is wired to ground.':'光照传感器接地时启用。','Brightness smoothing':'亮度平滑','Higher = calmer response to light changes.':'值越高，对光线变化响应越平缓。','Battery divider':'电池分压比','Only change it if the percentage is wrong.':'仅在电量百分比不准时修改。','Temperature offset':'温度偏移','Added to the reading. -9 cancels the case heat.':'加到读数上；-9 可抵消外壳发热。','Humidity offset':'湿度偏移','Added to the reading.':'加到读数上。','Temperature decimals':'温度小数位','Digits after the decimal point.':'小数点后的位数。','Low-battery threshold':'低电量阈值','Warn below this charge. 0 = off.':'低于此电量时警告，0 表示关闭。','Swap buttons':'交换按键','Use it if left and right act the wrong way round.':'左右按键作用相反时启用。','Button webhook':'按键 Webhook','HTTP URL called on button press.':'按键时调用的 HTTP URL。',
+  'Matrix data':'矩阵数据','Data line to the LED matrix.':'LED 矩阵的数据线。','Button left':'左键','Goes to the previous app.':'切换到上一个应用。','Button select':'确认键','Clears notifications; press twice to toggle the display.':'清除通知；按两次切换显示开关。','Button right':'右键','Goes to the next app.':'切换到下一个应用。','Battery':'电池','Analogue input of the battery divider.':'电池分压器的模拟输入。','Light sensor':'光照传感器','Analogue input of the LDR.':'光敏电阻的模拟输入。','Buzzer':'蜂鸣器','Piezo buzzer for tones and melodies.':'用于提示音和旋律的压电蜂鸣器。','I2C SDA':'I2C SDA','Sensor bus data.':'传感器总线数据线。','I2C SCL':'I2C SCL','Sensor bus clock.':'传感器总线时钟线。','DFPlayer RX':'DFPlayer RX','DFPlayer TX':'DFPlayer TX','Only with DFPlayer enabled.':'仅在启用 DFPlayer 时使用。','I2S BCLK':'I2S BCLK','External DAC for internet radio and MP3s.':'网络电台和 MP3 使用的外部 DAC。','I2S LRCLK':'I2S LRCLK','Same DAC, word select.':'同一 DAC 的字选择线。','I2S DOUT':'I2S DOUT','Same DAC, data.':'同一 DAC 的数据线。',
+  'Sound':'声音','Master switch for one-shot sounds. Radio keeps playing.':'短音效总开关；网络电台不受影响。','Buzzer volume':'蜂鸣器音量','RTTTL melodies.':'RTTTL 旋律。','DFPlayer volume':'DFPlayer 音量','Tracks.':'曲目。','MP3 volume':'MP3 音量','Stored MP3s.':'已存储的 MP3。','Radio volume':'电台音量','Internet radio.':'网络电台。','Radio track info':'电台曲目信息','Show the station and every new track title.':'显示电台名称和每首新曲目的标题。','DFPlayer':'DFPlayer','External audio module on the DFPlayer pins. ':'连接在 DFPlayer 引脚上的外部音频模块。','Stats interval':'统计间隔','How often stats go out over MQTT.':'通过 MQTT 发送统计信息的频率。','Art-Net':'Art-Net','Receive Art-Net DMX on UDP 6454.':'通过 UDP 6454 接收 Art-Net DMX。','Debug mode':'调试模式','Verbose serial logging.':'输出详细串口日志。','Run scripts':'运行脚本','Off frees about 40 KB of RAM and stops every script. Installed scripts are kept. Applies after a reboot.':'关闭可释放约 40 KB 内存并停止所有脚本；已安装脚本会保留，重启后生效。','Script limit':'脚本上限','How many scripts may run at the same time.':'可同时运行的脚本数量。','Max script size':'脚本最大尺寸','Largest script AWTRIX accepts.':'AWTRIX 可接受的最大脚本大小。',' (default)':'（默认）','- not connected -':'— 未连接 —','Sun':'日','Mon':'一','Tue':'二','Wed':'三','Thu':'四','Fri':'五','Sat':'六'
+};
+const FIELD_I18N={zh:ZH_FIELDS};
+const tt=s=>{const p=String(s).split('|');return FIELD_I18N[LANG]?.[p[0]]??p[LANGUAGES[LANG]?.slot||0]??p[0];};
+/* WEBUI-MODULE:i18n END */
+/* WEBUI-MODULE:schema BEGIN */
 const F=(g,w,l,h,x)=>Object.assign({g,w,l,h},x);
 const HHELP='Black = use the global text colour.|Schwarz = globale Textfarbe verwenden.';
 const OVERLAYS=['rain','snow','drizzle','storm','thunder','frost'];
@@ -1365,6 +1407,8 @@ const SYS_GROUPS=[['wifi','grpWifi','grpWifiH'],['web','grpWeb','grpWebH'],['mqt
  ['gpio','grpGpio','grpGpioH'],['btn','grpBtn','grpBtnH'],
  ['sndhw','grpSndHw','grpSndHwH'],['script','grpScript','grpScriptH'],['misc','grpMisc','grpMiscH']];
 const SOUND_KEYS=Object.keys(SYSF).filter(k=>SYSF[k].api==='settings');
+/* WEBUI-MODULE:schema END */
+/* WEBUI-MODULE:state BEGIN */
 const S={transitions:[],stats:null,ap:false,sysHost:'',sysUid:'',gpio:null,aud:null,
   scriptMax:0,scriptLimit:16,scriptsOff:null};
 function readAudioCaps(caps){
@@ -1381,6 +1425,8 @@ async function scriptsOff(){
   }
   return S.scriptsOff;
 }
+/* WEBUI-MODULE:state END */
+/* WEBUI-MODULE:system-hardware BEGIN */
 function applyGpioCaps(c){
   const dflt=c.defaults||{};
   const gp=p=>'GPIO '+p;
@@ -1437,6 +1483,8 @@ function paintPanelSize(fields,out){
   out.replaceChildren(bad||w+' × 8 = '+(w*8)+' '+t('pnLeds')+' · '+
     (n>1?n+' '+t('pnPanelsOf')+' '+pw+' × 8':t('pnOne')));
 }
+/* WEBUI-MODULE:system-hardware END */
+/* WEBUI-MODULE:shell BEGIN */
 let gen=0;
 function poller(fn,ms){
   const g=gen;let fails=0;
@@ -1482,6 +1530,7 @@ function nav(){
 }
 function render(){
   gen++;
+  document.documentElement.lang=LANG==='zh'?'zh-CN':LANG;
   const r=currentRoute();
   nav();
   const view=el('main',{id:'view'});
@@ -1489,7 +1538,19 @@ function render(){
   (TABS.find(([n])=>n===r)||TABS[0])[2](view);
 }
 window.addEventListener('hashchange',render);
-$('#langbtn').addEventListener('click',()=>{LANG=LANG==='en'?'de':'en';localStorage.awtrixLang=LANG;$('#langbtn').replaceChildren(LANG.toUpperCase());render();});
+const languageCodes=Object.keys(LANGUAGES);
+const paintLanguage=()=>{
+  const info=LANGUAGES[LANG];
+  $('#langbtn').replaceChildren(LANG==='zh'?'中':LANG.toUpperCase());
+  $('#langbtn').title=info.label;
+  $('#langbtn').setAttribute('aria-label',info.label);
+};
+$('#langbtn').addEventListener('click',()=>{
+  LANG=languageCodes[(languageCodes.indexOf(LANG)+1)%languageCodes.length];
+  localStorage.awtrixLang=LANG;
+  paintLanguage();
+  render();
+});
 $('#kofibtn').addEventListener('click',()=>window.open('https://ko-fi.com/blueforcer','_blank','noopener'));
 $('#docsbtn').addEventListener('click',()=>window.open('https://blueforcer.github.io/awtrix-ng/','_blank','noopener'));
 const themeUse=$('#themebtn').querySelector('use');
@@ -1501,6 +1562,8 @@ $('#themebtn').addEventListener('click',()=>{
   paintTheme();
   notifyPiskelTheme();
 });
+/* WEBUI-MODULE:shell END */
+/* WEBUI-MODULE:forms BEGIN */
 function mkSwitch(checked,onchange){
   const i=el('input',{type:'checkbox',checked});
   if(onchange)i.addEventListener('change',onchange);
@@ -1777,6 +1840,8 @@ function advancedSection(page,data,meta,alsoKnown){
   page.addFields(fields);
   page.section('adv',t('advanced'),t('advhelp'),fields.map(f=>f.row));
 }
+/* WEBUI-MODULE:forms END */
+/* WEBUI-MODULE:media BEGIN */
 const SVGNS='http://www.w3.org/2000/svg';
 function icon(id){
   const s=document.createElementNS(SVGNS,'svg');
@@ -1888,6 +1953,8 @@ const uptimeStr=s=>{const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Mat
   return(d?d+'d ':'')+(h||d?h+'h ':'')+m+'m';};
 const wifiWord=r=>r>=-55?t('excellent'):r>=-65?t('good'):r>=-75?t('fair'):t('weak');
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+/* WEBUI-MODULE:media END */
+/* WEBUI-MODULE:page-dashboard BEGIN */
 const TONE={ok:'var(--ok)',warn:'var(--warn)',err:'var(--err)',neutral:'var(--acc)'};
 function vitalDefs(st){
   const V=[];
@@ -2034,6 +2101,8 @@ function viewDash(view){
     renderVitals(data);
   },2000);
 }
+/* WEBUI-MODULE:page-dashboard END */
+/* WEBUI-MODULE:page-apps BEGIN */
 function cfgDef(f){
   const d={w:f.type==='bool'?'toggle':f.type,l:f.label||f.key,h:f.help||'',plain:1,
     min:f.min,max:f.max,step:f.step,unit:f.unit,dflt:f.default};
@@ -2359,6 +2428,8 @@ async function viewApps(view){
   try{await reload();}
   catch(e){view.replaceChildren(el('div',{class:'card wide'},t('neterr')));}
 }
+/* WEBUI-MODULE:page-apps END */
+/* WEBUI-MODULE:page-scripts BEGIN */
 const SCRIPT_TEMPLATE=`# @name My App
 # @desc What this app shows
 
@@ -3135,6 +3206,8 @@ function viewScripts(view){
   refreshShared().catch(()=>{});
   poller(refreshShared,3000);
 }
+/* WEBUI-MODULE:page-scripts END */
+/* WEBUI-MODULE:page-system BEGIN */
 const NESTED=['scroll','weekdayBar'];
 function mergeDisplayData(settings,display){
   const data={...settings,power:!!display.power,overlay:display.overlay||'',
@@ -3532,6 +3605,8 @@ function uploadZone(dir,accept,hint,onDone,asGif){
   }
   return el('div',null,zone,fileIn);
 }
+/* WEBUI-MODULE:page-system END */
+/* WEBUI-MODULE:page-icons BEGIN */
 let assetRev=0;
 async function uploadFile(file,dir,name,onProgress){
   const url=dir.startsWith('/api/')?dir:'/api/v1/files?dir='+encodeURIComponent(dir);
@@ -3624,6 +3699,8 @@ function lametricCard(onDone){
     el('div',{class:'ghelp'},t('lamhelp')),
     el('div',{class:'row'},idIn,getBtn,prev,saveBtn),note);
 }
+/* WEBUI-MODULE:page-icons END */
+/* WEBUI-MODULE:page-editor BEGIN */
 const PISKEL_URL_DEFAULT='https://blueforcer.github.io/awtrix-piskel/';
 function getPiskelUrl(){try{return localStorage.awtrixPiskelUrl||PISKEL_URL_DEFAULT;}catch(e){return PISKEL_URL_DEFAULT;}}
 function piskelOrigin(){try{return new URL(getPiskelUrl()).origin;}catch(e){return'';}}
@@ -3717,6 +3794,8 @@ function viewEditor(view){
     }
   },6000);
 }
+/* WEBUI-MODULE:page-editor END */
+/* WEBUI-MODULE:audio-codec BEGIN */
 const RTTTL_FREQ=[0,
   262,277,294,311,330,349,370,392,415,440,466,494,
   523,554,587,622,659,698,740,784,831,880,932,988,
@@ -3774,6 +3853,8 @@ function rtttlParse(s){
   const ms=notes.reduce((a,n)=>a+noteMs(n.d,timeUnit),0);
   return{ok:true,title,timeUnit,notes,durationMs:ms};
 }
+/* WEBUI-MODULE:audio-codec END */
+/* WEBUI-MODULE:page-audio BEGIN */
 let audioCtx=null,audioStop=null;
 function previewStop(){if(audioStop){audioStop();audioStop=null;}}
 function previewPlay(p){
@@ -4135,6 +4216,8 @@ async function viewAudio(view){
     section('melodies',t('melodies'),t('melodieshelp'),withVol('buzzerVolume',melodiesSection()),1);
   if(storage)panel.prepend(storage);
 }
+/* WEBUI-MODULE:page-audio END */
+/* WEBUI-MODULE:page-palettes BEGIN */
 const PAL_MAX=16;
 const PAL_BUILTIN=[
   ['Cloud','0000FF 00008B 00008B 00008B 00008B 00008B 00008B 00008B 0000FF 00008B 87CEEB 87CEEB ADD8E6 FFFFFF ADD8E6 87CEEB'],
@@ -4617,6 +4700,8 @@ function viewPalettes(view){
   load(null,'',palNew());
   reload();
 }
+/* WEBUI-MODULE:page-palettes END */
+/* WEBUI-MODULE:page-log BEGIN */
 function viewLog(view){
   const con=el('div',{class:'console'});
   let next=0,autoscroll=true,lines=[];
@@ -4646,7 +4731,9 @@ function viewLog(view){
     }
   },1000);
 }
-$('#langbtn').replaceChildren(LANG.toUpperCase());
+/* WEBUI-MODULE:page-log END */
+/* WEBUI-MODULE:boot BEGIN */
+paintLanguage();
 paintTheme();
 render();
 const topbar=$('.topbar');
@@ -4668,6 +4755,7 @@ new ResizeObserver(setChromeH).observe(topbar);
   }catch(e){}
   await loadSystemInfo();
 })();
+/* WEBUI-MODULE:boot END */
 </script>
 </body>
 </html>

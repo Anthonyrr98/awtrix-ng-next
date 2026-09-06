@@ -41,7 +41,7 @@ def render_js(project_dir):
 
 
 def inject(project_dir, path=None):
-    path = path or os.path.join(project_dir, "webui", "index.html")
+    path = path or os.path.join(project_dir, "webui", "src", "page-scripts.js")
     with open(path, "r", encoding="utf-8", newline="") as handle:
         html = handle.read()
     start, end = html.find(BEGIN), html.find(END)

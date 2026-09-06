@@ -170,14 +170,13 @@ def block(project_dir):
 
 
 def inject(project_dir, path=None):
-    """Rewrites the generated region inside webui/index.html, in place.
+    """Rewrites the generated region inside the Scripts source module.
 
     Returns True when the file changed. The build calls this before gzipping;
-    writing it back rather than injecting into a throwaway copy is what lets the
-    SIMULATOR, which serves webui/index.html straight from disk, see the same
-    table the device does.
+    The module inliner then copies it into webui/index.html for the simulator,
+    tests and device build.
     """
-    path = path or os.path.join(project_dir, "webui", "index.html")
+    path = path or os.path.join(project_dir, "webui", "src", "page-scripts.js")
     with open(path, "r", encoding="utf-8", newline="") as f:
         html = f.read()
     start, end = html.find(BEGIN), html.find(END)
@@ -199,6 +198,6 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if a != "--inject"]
     root = args[0] if args else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if "--inject" in sys.argv:
-        print("berry api: %s" % ("regenerated webui/index.html" if inject(root) else "already current"))
+        print("berry api: %s" % ("regenerated webui/src/page-scripts.js" if inject(root) else "already current"))
     else:
         print(render_js(root))

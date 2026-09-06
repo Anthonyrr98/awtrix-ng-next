@@ -171,9 +171,19 @@ locally after changes that touch `src/sim/`, the shared `core/`, or the web UI.
 
 Before compiling, the `pre:scripts/build_webui.py` extra script minifies and gzips
 `webui/index.html` into `src/transport/http/WebUiAsset.h`, a generated header that
-is checked in. The compressed asset has an 80 KB budget, and the header is rewritten
+is checked in. The compressed asset has an 84 KB budget (including the built-in English,
+German and Simplified Chinese language packs), and the header is rewritten
 only when `webui/index.html` has actually changed, so incremental builds stay
 incremental.
+
+Large, independent source sections can live under `webui/src/` while the simulator,
+tests and device still consume one self-contained `webui/index.html`. The build runs
+`scripts/webui_modules.py` first and replaces the matching generated regions in the
+HTML. The current boundaries cover shared browser utilities, language data, schemas, runtime
+state, the application shell and every feature page; see `webui/src/README.md`. Edit the source
+module, not its inlined region; run
+`python scripts/webui_modules.py` to refresh the checked-in page. CI rejects a stale
+generated region.
 
 Minification runs `html-minifier-terser`, pinned to one exact version, through
 `npx`, so **Node.js has to be on `PATH`** whenever the web UI source has changed

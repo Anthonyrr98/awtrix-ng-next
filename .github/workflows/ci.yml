@@ -45,6 +45,8 @@ jobs:
       - name: Install test dependencies
         run: npm ci
         working-directory: webui/test
+      - name: Check generated Web UI modules
+        run: python scripts/webui_modules.py --check
       - name: Run web UI tests
         run: npm test
         working-directory: webui/test

@@ -14,6 +14,11 @@ http://awtrixng-a1b2c3.local/
 [Finding AWTRIX](discovery.md). The page is a single HTML file stored on AWTRIX itself, so
 it works fully offline - including in provisioning mode, before it has ever seen your Wi-Fi.
 
+The Web UI includes English, German and Simplified Chinese. On first use it follows the browser
+language when supported; use the language button in the top bar to switch, and the choice is kept
+in that browser. English is used as the fallback if a future language pack has no translation for
+a newly added control.
+
 ## The tabs
 
 The navigation bar carries ten tabs (a bottom bar on phones, a top row on desktop). Each is a URL

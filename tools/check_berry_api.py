@@ -8,10 +8,8 @@ Two failures this catches, both of which are silent otherwise:
    would still succeed and the editor would just quietly lose its highlighting
    and completion, which reads as a styling choice rather than a broken build.
 
-2. The table checked into webui/index.html is stale. The build regenerates it in
-   place, so a commit that adds a binding without building leaves the simulator
-   -- which serves that file straight from disk -- offering an API that no longer
-   matches the firmware.
+2. The table checked into the Scripts Web UI module is stale. The build regenerates
+   it before inlining the module into the simulator/device page.
 
 Run: python tools/check_berry_api.py
 """
@@ -62,16 +60,16 @@ def main():
     check(table["max_bytes"] == 8192,
           "kDefaultMaxSourceBytes read as %r, expected 8192" % table["max_bytes"])
 
-    src = os.path.join(ROOT, "webui", "index.html")
+    src = os.path.join(ROOT, "webui", "src", "page-scripts.js")
     with open(src, "r", encoding="utf-8", newline="") as f:
         html = f.read()
     start, end = html.find(BEGIN), html.find(END)
     if start < 0 or end < 0 or end < start:
-        failures.append("the %s / %s markers are missing from webui/index.html" % (BEGIN, END))
+        failures.append("the %s / %s markers are missing from webui/src/page-scripts.js" % (BEGIN, END))
     else:
         current = html[start:end + len(END)]
         check(current == berry_api.block(ROOT),
-              "the Berry API table in webui/index.html is stale -- run `pio run -e awtrix` "
+              "the Berry API table in webui/src/page-scripts.js is stale -- run `pio run -e awtrix` "
               "(or `python scripts/berry_api.py`) and commit the result")
 
     if failures:
