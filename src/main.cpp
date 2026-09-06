@@ -424,6 +424,7 @@ void setup() {
   g_hostResolver = net::makeHostResolver();
   g_mqtt.begin(*g_engine, *g_board, cfg, uid, uid,
                cfg.hostname.empty() ? std::string("AWTRIX NG") : cfg.hostname, *g_hostResolver);
+  g_http.setOnMqttTest([] { return g_mqtt.testLoopback(); });
 
   Publisher publisher = [](const std::string& s, const std::string& p) {
     g_mqtt.publish(s, p, false);

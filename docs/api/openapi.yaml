@@ -86,7 +86,21 @@ paths:
             application/json:
               schema:
                 type: object
-                properties: { version: { type: string } }
+                properties:
+                  version: { type: string }
+                  updateImage:
+                    type: string
+                    description: Exact GitHub Release OTA asset for this compiled board variant.
+  /api/v1/mqtt/test:
+    post:
+      tags: [system]
+      summary: Test the MQTT publish/subscribe command loop
+      description: Publishes a short notification to this device's own MQTT command topic.
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200": { $ref: "#/components/responses/Ok" }
+        "503":
+          description: MQTT is offline or the broker rejected the publish.
   /api/v1/device/reboot:
     post:
       tags: [device]

@@ -35,6 +35,7 @@ class HttpApiServer {
     capabilitiesJson_ = std::move(j);
   }
   void setOnAssetsChanged(std::function<void()> cb) { onAssetsChanged_ = std::move(cb); }
+  void setOnMqttTest(std::function<bool()> cb) { onMqttTest_ = std::move(cb); }
   using ScriptSourceFn = std::function<bool(const std::string& name, std::string& out)>;
   using StoredScriptsFn = std::function<std::vector<script::StoredScript>()>;
   void setScripts(const script::ScriptHost* host, ScriptSourceFn readSource,
@@ -122,6 +123,7 @@ class HttpApiServer {
   std::string uid_;
   std::shared_ptr<const std::string> capabilitiesJson_ = std::make_shared<const std::string>("{}");
   std::function<void()> onAssetsChanged_;
+  std::function<bool()> onMqttTest_;
   const script::ScriptHost* scripts_ = nullptr;
   ScriptSourceFn scriptSource_;
   ScriptSourceFn scriptStore_;

@@ -762,6 +762,10 @@ const I18N={en:{
   maint:'Maintenance',mainthelp:'Firmware updates and resets.',
   apmaintH:'Restart AWTRIX to apply the WiFi settings you saved.',
   fwfile:'Upload firmware (.bin)',
+  fwOnline:'Online update',fwOnlineH:'Check GitHub Releases and install the firmware built for this board.',
+  fwCheck:'Check for updates',fwChecking:'Checking…',fwCurrent:'Up to date',fwAvailable:'available',
+  fwInstall:'Install update',fwDownloading:'Downloading firmware…',fwRelease:'Release notes',
+  fwNoAsset:'The release has no firmware matching this board.',fwCheckFail:'Could not check GitHub Releases.',
   resetset:'Reset settings',resetsetH:'Resets display settings to defaults (network stays).',
   factory:'Factory reset',factoryH:'Erases EVERYTHING (WiFi, files, settings). Type the hostname to confirm.',
   erase:'Erase everything',eraseNo:'Hostname does not match',
@@ -846,6 +850,8 @@ const I18N={en:{
   mqRetry:'retry in',
   mqeNoWifi:'No WiFi',mqeHost:'Host not found',mqeRefused:'Refused',
   mqeAuth:'Wrong login',mqeRejected:'Broker refused',mqeTimeout:'No response',mqeLost:'Lost',
+  mqTest:'Round-trip test',mqTestH:'Publish a notification through the broker and receive it back on the command topic.',
+  mqTestRun:'Run test',mqTestBusy:'Publishing…',mqTestOk:'Sent through MQTT',mqTestFail:'Test failed',
   grpTime:'Time',grpTimeH:'NTP server and timezone.',
   tzDetect:'Use my zone',tzDetectH:'Take the timezone this browser is set to.',
   tzDstOn:'daylight saving active',tzDstOff:'standard time',tzNoDst:'no daylight saving',
@@ -914,6 +920,10 @@ const I18N={en:{
   maint:'Wartung',mainthelp:'Firmware-Updates und Zurücksetzen.',
   apmaintH:'Neustart, damit die gespeicherten WLAN-Einstellungen wirken.',
   fwfile:'Firmware hochladen (.bin)',
+  fwOnline:'Online-Update',fwOnlineH:'GitHub Releases prüfen und die passende Firmware für dieses Board installieren.',
+  fwCheck:'Nach Updates suchen',fwChecking:'Prüfe…',fwCurrent:'Aktuell',fwAvailable:'verfügbar',
+  fwInstall:'Update installieren',fwDownloading:'Firmware wird geladen…',fwRelease:'Versionshinweise',
+  fwNoAsset:'Für dieses Board enthält das Release keine passende Firmware.',fwCheckFail:'GitHub Releases konnten nicht geprüft werden.',
   resetset:'Einstellungen zurücksetzen',resetsetH:'Setzt Anzeige-Einstellungen auf Standard zurück (Netzwerk bleibt).',
   factory:'Werkseinstellungen',factoryH:'Löscht ALLES (WLAN, Dateien, Einstellungen). Zur Bestätigung Hostname eintippen.',
   erase:'Alles löschen',eraseNo:'Hostname stimmt nicht überein',
@@ -999,6 +1009,8 @@ const I18N={en:{
   mqeNoWifi:'Kein WLAN',mqeHost:'Host nicht gefunden',mqeRefused:'Abgelehnt',
   mqeAuth:'Falsche Zugangsdaten',mqeRejected:'Broker lehnt ab',mqeTimeout:'Keine Antwort',
   mqeLost:'Getrennt',
+  mqTest:'Rundlauf-Test',mqTestH:'Eine Meldung über den Broker senden und über das Kommando-Topic wieder empfangen.',
+  mqTestRun:'Test starten',mqTestBusy:'Sende…',mqTestOk:'Über MQTT gesendet',mqTestFail:'Test fehlgeschlagen',
   grpTime:'Zeit',grpTimeH:'NTP-Server und Zeitzone.',
   tzDetect:'Meine Zone',tzDetectH:'Die Zeitzone übernehmen, auf die dieser Browser eingestellt ist.',
   tzDstOn:'Sommerzeit aktiv',tzDstOff:'Winterzeit',tzNoDst:'keine Zeitumstellung',
@@ -3138,7 +3150,21 @@ function systemPage(view,data){
   const mqSec=page.panel.querySelector('#sec-mqtt');
   if(mqSec){
     const mq=el('div',{class:'badge'});
-    mqSec.querySelector('.rows').prepend(actionRow(t('mqStatus'),t('mqStatusH'),[mq]));
+    const testState=el('div',{class:'badge'},t('mqTestRun'));
+    const testBtn=el('button',null,t('mqTestRun'));
+    testBtn.addEventListener('click',async()=>{
+      testBtn.disabled=true;testState.className='badge';testState.replaceChildren(t('mqTestBusy'));
+      try{
+        await post('/api/v1/mqtt/test');
+        testState.className='badge good';testState.replaceChildren(t('mqTestOk'));
+      }catch(e){
+        testState.className='badge bad';testState.replaceChildren(t('mqTestFail'));
+        toast(e.message,false);
+      }finally{testBtn.disabled=false;}
+    });
+    mqSec.querySelector('.rows').prepend(
+      actionRow(t('mqStatus'),t('mqStatusH'),[mq]),
+      actionRow(t('mqTest'),t('mqTestH'),[testState,testBtn]));
     paintMqtt(mq,S.stats&&S.stats.mqtt);
     poller(async()=>{
       const{data}=await api('/api/v1/device',{timeout:4000});
@@ -3226,6 +3252,44 @@ function maintenanceSection(page){
     }catch(e){toast(e.message,false);fwBtn.disabled=false;fw.hide();}
   });
   fwIn.addEventListener('click',()=>{fwIn.value='';});
+  const onlineState=el('div',{class:'badge'},t('fwCheck'));
+  const onlineBtn=el('button',null,t('fwCheck'));
+  const installBtn=armable(el('button',{class:'pri',style:'display:none'},t('fwInstall')),async()=>{
+    if(!installBtn.asset)return;
+    installBtn.disabled=true;onlineBtn.disabled=true;fw.show();
+    onlineState.className='badge';onlineState.replaceChildren(t('fwDownloading'));
+    try{
+      const r=await fetch(installBtn.asset.browser_download_url,{cache:'no-store'});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const blob=await r.blob();fw.set(.25);
+      const x=await xhrPost('/update','firmware',blob,installBtn.asset.name,p=>fw.set(.25+p*.75));
+      if(x.status<300){toast(t('rebooting'));setTimeout(()=>location.reload(),12000);return;}
+      throw new Error('HTTP '+x.status+' - '+x.responseText.slice(0,80));
+    }catch(e){toast(e.message,false);installBtn.disabled=false;onlineBtn.disabled=false;fw.hide();}
+  });
+  const releaseLink=el('a',{target:'_blank',rel:'noopener',style:'display:none'},t('fwRelease'));
+  onlineBtn.addEventListener('click',async()=>{
+    onlineBtn.disabled=true;installBtn.style.display='none';releaseLink.style.display='none';
+    onlineState.className='badge';onlineState.replaceChildren(t('fwChecking'));
+    try{
+      const [versionFile,local]=await Promise.all([
+        fetch('https://raw.githubusercontent.com/Anthonyrr98/awtrix-ng-next/main/version',{cache:'no-store'}),
+        api('/api/v1/version',{cache:'no-store'})]);
+      if(!versionFile.ok)throw new Error('GitHub HTTP '+versionFile.status);
+      const latest=(await versionFile.text()).trim().replace(/^v/,''),image=local.data.updateImage;
+      if(!latest||!image)throw new Error(t('fwNoAsset'));
+      const current=String(local.data.version||'0');
+      releaseLink.href='https://github.com/Anthonyrr98/awtrix-ng-next/releases/tag/v'+latest;releaseLink.style.display='';
+      if(compareVersions(latest,current)<=0){
+        onlineState.className='badge good';onlineState.replaceChildren(t('fwCurrent')+' · '+current);
+      }else{
+        onlineState.className='badge good';onlineState.replaceChildren('v'+latest+' '+t('fwAvailable'));
+        installBtn.asset={name:image,browser_download_url:'https://github.com/Anthonyrr98/awtrix-ng-next/releases/download/v'+latest+'/'+image};
+        installBtn.style.display='';
+      }
+    }catch(e){onlineState.className='badge bad';onlineState.replaceChildren(t('fwCheckFail'));toast(e.message,false);}
+    finally{onlineBtn.disabled=false;}
+  });
   const rebootBtn=armable(el('button',null,t('reboot')),()=>doReboot());
   const resetBtn=armable(el('button',{class:'danger'},t('resetset')),async()=>{
     try{await post('/api/v1/settings/reset');toast(t('saved'));}catch(e){toast(e.message,false);}
@@ -3240,12 +3304,20 @@ function maintenanceSection(page){
   });
   const ver=S.stats&&S.stats.version;
   page.section('maint',t('maint'),t('mainthelp'),[
+    actionRow(t('fwOnline'),t('fwOnlineH'),[onlineState,releaseLink,installBtn,onlineBtn]),
     actionRow(t('fwfile'),ver?t('version')+' '+ver:null,[fwBtn,fwIn]),
     fw.row,
     actionRow(t('reboot'),null,[rebootBtn]),
     actionRow(t('resetset'),t('resetsetH'),[resetBtn]),
     actionRow(t('factory'),t('factoryH'),[hostIn,eraseBtn]),
   ]);
+}
+function compareVersions(a,b){
+  const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
+  for(let i=0;i<Math.max(pa.length,pb.length);i++){
+    const d=(pa[i]||0)-(pb[i]||0);if(d)return d;
+  }
+  return 0;
 }
 const BK_CATS=[['wifi','bkWifi'],['settings','bkSettings'],['icons','bkIcons'],
   ['melodies','bkMelodies'],['palettes','bkPalettes'],['mp3','bkMp3'],

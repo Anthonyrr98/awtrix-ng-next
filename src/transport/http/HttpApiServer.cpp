@@ -867,7 +867,8 @@ bool HttpApiServer::serveState(const Request& req) {
     return true;
   }
   if (path == "/api/v1/version") {
-    sendJson(200, std::string("{\"version\":\"") + AWTRIX_NG_VERSION + "\"}");
+    sendJson(200, std::string("{\"version\":\"") + AWTRIX_NG_VERSION +
+                      "\",\"updateImage\":\"" + kUpdateImageName + "\"}");
     return true;
   }
   if (path == "/version") {
@@ -936,6 +937,14 @@ bool HttpApiServer::serveState(const Request& req) {
 }
 
 bool HttpApiServer::serveDiagnostics(const Request& req) {
+  if (req.method == "POST" && req.path == "/api/v1/mqtt/test") {
+    if (!onMqttTest_ || !onMqttTest_()) {
+      sendError(503, "unavailable", "MQTT is not connected or the test publish failed");
+    } else {
+      sendJson(200, "{\"ok\":true}");
+    }
+    return true;
+  }
   if (!req.get) return false;
 
   // Scanning takes seconds and would block the loop, so the first call starts it and answers 202;

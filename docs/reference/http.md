@@ -212,13 +212,25 @@ curl http://<awtrix-ip>/api/v1/device
 ### GET /api/v1/version
 
 ```json
-{"version":"1.0.12"}
+{"version":"1.4.0","updateImage":"firmware-awtrix-ng-s3-octal.bin"}
 ```
+
+`updateImage` is the exact OTA asset this compiled board variant accepts from GitHub Releases.
 
 GET only. Any other method → 405, `allowed method(s): GET`.
 
 ```bash
 curl http://<awtrix-ip>/api/v1/version
+```
+
+### POST /api/v1/mqtt/test
+
+Publishes a three-second `MQTT OK` notification to the device's own `<prefix>/cmd/notify`
+topic. Receiving the notification on the panel confirms the authenticated publish and subscribe
+path through the broker. Returns 503 while MQTT is offline or when the publish fails.
+
+```bash
+curl -X POST http://<awtrix-ip>/api/v1/mqtt/test
 ```
 
 ### GET /version
@@ -1951,6 +1963,7 @@ Anything not matched above answers **404** `notFound` with message `unknown rout
 | GET | `/api/v1/device` | [state & statistics](#get-apiv1device) |
 | GET | `/api/v1/version` | [JSON version](#get-apiv1version) |
 | GET | `/version` | [plain-text version](#get-version) |
+| POST | `/api/v1/mqtt/test` | [broker round-trip test](#post-apiv1mqtttest) |
 | POST | `/api/v1/device/reboot` | [200, then reboots](#post-apiv1devicereboot) |
 | POST | `/api/v1/device/sleep` | [200, then sleeps](#post-apiv1devicesleep) |
 | POST | `/api/v1/device/factory-reset` | [200, then resets](#post-apiv1devicefactory-reset) |

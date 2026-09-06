@@ -23,6 +23,7 @@ class MqttService {
   void tick();
   bool enabled() const { return link_.enabled(); }
   void publish(const std::string& suffix, const std::string& payload, bool retained = false);
+  bool testLoopback();
   void setCapabilitiesJson(std::shared_ptr<const std::string> j) {
     capabilitiesJson_ = std::move(j);
   }

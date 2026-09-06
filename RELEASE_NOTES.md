@@ -1,14 +1,20 @@
-## AWTRIX NG 1.3.1
+## AWTRIX NG 1.4.0
 
-**Fixed**
+**New features**
 
-- MQTT over TLS now connects using the broker hostname instead of its resolved IP address, preserving SNI and certificate hostname verification.
-- HiveMQ Cloud connections on port `8883` no longer fail repeatedly with `Not connected · Refused` after DNS resolution succeeds.
+- The System page can run an MQTT round-trip test through the configured broker and report the result immediately.
+- The maintenance panel can check GitHub Releases for a newer version, select the correct firmware for the current board, and install it online.
+- CI now reports firmware usage for every hardware target and fails when an image exceeds 90% of its OTA partition.
+
+**Improvements**
+
+- The version API now identifies the exact OTA image required by the running hardware, preventing cross-flashing between classic, S3 octal, and S3 quad targets.
+- Online updates show the available version and link to its release notes before installation.
 
 **Compatibility**
 
-- Existing MQTT settings and credentials are preserved; no migration is required.
-- Plain MQTT connections and non-TLS brokers are unchanged.
+- Existing settings, scripts, applications, MQTT credentials, groups, scenes, and backups are preserved.
+- Manual firmware upload remains available for offline recovery and development builds.
 
 ---
 

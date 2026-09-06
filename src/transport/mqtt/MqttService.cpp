@@ -87,6 +87,13 @@ void MqttService::publish(const std::string& suffix, const std::string& payload,
   send(prefix_ + "/" + suffix, payload, retained);
 }
 
+bool MqttService::testLoopback() {
+  if (!link_.online()) return false;
+  return send(prefix_ + "/cmd/notify",
+              "{\"text\":\"MQTT OK\",\"color\":\"00FF88\",\"durationMs\":3000}",
+              false);
+}
+
 void MqttService::publishRaw(const std::string& topic, const std::string& payload) {
   if (!link_.online()) return;
   send(topic, payload, false);

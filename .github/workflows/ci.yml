@@ -82,6 +82,8 @@ jobs:
         run: pip install -U platformio esptool
       - name: Build firmware
         run: pio run -e ${{ matrix.env }}
+      - name: Report firmware size
+        run: python scripts/report_firmware_size.py --env ${{ matrix.env }} --summary "$GITHUB_STEP_SUMMARY"
       - name: Build USB install images
         # The full-flash artefact: bootloader, partition table, boot_app0 and the
         # app, one image per flash variant this SoC ships in. Built on every run,
