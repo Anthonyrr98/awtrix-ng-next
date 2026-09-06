@@ -10,6 +10,7 @@
 #include <sdkconfig.h>
 
 #include <algorithm>
+#include <cctype>
 
 #include "AppConfig.h"
 #include "core/AssetPaths.h"
@@ -478,6 +479,17 @@ void HttpApiServer::handleUpdateUpload() {
     uploadAuthed_ = !cfg_->authEnabled ||
                     server_->authenticate(cfg_->authUser.c_str(), cfg_->authPass.c_str());
     if (!uploadAuthed_) return;
+    updateExpectedSha256_ = server_->arg("sha256").c_str();
+    std::transform(updateExpectedSha256_.begin(), updateExpectedSha256_.end(),
+                   updateExpectedSha256_.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    if (!updateExpectedSha256_.empty() &&
+        (updateExpectedSha256_.size() != 64 ||
+         !std::all_of(updateExpectedSha256_.begin(), updateExpectedSha256_.end(),
+                      [](unsigned char c) { return std::isxdigit(c); }))) {
+      updateImageError_ = "invalid expected SHA-256 checksum";
+      return;
+    }
     const size_t contentLen = server_->clientContentLength();
     if (contentLen > 0 && contentLen > ESP.getFreeSketchSpace()) return;
     uploadContentChecked_ = false;
@@ -485,6 +497,8 @@ void HttpApiServer::handleUpdateUpload() {
     markerCapturing_ = false;
     markerRead_ = false;
     markerVariant_.clear();
+    mbedtls_sha256_init(&updateSha256_);
+    updateSha256Active_ = mbedtls_sha256_starts_ret(&updateSha256_, 0) == 0;
     uploadWriteOk_ = Update.begin(UPDATE_SIZE_UNKNOWN);
   } else if (up.status == UPLOAD_FILE_WRITE) {
     // Catch an image that does not belong in the OTA slot from the very first chunk, before any of
@@ -532,13 +546,47 @@ void HttpApiServer::handleUpdateUpload() {
         return;
       }
     }
+    if (uploadWriteOk_ && updateSha256Active_ &&
+        mbedtls_sha256_update_ret(&updateSha256_, up.buf, up.currentSize) != 0) {
+      updateImageError_ = "could not calculate firmware SHA-256";
+      uploadWriteOk_ = false;
+      Update.abort();
+    }
     if (uploadWriteOk_ && Update.write(up.buf, up.currentSize) != up.currentSize) {
       uploadWriteOk_ = false;
     }
   } else if (up.status == UPLOAD_FILE_ABORTED) {
     Update.abort();
     uploadWriteOk_ = false;
+    if (updateSha256Active_) {
+      mbedtls_sha256_free(&updateSha256_);
+      updateSha256Active_ = false;
+    }
   } else if (up.status == UPLOAD_FILE_END) {
+    if (updateSha256Active_) {
+      uint8_t digest[32]{};
+      if (mbedtls_sha256_finish_ret(&updateSha256_, digest) != 0) {
+        updateImageError_ = "could not finish firmware SHA-256";
+        uploadWriteOk_ = false;
+      } else if (!updateExpectedSha256_.empty()) {
+        static constexpr char kHex[] = "0123456789abcdef";
+        std::string actual;
+        actual.reserve(64);
+        for (uint8_t b : digest) {
+          actual.push_back(kHex[b >> 4]);
+          actual.push_back(kHex[b & 0x0f]);
+        }
+        if (actual != updateExpectedSha256_) {
+          updateImageError_ = "firmware SHA-256 does not match the release manifest";
+          uploadWriteOk_ = false;
+          logf("update: refused - SHA-256 mismatch");
+        } else {
+          logf("update: SHA-256 verified");
+        }
+      }
+      mbedtls_sha256_free(&updateSha256_);
+      updateSha256Active_ = false;
+    }
     if (uploadWriteOk_) {
       if (!Update.end(true)) uploadWriteOk_ = false;
     } else {
@@ -562,7 +610,8 @@ void HttpApiServer::handleUpdateDone() {
     return;
   }
   if (!uploadWriteOk_ || Update.hasError()) {
-    sendError(500, "internalError", "firmware update failed (bad image or storage full)");
+    const char* detail = Update.errorString();
+    sendError(500, "updateFailed", detail && *detail ? detail : "firmware update failed");
     return;
   }
   sendJson(200, "{\"ok\":true}");

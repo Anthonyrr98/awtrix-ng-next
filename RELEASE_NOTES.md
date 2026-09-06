@@ -1,15 +1,20 @@
-## AWTRIX NG 1.4.0
+## AWTRIX NG 1.4.2
 
-**New features**
+**Stability and update safety**
 
-- The System page can run an MQTT round-trip test through the configured broker and report the result immediately.
-- The maintenance panel can check GitHub Releases for a newer version, select the correct firmware for the current board, and install it online.
-- CI now reports firmware usage for every hardware target and fails when an image exceeds 90% of its OTA partition.
+- Production ESP32-S3 builds retain the hardware brownout detector. Unsafe brownout-disabled builds are isolated in explicitly named bench-only environments and are never release targets.
+- New OTA firmware stays pending until setup, services, rendering, and 300 main-loop frames complete successfully. A crash or reboot before validation automatically rolls back to the previous partition.
+- Releases include SHA-256 checksums in a machine-readable manifest. Online updates verify every received byte before activating the new image.
+- Online installation first downloads a safety backup of configuration, credentials, scripts, icons, palettes, app order, scenes, and radio stations. Large MP3 media is excluded.
+- Update failures now report the specific validation, checksum, or flash-writer error.
 
-**Improvements**
+**Update experience**
 
-- The version API now identifies the exact OTA image required by the running hardware, preventing cross-flashing between classic, S3 octal, and S3 quad targets.
-- Online updates show the available version and link to its release notes before installation.
+- The maintenance page reports backup, download, verification, upload, and reboot phases separately.
+- The stable update channel only accepts verified GitHub Release manifests and never falls back to development files from `main`.
+- The Scripts page shows installed capacity, counts modules toward the limit, and explains how to recover before a new install fails.
+- Sixteen built-in Berry examples can be browsed, previewed, and installed without overwriting an existing script.
+- Dashboard device health checks highlight reset, memory fragmentation, connectivity, and rendering problems and can export a diagnostic report.
 
 **Compatibility**
 

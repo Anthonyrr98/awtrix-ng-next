@@ -26,11 +26,17 @@ MINIFY_ARGS = [
 
 sys.path.insert(0, os.path.join(env["PROJECT_DIR"], "scripts"))
 import berry_api
+import example_catalog
 
 
 def refresh_berry_api():
     if berry_api.inject(env["PROJECT_DIR"], SRC):
         print("webui: regenerated the Berry API table in webui/index.html")
+
+
+def refresh_example_catalog():
+    if example_catalog.inject(env["PROJECT_DIR"], SRC):
+        print("webui: regenerated the example catalog in webui/index.html")
 
 
 def minify(src_path):
@@ -61,6 +67,7 @@ def minify(src_path):
 
 
 def build_webui_asset():
+    refresh_example_catalog()
     with open(SRC, "rb") as f:
         raw = f.read()
     src_md5 = hashlib.md5(raw).hexdigest()

@@ -1736,6 +1736,7 @@ components:
                 - invalidName           # 400, any route naming an app - name outside [A-Za-z0-9_-]{1,32}
                 - invalidMethodOverride # 400, X-HTTP-Method-Override on a non-POST, naming anything but PUT/PATCH/DELETE, or aimed at the script upload
                 - wrongChip             # 400, POST /update only - image built for a different SoC or the other ESP32-S3 PSRAM type, or a factory image; the running firmware is untouched
+                - updateFailed          # 500, POST /update only - flash writer or OTA storage failure
                 - unauthorized          # 401
                 - forbidden             # 403, disabled during provisioning
                 - notFound              # 404

@@ -6,6 +6,11 @@ uploaded files stay as they are.
 
 ## Upload a new image
 
+The built-in online updater is the **stable channel**. It only accepts firmware listed in the
+latest GitHub Release manifest with a valid SHA-256 checksum; it never falls back to the changing
+`main` branch. Development builds are installed manually from a local PlatformIO build and are
+not offered as stable updates.
+
 === "Web UI"
 
     **System → Maintenance → Upload firmware (.bin)**. Pick your `.bin` and the browser uploads it
@@ -79,6 +84,10 @@ wrong one costs you nothing but the upload.
 
 To upload a build of your own, `pio run -e awtrix` writes it to `.pio/build/awtrix/firmware.bin` -
 see [Building from source](../advanced/building.md).
+
+Released ESP32-S3 builds retain the hardware brownout detector. The
+`awtrix_s3_*_unsafe_no_brownout` PlatformIO environments exist only for controlled bench diagnosis;
+their images must not be distributed or used as a workaround for an undersized power supply.
 
 ## An update that fails changes nothing
 

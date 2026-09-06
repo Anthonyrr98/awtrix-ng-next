@@ -2,6 +2,7 @@
 
 #include <FS.h>
 #include <WebServer.h>
+#include <mbedtls/sha256.h>
 
 #include <cstdint>
 #include <functional>
@@ -97,6 +98,9 @@ class HttpApiServer {
   bool uploadContentOk_ = true;
   bool uploadContentChecked_ = false;
   std::string updateImageError_;
+  std::string updateExpectedSha256_;
+  mbedtls_sha256_context updateSha256_{};
+  bool updateSha256Active_ = false;
   // The image marker straddles chunk boundaries as readily as it sits inside one, so the match runs
   // a byte at a time and its progress lives here between chunks.
   uint8_t markerMatched_ = 0;

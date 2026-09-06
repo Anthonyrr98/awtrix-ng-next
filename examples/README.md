@@ -21,7 +21,9 @@ This directory contains 16 ready-to-install Berry apps for the on-device script 
 | `moon_phase` | Current moon phase |
 | `light_chart` | Ambient-light history chart |
 
-Open **Apps → Scripts** in the device Web UI, create a script with the same file name, paste the
-corresponding `.ax` source from `apps/`, and save it. Configuration fields declared at the top of
-each script then appear under **Apps → Actions → Configure**.
+Open **Scripts → Example library** in the device Web UI to browse, preview, and install any of
+these apps with one click. Existing scripts with the same name are never overwritten. Configuration
+fields declared at the top of each script then appear under **Apps → Actions → Configure**.
 
+The library is generated from `apps/*.ax` during every firmware build, so this directory remains
+the single source of truth. Advanced users can still copy or modify the source manually.

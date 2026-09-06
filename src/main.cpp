@@ -1,9 +1,12 @@
 #include <Arduino.h>
+#if defined(AWTRIX_UNSAFE_DISABLE_BROWNOUT)
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
+#endif
 
 #include <memory>
 #include <esp_heap_caps.h>
+#include <esp_ota_ops.h>
 #include <LittleFS.h>
 #include <WiFi.h>
 #include <ctime>
@@ -78,6 +81,11 @@
 
 using namespace awtrix;
 
+// Arduino's default rollback hook validates a freshly written OTA image before setup() runs.
+// Defer that decision until the real application has completed setup and rendered reliably for
+// a while. If it crashes or reboots before then, the ESP bootloader returns to the previous slot.
+extern "C" bool verifyRollbackLater() { return true; }
+
 namespace {
 IBoard* g_board = nullptr;
 Canvas* g_canvas = nullptr;
@@ -147,6 +155,36 @@ script::ScriptHost* g_scripts = nullptr;
 script::ScriptService* g_scriptService = nullptr;
 bool g_netWasConnected = false;
 std::string g_appliedTz, g_appliedNtp;
+bool g_otaPendingVerify = false;
+int64_t g_otaBootStartedMs = 0;
+uint16_t g_otaHealthyFrames = 0;
+
+void beginOtaHealthCheck() {
+  const esp_partition_t* running = esp_ota_get_running_partition();
+  esp_ota_img_states_t state;
+  if (running && esp_ota_get_state_partition(running, &state) == ESP_OK &&
+      state == ESP_OTA_IMG_PENDING_VERIFY) {
+    g_otaPendingVerify = true;
+    g_otaBootStartedMs = monotonicMs();
+    logf("update: new image pending health validation");
+  }
+}
+
+void tickOtaHealthCheck(int64_t now) {
+  if (!g_otaPendingVerify) return;
+  if (g_otaHealthyFrames < 300) ++g_otaHealthyFrames;
+  // Confirm only after setup, HTTP/MQTT/service ticks, rendering, and 300 complete main-loop
+  // frames have all succeeded. Network connectivity is deliberately not required: a changed WiFi
+  // password must not roll a healthy firmware back forever.
+  if (now - g_otaBootStartedMs < 15000 || g_otaHealthyFrames < 300) return;
+  const esp_err_t result = esp_ota_mark_app_valid_cancel_rollback();
+  if (result == ESP_OK) {
+    logf("update: image passed health validation; rollback cancelled");
+    g_otaPendingVerify = false;
+  } else {
+    logf("update: could not confirm image health (%s)", esp_err_to_name(result));
+  }
+}
 
 bool holdingSelectAtBoot() {
   ButtonState b;
@@ -202,13 +240,15 @@ void applyTimeConfig(const DeviceConfig& cfg, bool force) {
 }
 
 void setup() {
-#if defined(AWTRIX_SOC_ESP32S3)
-  // Bench-test build only: allow operation below the brownout threshold.
-  // This does not make an undersized supply safe or stable.
+#if defined(AWTRIX_SOC_ESP32S3) && defined(AWTRIX_UNSAFE_DISABLE_BROWNOUT)
+  // Explicit bench-only escape hatch. Released builds never define this macro: disabling the
+  // detector can turn a diagnosable supply problem into crashes or interrupted flash writes.
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
 #endif
   Serial.begin(115200);
   Serial.println();
+
+  beginOtaHealthCheck();
 
   awtrix::noise::reseed(esp_random());
 
@@ -688,6 +728,7 @@ void loop() {
   probe::begin();
   g_board->show(*g_canvas);
   probe::report("show", 256);
+  tickOtaHealthCheck(now);
 
   // Reboots and shutdowns wait for the power animation to play out, and any queued script store
   // is written first so nothing a script saved in its last seconds is lost.

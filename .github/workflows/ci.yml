@@ -187,6 +187,12 @@ jobs:
           cp .pio/build/awtrix/firmware.bin firmware-awtrix-ng.bin
           cp .pio/build/awtrix_s3_octal/firmware.bin firmware-awtrix-ng-s3-octal.bin
           cp .pio/build/awtrix_s3_quad/firmware.bin firmware-awtrix-ng-s3-quad.bin
+      - name: Create the verified update manifest
+        run: |
+          python tools/release_manifest.py \
+            firmware-awtrix-ng.bin \
+            firmware-awtrix-ng-s3-octal.bin \
+            firmware-awtrix-ng-s3-quad.bin
       - name: Stage the USB install images
         # What a user flashes over USB: bootloader, partition table, app. The
         # table is the only part that varies with flash size, which is why one
@@ -227,6 +233,7 @@ jobs:
             firmware-awtrix-ng.bin
             firmware-awtrix-ng-s3-octal.bin
             firmware-awtrix-ng-s3-quad.bin
+            release-manifest.json
             usb-awtrix-ng.zip
             licenses-awtrix-ng.zip
       - name: Flip the release live, now that every asset is attached
