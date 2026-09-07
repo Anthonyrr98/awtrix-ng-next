@@ -157,6 +157,8 @@ jobs:
         # overlap or a misaligned app offset only shows up once someone flashes
         # it. Cheap to check here, expensive to discover in the field.
         run: python tools/check_partitions.py
+      - name: Check the embedded release signing key
+        run: openssl pkey -pubin -in security/release-signing-public.pem -noout
 
   release:
     name: Publish firmware release
@@ -190,11 +192,19 @@ jobs:
           cp .pio/build/awtrix_s3_octal/firmware.bin firmware-awtrix-ng-s3-octal.bin
           cp .pio/build/awtrix_s3_quad/firmware.bin firmware-awtrix-ng-s3-quad.bin
       - name: Create the verified update manifest
+        env:
+          RELEASE_SIGNING_KEY: ${{ secrets.RELEASE_SIGNING_KEY }}
         run: |
+          test -n "$RELEASE_SIGNING_KEY"
+          printf '%s' "$RELEASE_SIGNING_KEY" | base64 --decode > release-signing-key.pem
           python tools/release_manifest.py \
+            --signing-key release-signing-key.pem \
             firmware-awtrix-ng.bin \
             firmware-awtrix-ng-s3-octal.bin \
             firmware-awtrix-ng-s3-quad.bin
+          openssl pkeyutl -verify -rawin -pubin -inkey security/release-signing-public.pem \
+            -in release-manifest.json -sigfile release-manifest.sig
+          rm -f release-signing-key.pem
       - name: Stage the USB install images
         # What a user flashes over USB: bootloader, partition table, app. The
         # table is the only part that varies with flash size, which is why one
@@ -236,6 +246,7 @@ jobs:
             firmware-awtrix-ng-s3-octal.bin
             firmware-awtrix-ng-s3-quad.bin
             release-manifest.json
+            release-manifest.sig
             usb-awtrix-ng.zip
             licenses-awtrix-ng.zip
       - name: Flip the release live, now that every asset is attached

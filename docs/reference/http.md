@@ -212,10 +212,13 @@ curl http://<awtrix-ip>/api/v1/device
 ### GET /api/v1/version
 
 ```json
-{"version":"1.4.1","updateImage":"firmware-awtrix-ng-s3-octal.bin"}
+{"version":"1.6.0","buildId":"ea8df83f95b5","buildEpoch":1788746400,"webUiEtag":"bf0403cfa0f27ceee20f9ace52866a46","updateImage":"firmware-awtrix-ng-s3-octal.bin"}
 ```
 
 `updateImage` is the exact OTA asset this compiled board variant accepts from GitHub Releases.
+`buildId` identifies the source commit and ends in `-dirty` for a locally modified build.
+`buildEpoch` is the commit timestamp, so release builds remain reproducible. `webUiEtag` identifies
+the exact embedded browser interface independently of the semantic version.
 
 GET only. Any other method → 405, `allowed method(s): GET`.
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 
@@ -14,6 +15,8 @@ def main() -> None:
     parser.add_argument("assets", nargs="+", type=Path)
     parser.add_argument("--version-file", type=Path, default=Path("version"))
     parser.add_argument("--output", type=Path, default=Path("release-manifest.json"))
+    parser.add_argument("--signing-key", type=Path)
+    parser.add_argument("--signature-output", type=Path, default=Path("release-manifest.sig"))
     args = parser.parse_args()
 
     version = args.version_file.read_text(encoding="utf-8").strip().removeprefix("v")
@@ -27,6 +30,11 @@ def main() -> None:
 
     manifest = {"schema": 1, "version": version, "assets": assets}
     args.output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    if args.signing_key:
+        subprocess.run([
+            "openssl", "pkeyutl", "-sign", "-rawin", "-inkey", str(args.signing_key),
+            "-in", str(args.output), "-out", str(args.signature_output),
+        ], check=True)
 
 
 if __name__ == "__main__":

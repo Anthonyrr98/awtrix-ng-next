@@ -637,7 +637,9 @@ bool SimHttpServer::Impl::serveState(const httplib::Request& req, const std::str
     return true;
   }
   if (path == "/api/v1/version") {
-    sendJson(res, 200, std::string("{\"version\":\"") + AWTRIX_NG_VERSION + "\"}");
+    sendJson(res, 200, std::string("{\"version\":\"") + AWTRIX_NG_VERSION +
+                           "\",\"buildId\":\"" + AWTRIX_NG_BUILD_ID +
+                           "\",\"buildEpoch\":" + AWTRIX_NG_BUILD_EPOCH + "}");
     return true;
   }
   if (path == "/version") {

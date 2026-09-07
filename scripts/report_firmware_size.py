@@ -24,6 +24,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", required=True)
     parser.add_argument("--summary")
+    parser.add_argument("--warn-percent", type=float, default=88.0)
     parser.add_argument("--limit-percent", type=float, default=90.0)
     args = parser.parse_args()
 
@@ -46,9 +47,11 @@ def main() -> int:
                 handle.write("## Firmware size\n\n| Target | Firmware | OTA slot | Free | Used |\n")
                 handle.write("|---|---:|---:|---:|---:|\n")
             handle.write(line)
-    if percent > args.limit_percent:
-        print(f"firmware exceeds the {args.limit_percent:.1f}% OTA-slot limit")
+    if percent >= args.limit_percent:
+        print(f"::error::firmware uses {percent:.1f}% of its OTA slot; limit is {args.limit_percent:.1f}%")
         return 1
+    if percent >= args.warn_percent:
+        print(f"::warning::firmware uses {percent:.1f}% of its OTA slot; warning starts at {args.warn_percent:.1f}%")
     return 0
 
 

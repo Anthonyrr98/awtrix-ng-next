@@ -88,6 +88,13 @@
 :root[data-theme=liquid-glass-color] h1,:root[data-theme=liquid-glass-color] h2{
   color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.4),0 0 18px rgba(78,205,196,.55)}
 @media(prefers-reduced-motion:reduce){:root[data-theme|=liquid-glass] *{transition-duration:.01ms!important}}
+@media(prefers-reduced-transparency:reduce),(update:slow){
+  :root[data-theme|=liquid-glass] .card,:root[data-theme|=liquid-glass] nav,
+  :root[data-theme|=liquid-glass] .topbar{backdrop-filter:blur(12px) saturate(130%)}
+  :root[data-theme|=liquid-glass] button,:root[data-theme|=liquid-glass] input,
+  :root[data-theme|=liquid-glass] select,:root[data-theme|=liquid-glass] textarea,
+  :root[data-theme|=liquid-glass] .approw,:root[data-theme|=liquid-glass] .healthitem{backdrop-filter:none}
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg);color:var(--fg)}
 body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding-bottom:70px}
@@ -378,12 +385,15 @@ canvas#screen{display:block;width:100%;aspect-ratio:4/1;image-rendering:pixelate
   border-radius:9px;padding:7px 10px;border:1px solid transparent;flex-wrap:wrap;min-width:0}
 .approw.dover{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 24%,transparent)}
 .draglayer{position:fixed;inset:0;z-index:100;pointer-events:none}
-.draglayer .dragghost{position:absolute;margin:0;opacity:.94;border-color:var(--acc);cursor:grabbing;
-  box-shadow:0 14px 34px var(--sh);transform:none;transition:none}
+.draglayer .dragghost{position:absolute;left:0;top:0;margin:0;opacity:.94;border-color:var(--acc);cursor:grabbing;
+  box-shadow:0 14px 34px var(--sh);backdrop-filter:none!important;transition:none!important;
+  will-change:transform;contain:layout paint}
 .draglayer .dragghost:hover{transform:none;border-color:var(--acc);box-shadow:0 14px 34px var(--sh)}
 .dragghost .rowmenu,.dragghost .appcfg{display:none}
 .tiles .approw.dragplace{opacity:.25;transform:none;box-shadow:none}
 body.dragging-app{cursor:grabbing;user-select:none}
+body.dragging-app .applist.tiles>.approw{transition:none}
+body.dragging-app .applist.tiles>.approw:hover{transform:none}
 .approw .grip{cursor:grab;color:var(--dim);flex:none;user-select:none;font-size:15px;line-height:1;
   touch-action:none;padding:6px 4px;margin:-6px -2px}
 .approw .pos{color:var(--dim);font:11px ui-monospace,Consolas,monospace;width:20px;text-align:right;flex:none}
@@ -525,6 +535,9 @@ body.dragging-app{cursor:grabbing;user-select:none}
 .ed .ta{overflow:auto;resize:none;background:transparent;color:transparent;
   caret-color:var(--fg);width:100%;height:100%}
 .ed .ta:focus{outline:none}
+:root[data-theme|=liquid-glass] .ed .ta,
+:root[data-theme|=liquid-glass] .ed .ta:focus{background:transparent;backdrop-filter:none;
+  box-shadow:none;border:0;transition:none}
 .ed .ta::selection{background:var(--tselo);color:transparent}
 .ed .hl i{position:absolute;left:0;right:0;display:block;z-index:-1}
 .ed .hl i.err{background:var(--badbg)}
@@ -2523,8 +2536,7 @@ async function viewApps(view){
         doc.body.append(dragLayer);
         doc.body.classList.add('dragging-app');
         const moveGhost=ev=>{
-          dragGhost.style.left=(ev.clientX-offsetX)+'px';
-          dragGhost.style.top=(ev.clientY-offsetY)+'px';
+          dragGhost.style.transform='translate3d('+(ev.clientX-offsetX)+'px,'+(ev.clientY-offsetY)+'px,0)';
         };
         moveGhost(e);
         row.classList.add('dragplace');
@@ -2535,9 +2547,13 @@ async function viewApps(view){
           const under=cell?[...loopList.children].indexOf(cell):-1;
           if(under<0||dragFrom==null||under===dragFrom)return;
           const[m]=loop.splice(dragFrom,1);loop.splice(under,0,m);
-          dragFrom=under;render();
-          const moved=loopList.children[under];
-          if(moved)moved.classList.add('dragplace');
+          if(under>dragFrom)loopList.insertBefore(row,cell.nextSibling);
+          else loopList.insertBefore(row,cell);
+          dragFrom=under;
+          [...loopList.children].forEach((item,pos)=>{
+            const label=item.querySelector('.pos');
+            if(label)label.textContent=pos+1;
+          });
         };
         const done=()=>{
           doc.removeEventListener('pointermove',over);

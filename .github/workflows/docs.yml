@@ -70,6 +70,7 @@ jobs:
           # the device's private IP cannot fetch those assets directly.
           gh release download "$tag" --pattern 'firmware-awtrix-ng*.bin' --dir docs/firmware
           gh release download "$tag" --pattern 'release-manifest.json' --dir docs/firmware
+          gh release download "$tag" --pattern 'release-manifest.sig' --dir docs/firmware
           if ! find docs/firmware -maxdepth 1 -type f \( -name 'usb-*.bin' -o -name 'factory-*.bin' \) | grep -q .; then
             echo "::warning::Release $tag carries no USB install image -- the browser flasher will report that no firmware is available."
             exit 0

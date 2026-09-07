@@ -174,8 +174,7 @@ async function viewApps(view){
         doc.body.append(dragLayer);
         doc.body.classList.add('dragging-app');
         const moveGhost=ev=>{
-          dragGhost.style.left=(ev.clientX-offsetX)+'px';
-          dragGhost.style.top=(ev.clientY-offsetY)+'px';
+          dragGhost.style.transform='translate3d('+(ev.clientX-offsetX)+'px,'+(ev.clientY-offsetY)+'px,0)';
         };
         moveGhost(e);
         row.classList.add('dragplace');
@@ -186,9 +185,13 @@ async function viewApps(view){
           const under=cell?[...loopList.children].indexOf(cell):-1;
           if(under<0||dragFrom==null||under===dragFrom)return;
           const[m]=loop.splice(dragFrom,1);loop.splice(under,0,m);
-          dragFrom=under;render();
-          const moved=loopList.children[under];
-          if(moved)moved.classList.add('dragplace');
+          if(under>dragFrom)loopList.insertBefore(row,cell.nextSibling);
+          else loopList.insertBefore(row,cell);
+          dragFrom=under;
+          [...loopList.children].forEach((item,pos)=>{
+            const label=item.querySelector('.pos');
+            if(label)label.textContent=pos+1;
+          });
         };
         const done=()=>{
           doc.removeEventListener('pointermove',over);

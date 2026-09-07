@@ -47,6 +47,11 @@ async function scenarioStaysClean() {
   await goto(window, '#/scripts');
   assert(!isDirty(window), 'empty editor starts clean');
 
+  window.AWTRIX_THEMES.apply('liquid-glass-white');
+  const css=$('style').textContent.replace(/\s+/g,'');
+  assert(css.includes(':root[data-theme|=liquid-glass].ed.ta,:root[data-theme|=liquid-glass].ed.ta:focus{background:transparent;backdrop-filter:none;'),
+    'Liquid Glass leaves the transparent editor input free of backdrop filtering');
+
   const saved = await newSavedScript(window);
   assert(!isDirty(window), 'after save the editor is clean');
 

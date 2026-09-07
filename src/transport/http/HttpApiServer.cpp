@@ -917,6 +917,9 @@ bool HttpApiServer::serveState(const Request& req) {
   }
   if (path == "/api/v1/version") {
     sendJson(200, std::string("{\"version\":\"") + AWTRIX_NG_VERSION +
+                      "\",\"buildId\":\"" + AWTRIX_NG_BUILD_ID +
+                      "\",\"buildEpoch\":" + AWTRIX_NG_BUILD_EPOCH +
+                      ",\"webUiEtag\":\"" + WEBUI_ETAG +
                       "\",\"updateImage\":\"" + kUpdateImageName + "\"}");
     return true;
   }

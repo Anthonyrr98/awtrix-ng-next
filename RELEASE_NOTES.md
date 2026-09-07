@@ -1,40 +1,31 @@
-## AWTRIX NG 1.5.0
+## AWTRIX NG 1.6.0
 
-**Global themes and Liquid Glass**
+**Trusted and identifiable firmware updates**
 
-- Added a global theme registry with a public API for registering, applying, enumerating and observing themes without coupling feature pages to a specific palette.
-- Added a theme picker to the header with persistent Dark, Light, White Liquid Glass and Color Liquid Glass choices, localized in English, German and Simplified Chinese.
-- Liquid Glass themes provide translucent surfaces, high-saturation background blur, refractive borders, accessible focus states, reduced-motion handling and clearer component separation.
-- Theme changes propagate to the embedded icon editor and future registered themes appear in the picker automatically.
+- Stable update manifests now publish an Ed25519 detached signature, generated and verified by release CI for downstream clients and independent provenance checks.
+- SHA-256 image verification, board-variant checks and post-boot rollback validation remain in place as separate safety layers.
+- The version endpoint now reports the source build ID, reproducible commit timestamp and embedded Web UI ETag, making local and release builds unambiguous.
+- Release CI warns once a firmware consumes 88% of its OTA slot and refuses builds at 90%.
 
-**Application management**
+**Interface performance and reliability**
 
-- Reworked the application rotation into compact square cards so substantially more apps fit on screen at once.
-- Dragging now carries a full-size card under the pointer while preserving a visible source slot.
-- Application action menus rise above neighbouring cards instead of being clipped or obscured.
-- Improved visual boundaries for application cards, settings sections, audio panels, navigation and form rows in both Liquid Glass themes.
+- Application reordering moves existing cards instead of rebuilding the complete grid during every pointer crossing, and uses compositor-friendly positioning for the drag preview.
+- Liquid Glass avoids expensive blur work while dragging and automatically reduces transparency effects on constrained browsers and for accessibility preferences.
+- Fixed Liquid Glass hiding the script editor's syntax-highlighted source behind its transparent input layer.
 
-**Language and maintenance improvements**
+**Long-running device validation**
 
-- The language button now opens an extensible picker containing every registered language.
-- Stable update checks use the project-hosted release manifest and firmware endpoints, avoiding browser CORS restrictions on GitHub Release asset downloads.
-- Documentation deployment now publishes the verified OTA manifest and board-specific firmware files consumed by the device updater.
-- The Scripts toolbar keeps the full Example Library label visible instead of clipping it into an icon-sized button.
-
-**Compatibility**
-
-- Existing device settings, scripts, applications, MQTT credentials, scenes and stored media are preserved.
-- HTTP, MQTT and Berry APIs are unchanged.
-- Theme preferences are browser-local; an obsolete preview theme name safely falls back to the browser's preferred light or dark mode.
-- Liquid Glass blur and colour mixing require a current browser. Older browsers retain functional controls and layout with reduced visual effects.
+- Added a reusable soak sampler for recording device health as JSON Lines and enforcing minimum internal-heap, contiguous-block and connectivity thresholds during 24–72 hour tests.
+- Existing configurations, scripts, applications, media, scenes and MQTT credentials are preserved.
+- HTTP, MQTT and Berry application APIs remain compatible; `/api/v1/version` only gains additive fields.
 
 ---
 
-**Which file do I need?**
+## Which file should I use?
 
-| Your board | Update a running AWTRIX NG | First install over USB |
-|---|---|---|
-| Classic ESP32, Ulanzi TC001, AWTRIX 2 conversions | `firmware-awtrix-ng.bin` | An image inside `usb-awtrix-ng.zip` |
+| Hardware | Web UI OTA update | First install over USB |
+| --- | --- | --- |
+| Original ESP32 / Ulanzi TC001 / AWTRIX 2 conversions | `firmware-awtrix-ng.bin` | The matching ESP32 image inside `usb-awtrix-ng.zip` |
 | ESP32-S3 with octal PSRAM (`N8R8`, `N16R8`) or no PSRAM | `firmware-awtrix-ng-s3-octal.bin` | The matching S3 octal image inside `usb-awtrix-ng.zip` |
 | ESP32-S3 with quad PSRAM (`N8R2`, `N16R2`, `N4R2`) | `firmware-awtrix-ng-s3-quad.bin` | The matching S3 quad image inside `usb-awtrix-ng.zip` |
 

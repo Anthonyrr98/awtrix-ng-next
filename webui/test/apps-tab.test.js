@@ -85,6 +85,22 @@ async function run() {
     'dragging creates a complete tile that follows the pointer');
   assert(ghost&&ghost.style.width==='118px'&&firstTile.classList.contains('dragplace'),
     'the floating tile keeps its size while its original slot becomes a placeholder');
+  const loopGrid=rotation.querySelector('.applist');
+  const thirdTile=loopGrid.children[2];
+  window.document.elementFromPoint=()=>thirdTile;
+  window.document.dispatchEvent(new window.MouseEvent('pointermove',{
+    bubbles:true,clientX:330,clientY:65,
+  }));
+  assert(loopGrid.children[2]===firstTile&&firstTile.isConnected,
+    'dragging reorders the existing tile without rebuilding the application grid');
+  assert(ghost.style.transform.includes('translate3d'),
+    'the floating tile follows the pointer with a compositor-friendly transform');
+  window.document.elementFromPoint=()=>loopGrid.children[0];
+  window.document.dispatchEvent(new window.MouseEvent('pointermove',{
+    bubbles:true,clientX:50,clientY:65,
+  }));
+  assert(loopGrid.children[0]===firstTile,
+    'the same tile can move back smoothly before the drag finishes');
   window.document.dispatchEvent(new window.MouseEvent('pointerup',{bubbles:true}));
   assert(!window.document.querySelector('.draglayer')&&!window.document.body.classList.contains('dragging-app'),
     'ending a drag removes the floating layer');

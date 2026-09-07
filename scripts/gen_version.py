@@ -16,6 +16,7 @@ Runs two ways:
 """
 
 import os
+import subprocess
 import sys
 
 FALLBACK = "0.0.0-dev"
@@ -30,12 +31,40 @@ def read_version(root):
         return None
 
 
+def git_value(root, *args, fallback="unknown"):
+    try:
+        return subprocess.check_output(
+            ["git", "-C", root, *args], stderr=subprocess.DEVNULL, text=True
+        ).strip() or fallback
+    except (OSError, subprocess.CalledProcessError):
+        return fallback
+
+
+def build_identity(root):
+    commit = git_value(root, "rev-parse", "--short=12", "HEAD")
+    epoch = git_value(root, "show", "-s", "--format=%ct", "HEAD", fallback="0")
+    try:
+        dirty = subprocess.call(
+            ["git", "-C", root, "diff-index", "--quiet", "HEAD", "--"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ) != 0
+    except OSError:
+        dirty = False
+    return commit + ("-dirty" if dirty else ""), epoch
+
+
 def _platformio():
-    version = read_version(env.subst("$PROJECT_DIR"))  # noqa: F821
+    root = env.subst("$PROJECT_DIR")  # noqa: F821
+    version = read_version(root)
     if not version:
         raise SystemExit("gen_version: repo-root `version` file is missing or empty")
-    env.Append(CPPDEFINES=[("AWTRIX_NG_VERSION", env.StringifyMacro(version))])  # noqa: F821
-    print("version: AWTRIX_NG_VERSION = %s (from ./version)" % version)
+    build_id, build_epoch = build_identity(root)
+    env.Append(CPPDEFINES=[  # noqa: F821
+        ("AWTRIX_NG_VERSION", env.StringifyMacro(version)),
+        ("AWTRIX_NG_BUILD_ID", env.StringifyMacro(build_id)),
+        ("AWTRIX_NG_BUILD_EPOCH", env.StringifyMacro(build_epoch)),
+    ])
+    print("version: %s (build %s, epoch %s)" % (version, build_id, build_epoch))
 
 
 try:
