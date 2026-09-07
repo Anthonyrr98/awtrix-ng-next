@@ -55,6 +55,26 @@ jobs:
         # so its golden fixtures run on the node this job already has.
         run: node --test "tools/flowconv/*.test.mjs"
 
+  music-visualizer-build:
+    name: Windows music visualizer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build the single-file companion
+        shell: powershell
+        run: ./tools/build_music_visualizer.ps1
+      - name: Smoke-test the executable
+        shell: powershell
+        run: ./dist/music-visualizer/awtrix-music-visualizer.exe --help
+      - uses: actions/upload-artifact@v4
+        with:
+          name: awtrix-music-visualizer
+          path: dist/music-visualizer/awtrix-music-visualizer.exe
+          if-no-files-found: error
+
   device-build:
     name: Firmware build (${{ matrix.env }})
     runs-on: ubuntu-latest
@@ -163,7 +183,7 @@ jobs:
   release:
     name: Publish firmware release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [native-tests, webui-tests, device-build, docs]
+    needs: [native-tests, webui-tests, music-visualizer-build, device-build, docs]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -228,6 +248,11 @@ jobs:
         # text to accompany a binary distribution. A release of bare .bin files
         # carries none, so the notices ship as their own asset.
         run: zip -r licenses-awtrix-ng.zip LICENSE.md THIRD-PARTY-NOTICES.md LICENSES/
+      - name: Download the Windows music visualizer
+        uses: actions/download-artifact@v4
+        with:
+          name: awtrix-music-visualizer
+          path: release-tools
       - name: Stage the release as a draft
         # Created as a draft on purpose. Publishing fires `release: published`,
         # which is what notifies Discord -- do that before the assets are
@@ -247,6 +272,7 @@ jobs:
             firmware-awtrix-ng-s3-quad.bin
             release-manifest.json
             release-manifest.sig
+            release-tools/awtrix-music-visualizer.exe
             usb-awtrix-ng.zip
             licenses-awtrix-ng.zip
       - name: Flip the release live, now that every asset is attached

@@ -403,12 +403,14 @@ body.dragging-app .applist.tiles>.approw:hover{transform:none}
 .approw .chip{font-size:10.5px;color:var(--acc);border:1px solid #58a6ff55;border-radius:99px;padding:1px 8px;flex:none}
 .approw .chip.s{color:var(--ok);border-color:#2ea04355}
 .approw .chip.skip{color:var(--dim);border-color:var(--border)}
+.approw .rowbadges{display:flex;gap:4px}
 .rowmenu{position:relative;flex:none;margin-left:auto}
 .rowmenu>.mbtn{padding:4px 10px;font-size:14px;line-height:1}
 .rowmenu>.mlist{position:absolute;right:0;top:calc(100% + 4px);z-index:40;min-width:190px;
   display:flex;flex-direction:column;padding:4px;gap:2px;background:var(--card);
   border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px #0007}
 .rowmenu>.mlist[hidden]{display:none}
+.tiles .rowmenu>.mlist{top:auto;bottom:calc(100% + 4px)}
 .rowmenu>.mlist>button{width:100%;text-align:left;padding:9px 12px;font-size:13px;
   background:none;border:none;border-radius:6px}
 .rowmenu>.mlist>button:hover{background:var(--card2)}
@@ -424,8 +426,8 @@ body.dragging-app .applist.tiles>.approw:hover{transform:none}
 .tiles .approw .nm{flex:1 1 100%;font-size:13px;font-weight:650;line-height:1.25;display:-webkit-box;
   overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .tiles .approw .nm .sub{display:none}
-.tiles .approw .chip{position:absolute;left:9px;bottom:9px;max-width:62px;overflow:hidden;text-overflow:ellipsis}
-.tiles .approw .chip+.chip{left:auto;right:44px}
+.tiles .approw .rowbadges{position:absolute;left:9px;right:52px;bottom:9px;overflow:hidden}
+.tiles .rowbadges .chip{flex:1;min-width:0;overflow:hidden}
 .tiles .approw .rowmenu{position:absolute;right:8px;bottom:8px}
 .tiles .approw:has(.rowmenu .mlist:not([hidden])){z-index:45}
 .tiles .approw:has(.appcfg:not([hidden])){grid-column:1/-1;aspect-ratio:auto;min-height:0;padding-bottom:48px}
@@ -2621,10 +2623,11 @@ async function viewApps(view){
      el('div',{class:'rowmain'},
        el('span',{class:'nm'},m.name||a.name,
          bits.length?el('span',{class:'sub'},bits.join(' · ')):null),
-       own?el('span',{class:'chip'+(scr?' s':'')},t(scr?'chipScript':'chipPushed')):null,
-       inLoop&&a.skipped?el('span',{class:'chip skip',title:t('chipSkipH')},t('chipSkip')):null,
-       a.present===false?el('span',{class:'chip skip',title:t('chipGoneH')},t('chipGone')):null,
-       a.error?errBadge(a.name,a.error):null),
+       el('span',{class:'rowbadges'},
+         own?el('span',{class:'chip'+(scr?' s':'')},t(scr?'chipScript':'chipPushed')):null,
+         inLoop&&a.skipped?el('span',{class:'chip skip',title:t('chipSkipH')},t('chipSkip')):null,
+         a.present===false?el('span',{class:'chip skip',title:t('chipGoneH')},t('chipGone')):null,
+         a.error?errBadge(a.name,a.error):null)),
      menu,
      cfgBox,
     ].forEach(n=>{if(n)row.append(n);});

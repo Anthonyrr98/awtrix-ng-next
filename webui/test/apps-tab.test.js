@@ -129,6 +129,13 @@ async function run() {
     'an open tile menu raises its whole card above neighbouring tiles');
   rowFor2(window, 'Time').querySelector('.rowmenu .mbtn').click();
 
+  const bottomRow = rowFor2(window, 'co2');
+  const bottomMenu = bottomRow.querySelector('.rowmenu .mlist');
+  assert(window.getComputedStyle(bottomMenu).bottom !== 'auto',
+    'tile menus open upward instead of being clipped at the bottom');
+  assert(bottomRow.querySelector('.rowbadges')?.contains(bottomRow.querySelector('.chip')),
+    'tile status chips share a reserved badge rail away from the menu button');
+
   const rowsOf = card => [...card.querySelectorAll('.approw')];
   // Every row action lives behind the row's menu now, labelled with words.
   const btn = (row, label) => {

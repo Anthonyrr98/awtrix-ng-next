@@ -37,6 +37,7 @@ site/
 # the docs build, published with the site, never committed.
 docs/firmware/
 __pycache__/
+.build/
 
 # Local Berry scripts (uploaded to the device, not part of the firmware)
 /Berry/

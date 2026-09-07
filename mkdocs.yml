@@ -124,4 +124,5 @@ nav:
       - FAQ: troubleshooting/faq.md
   - Advanced:
       - Simulator: advanced/simulator.md
+      - Windows music visualizer: advanced/music-visualizer.md
       - Building from source: advanced/building.md
