@@ -919,7 +919,7 @@ bool HttpApiServer::serveState(const Request& req) {
     sendJson(200, std::string("{\"version\":\"") + AWTRIX_NG_VERSION +
                       "\",\"buildId\":\"" + AWTRIX_NG_BUILD_ID +
                       "\",\"buildEpoch\":" + AWTRIX_NG_BUILD_EPOCH +
-                      ",\"webUiEtag\":\"" + WEBUI_ETAG +
+                      ",\"webUiEtag\":\"" + WEBUI_ETAG_VALUE +
                       "\",\"updateImage\":\"" + kUpdateImageName + "\"}");
     return true;
   }

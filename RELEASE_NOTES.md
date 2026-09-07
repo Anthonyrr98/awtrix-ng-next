@@ -1,9 +1,10 @@
-## AWTRIX NG 1.6.1
+## AWTRIX NG 1.6.2
 
 **Online update hotfix**
 
-- The stable update checker now reads firmware metadata and images from this repository's GitHub Pages deployment.
-- Fixes “Unable to check GitHub Release” after 1.6.0 because the Web UI still pointed at the upstream project's Pages site.
+- The stable update checker reads firmware metadata and images from this repository's GitHub Pages deployment.
+- Fixes “Unable to check GitHub Release” when the Web UI still pointed at the upstream project's Pages site.
+- Fixes invalid JSON from `/api/v1/version` caused by quoting the HTTP ETag twice.
 - GitHub Pages is now enabled for this repository and is populated from verified release assets by the Docs workflow.
 - Existing configurations, scripts, applications, media, scenes and MQTT credentials are preserved.
 

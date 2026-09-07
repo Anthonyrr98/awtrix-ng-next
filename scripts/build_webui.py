@@ -110,6 +110,7 @@ def build_webui_asset():
         "namespace awtrix {",
         "",
         'inline constexpr char WEBUI_ETAG[] = "\\"%s\\"";' % etag,
+        'inline constexpr char WEBUI_ETAG_VALUE[] = "%s";' % etag,
         "inline constexpr unsigned WEBUI_GZ_LEN = %d;" % len(gz),
         "inline const uint8_t WEBUI_GZ[] PROGMEM = {",
     ]
