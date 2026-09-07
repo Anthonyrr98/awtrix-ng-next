@@ -13,12 +13,12 @@ jobs:
     name: Core host unit tests (native)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Cache PlatformIO
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.platformio
@@ -33,8 +33,8 @@ jobs:
     name: Web UI tests (jsdom)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
@@ -59,8 +59,8 @@ jobs:
     name: Windows music visualizer
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Build the single-file companion
@@ -69,7 +69,7 @@ jobs:
       - name: Smoke-test the executable
         shell: powershell
         run: ./dist/music-visualizer/awtrix-music-visualizer.exe --help
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: awtrix-music-visualizer
           path: dist/music-visualizer/awtrix-music-visualizer.exe
@@ -83,16 +83,16 @@ jobs:
       matrix:
         env: [awtrix, awtrix_s3_octal, awtrix_s3_quad]
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # scripts/build_webui.py minifies the web UI through npx before it embeds it.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
       - name: Cache PlatformIO
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.platformio
@@ -113,7 +113,7 @@ jobs:
         # so a table change that breaks it should fail the PR that made it, not
         # the release three commits later.
         run: python scripts/factory_image.py --env ${{ matrix.env }} --all -o dist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           # The prefix is usb-, not factory-, and comes from factory_image.asset_name.
           # Keep the two in step: if-no-files-found is error, so a stale pattern here
@@ -126,8 +126,8 @@ jobs:
     name: API docs match the firmware
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install the check's only dependency
@@ -190,11 +190,11 @@ jobs:
       # To dispatch the Docs workflow once the assets exist -- see the last step.
       actions: write
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
       - name: Install PlatformIO
@@ -249,7 +249,7 @@ jobs:
         # carries none, so the notices ship as their own asset.
         run: zip -r licenses-awtrix-ng.zip LICENSE.md THIRD-PARTY-NOTICES.md LICENSES/
       - name: Download the Windows music visualizer
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: awtrix-music-visualizer
           path: release-tools
@@ -259,7 +259,7 @@ jobs:
         # uploaded and the announcement points at a release with nothing to
         # download for the next few minutes. A draft carries no such event, so
         # the assets land first and the next step flips it live.
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
           # The notes are written by hand into RELEASE_NOTES.md alongside the
