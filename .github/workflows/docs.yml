@@ -65,13 +65,19 @@ jobs:
           fi
           gh release download "$tag" --pattern 'usb-*.bin' --dir docs/firmware || true
           gh release download "$tag" --pattern 'factory-*.bin' --dir docs/firmware || true
-          if ! ls docs/firmware/*.bin >/dev/null 2>&1; then
+          # The device Web UI also reads updates from Pages. GitHub release
+          # object storage does not send CORS headers, so a browser opened on
+          # the device's private IP cannot fetch those assets directly.
+          gh release download "$tag" --pattern 'firmware-awtrix-ng*.bin' --dir docs/firmware
+          gh release download "$tag" --pattern 'release-manifest.json' --dir docs/firmware
+          if ! find docs/firmware -maxdepth 1 -type f \( -name 'usb-*.bin' -o -name 'factory-*.bin' \) | grep -q .; then
             echo "::warning::Release $tag carries no USB install image -- the browser flasher will report that no firmware is available."
             exit 0
           fi
           python - "$tag" <<'PY'
           import json, os, sys
-          names = sorted(f for f in os.listdir("docs/firmware") if f.endswith(".bin"))
+          names = sorted(f for f in os.listdir("docs/firmware")
+                         if f.startswith(("usb-", "factory-")) and f.endswith(".bin"))
           with open("docs/firmware/index.json", "w") as f:
               json.dump({"version": sys.argv[1], "assets": names}, f, indent=1)
           print("web flasher serves %s: %s" % (sys.argv[1], ", ".join(names)))

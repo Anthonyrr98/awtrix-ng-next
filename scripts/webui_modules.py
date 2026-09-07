@@ -9,7 +9,7 @@ import os
 
 
 MODULES = (
-    "core", "i18n", "schema", "state", "system-hardware", "shell", "forms", "media",
+    "core", "theme", "i18n", "schema", "state", "system-hardware", "shell", "forms", "media",
     "page-dashboard", "page-apps", "page-scripts", "page-system", "page-icons",
     "page-editor", "audio-codec", "page-audio", "page-palettes", "page-log", "boot",
 )

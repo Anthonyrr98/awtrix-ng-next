@@ -69,6 +69,26 @@ async function run() {
 
   const [rotation, background, disabled] = cards(window);
 
+  assert(window.getComputedStyle(rotation.querySelector('.applist')).gridTemplateColumns !== 'none',
+    'app rotation uses a compact grid');
+  assert(window.getComputedStyle(rotation.querySelector('.approw')).aspectRatio === '1',
+    'apps are square cards');
+
+  const firstGrip=rotation.querySelector('.approw .grip');
+  const firstTile=firstGrip.closest('.approw');
+  firstTile.getBoundingClientRect=()=>({left:20,top:30,width:118,height:118});
+  firstGrip.dispatchEvent(new window.MouseEvent('pointerdown',{
+    bubbles:true,clientX:50,clientY:65,
+  }));
+  const ghost=window.document.querySelector('.draglayer .dragghost');
+  assert(!!ghost&&ghost.textContent.includes('Time'),
+    'dragging creates a complete tile that follows the pointer');
+  assert(ghost&&ghost.style.width==='118px'&&firstTile.classList.contains('dragplace'),
+    'the floating tile keeps its size while its original slot becomes a placeholder');
+  window.document.dispatchEvent(new window.MouseEvent('pointerup',{bubbles:true}));
+  assert(!window.document.querySelector('.draglayer')&&!window.document.body.classList.contains('dragging-app'),
+    'ending a drag removes the floating layer');
+
   assert(cardRows(window, 0).join(',') === 'Time,co2,Weather',
     'rotation holds the drawn apps in order, then the enabled ones nothing is sending');
   assert(cardRows(window, 1).join(',') === 'Doorbell', 'background holds the running headless script');
@@ -87,6 +107,11 @@ async function run() {
   assert(window.getComputedStyle(
     rowFor2(window, 'Time').querySelector('.rowmenu .mlist')).display === 'none',
     'a row menu starts closed');
+
+  rowFor2(window, 'Time').querySelector('.rowmenu .mbtn').click();
+  assert(Number(window.getComputedStyle(rowFor2(window, 'Time')).zIndex) >= 40,
+    'an open tile menu raises its whole card above neighbouring tiles');
+  rowFor2(window, 'Time').querySelector('.rowmenu .mbtn').click();
 
   const rowsOf = card => [...card.querySelectorAll('.approw')];
   // Every row action lives behind the row's menu now, labelled with words.

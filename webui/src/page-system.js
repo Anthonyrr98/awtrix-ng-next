@@ -253,7 +253,8 @@ function maintenanceSection(page){
     onlineState.className='badge';onlineState.replaceChildren(t('fwChecking'));
     try{
       const local=await api('/api/v1/version',{cache:'no-store'}),image=local.data.updateImage;
-      const manifestResponse=await fetch('https://github.com/Anthonyrr98/awtrix-ng-next/releases/latest/download/release-manifest.json',{cache:'no-store'});
+      const firmwareBase='https://blueforcer.github.io/awtrix-ng/firmware/';
+      const manifestResponse=await fetch(firmwareBase+'release-manifest.json',{cache:'no-store'});
       if(!manifestResponse.ok)throw new Error('manifest HTTP '+manifestResponse.status);
       const manifest=await manifestResponse.json();
       const latest=String(manifest.version||'').replace(/^v/,'');
@@ -267,7 +268,7 @@ function maintenanceSection(page){
         onlineState.className='badge good';onlineState.replaceChildren(t('fwCurrent')+' · '+current);
       }else{
         onlineState.className='badge good';onlineState.replaceChildren('v'+latest+' '+t('fwAvailable')+' · '+t('fwVerified'));
-        installBtn.asset={name:image,sha256,browser_download_url:'https://github.com/Anthonyrr98/awtrix-ng-next/releases/download/v'+latest+'/'+image};
+        installBtn.asset={name:image,sha256,browser_download_url:firmwareBase+image};
         installBtn.style.display='';
       }
     }catch(e){onlineState.className='badge bad';onlineState.replaceChildren(t('fwCheckFail'));toast(e.message,false);}

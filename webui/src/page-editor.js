@@ -5,7 +5,7 @@ function postToPiskel(msg){
   const f=$('#piskelFrame'),o=piskelOrigin();
   if(f&&f.contentWindow&&o)f.contentWindow.postMessage(Object.assign({ns:'awtrix'},msg),o);
 }
-function notifyPiskelTheme(){postToPiskel({type:'theme',theme:document.documentElement.dataset.theme==='light'?'light':'dark'});}
+function notifyPiskelTheme(){postToPiskel({type:'theme',theme:AWTRIX_THEMES.info().mode});}
 let pendingEditIcon=null;
 let piskelReady=false;
 function b64ToBlob(b64,mime){
@@ -79,7 +79,7 @@ function viewEditor(view){
   if(piskelLiveOn)piskelLiveOff();
   piskelReady=false;
   const url=getPiskelUrl();
-  const theme=document.documentElement.dataset.theme==='light'?'light':'dark';
+  const theme=AWTRIX_THEMES.info().mode;
   const src=url+(url.includes('?')?'&':'?')+'theme='+encodeURIComponent(theme)+'&sizes=8x8,32x8&host=awtrix';
   const loading=el('div',{class:'piskelload'},el('span',{class:'spin'}),el('span',null,t('edLoading')));
   const frame=el('iframe',{id:'piskelFrame',src,title:t('editorTab'),allow:'clipboard-read; clipboard-write'});

@@ -1,3 +1,4 @@
+AWTRIX_THEMES.apply(AWTRIX_THEMES.current(),{persist:false});
 paintLanguage();
 paintTheme();
 render();

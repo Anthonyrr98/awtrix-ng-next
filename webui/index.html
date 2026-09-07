@@ -19,7 +19,7 @@
   --f2:19px;
   --mono:ui-monospace,Consolas,monospace;
 }
-:root[data-theme=light]{
+:root[data-theme-mode=light]{
   color-scheme:light;
   --bg:#fff;--card:#f6f8fa;--card2:#eaeef2;--border:#d0d7de;--brd2:#d8dee4;--fg:#1f2328;
   --dim:#59636e;--acc:#0969da;--pri:#0969da;--ok:#1a7f37;--err:#cf222e;--warn:#9a6700;
@@ -28,6 +28,66 @@
   --tkw:#cf222e;--tapi:#953800;--tcore:#8250df;--tstr:#0a3069;--tnum:#0550ae;
   --tcom:#59636e;--top:#24292f;--tsel:#b6d9ff;--tselo:rgba(137,198,255,.4);--tcur:#f0f3f6;
 }
+:root[data-theme|=liquid-glass] body{background-attachment:fixed}
+:root[data-theme=liquid-glass-white] body{
+  background:radial-gradient(circle at 9% 8%,#fff 0,transparent 24rem),
+    radial-gradient(circle at 88% 18%,rgba(80,205,255,.3),transparent 27rem),
+    radial-gradient(circle at 50% 100%,rgba(255,126,185,.18),transparent 34rem),var(--bg)}
+:root[data-theme=liquid-glass-color] body{
+  background:radial-gradient(circle at 10% 6%,rgba(168,85,247,.42),transparent 28rem),
+    radial-gradient(circle at 90% 20%,rgba(255,45,146,.32),transparent 25rem),
+    radial-gradient(circle at 52% 100%,rgba(78,205,196,.26),transparent 34rem),
+    linear-gradient(145deg,#1a1a2e,#16213e 48%,#0f0f23)}
+:root[data-theme|=liquid-glass] .topbar{background:color-mix(in srgb,var(--bg) 62%,transparent);backdrop-filter:blur(40px) saturate(180%)}
+:root[data-theme|=liquid-glass] .topbar>header{background:transparent}
+:root[data-theme|=liquid-glass] .card,
+:root[data-theme|=liquid-glass] .langmenu,
+:root[data-theme|=liquid-glass] .rowmenu>.mlist{
+  backdrop-filter:blur(40px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 18px 44px var(--sh);
+}
+:root[data-theme|=liquid-glass] .card{position:relative;border:1px solid transparent;border-radius:24px;
+  background:linear-gradient(var(--card),var(--card)) padding-box,
+    linear-gradient(125deg,#ff6b6b99,#ffd93d77,#6bcb7788,#4ecdc499,#a855f799) border-box}
+:root[data-theme|=liquid-glass] .card:after{content:"";position:absolute;inset:1px 1px auto;height:32%;border-radius:23px 23px 50% 50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.2),transparent);pointer-events:none}
+:root[data-theme|=liquid-glass] button,
+:root[data-theme|=liquid-glass] input,
+:root[data-theme|=liquid-glass] select,
+:root[data-theme|=liquid-glass] textarea,
+:root[data-theme|=liquid-glass] .approw,
+:root[data-theme|=liquid-glass] .healthitem{border-radius:16px;backdrop-filter:blur(40px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24);transition:all .5s ease-out}
+:root[data-theme|=liquid-glass] button:hover{background:color-mix(in srgb,var(--card2) 82%,white 18%);
+  border-color:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 24px color-mix(in srgb,var(--acc) 28%,transparent)}
+:root[data-theme|=liquid-glass] button:active{transform:scale(.98)}
+:root[data-theme|=liquid-glass] input:focus,:root[data-theme|=liquid-glass] select:focus,
+:root[data-theme|=liquid-glass] textarea:focus{outline:none;border-color:transparent;
+  box-shadow:0 0 0 2px rgba(168,85,247,.5),0 0 20px rgba(168,85,247,.2),inset 0 1px 0 #fff5}
+:root[data-theme|=liquid-glass] button.pri{background:linear-gradient(110deg,#ff2d92dd,#a855f7dd);border-color:#ffffff44;
+  box-shadow:inset 0 1px 0 #fff7,0 8px 24px rgba(168,85,247,.3)}
+:root[data-theme|=liquid-glass] nav a.on{background:linear-gradient(180deg,var(--card2),var(--card));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+:root[data-theme|=liquid-glass] nav{padding:8px 12px;background:var(--glass-surface);
+  border-top:1px solid rgba(255,255,255,.46);border-bottom:1px solid var(--glass-line);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 8px 24px var(--sh);
+  backdrop-filter:blur(40px) saturate(180%)}
+:root[data-theme|=liquid-glass] nav a{border:1px solid transparent;border-radius:12px;padding:7px 13px;transition:all .5s ease-out}
+:root[data-theme|=liquid-glass] nav a:hover{color:var(--fg);background:color-mix(in srgb,var(--glass-surface) 72%,white 28%);border-color:var(--glass-line)}
+:root[data-theme|=liquid-glass] nav a.on{border:1px solid var(--glass-line);color:var(--fg);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 5px 14px var(--sh)}
+:root[data-theme|=liquid-glass] .approw{background:var(--glass-surface);border-color:var(--glass-line);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.42),0 5px 14px var(--sh)}
+:root[data-theme|=liquid-glass] .tiles .approw:hover{border-color:var(--acc);box-shadow:inset 0 1px 0 #fff8,0 9px 22px var(--sh)}
+:root[data-theme|=liquid-glass] .section,:root[data-theme|=liquid-glass] .edwrap{
+  border-color:var(--glass-line);box-shadow:inset 0 1px 0 #fff5,0 10px 28px var(--sh)}
+:root[data-theme|=liquid-glass] .section>header{border-bottom-color:var(--glass-line);background:var(--glass-surface)}
+:root[data-theme|=liquid-glass] .frow{border-bottom-color:var(--glass-line)}
+:root[data-theme|=liquid-glass] .subnav a{border:1px solid transparent;border-left-width:3px}
+:root[data-theme|=liquid-glass] .subnav a.on{border-color:var(--glass-line);border-left-color:var(--acc);background:var(--glass-surface)}
+:root[data-theme=liquid-glass-color] h1,:root[data-theme=liquid-glass-color] h2{
+  color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.4),0 0 18px rgba(78,205,196,.55)}
+@media(prefers-reduced-motion:reduce){:root[data-theme|=liquid-glass] *{transition-duration:.01ms!important}}
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg);color:var(--fg)}
 body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding-bottom:70px}
@@ -42,6 +102,22 @@ button.pri{background:var(--pri);border-color:var(--pri);color:#fff}
 button.danger{color:var(--err);border-color:var(--errbrd)}
 button.danger.armed{background:var(--err);color:#fff;border-color:var(--err)}
 button.icon{padding:7px 10px}
+.langpick,.themepick{position:relative;display:flex}
+.langmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:50;min-width:150px;padding:5px;
+  display:grid;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:9px;
+  box-shadow:0 8px 24px var(--sh)}
+.langmenu[hidden]{display:none}
+.langmenu button{border:0;background:none;text-align:left;padding:8px 10px}
+.langmenu button:hover{background:var(--card2)}
+.langmenu button.on{color:var(--acc);font-weight:600;background:var(--card2)}
+.thememenu{min-width:190px}
+.thememenu button{display:flex;align-items:center;gap:10px}
+.themeswatch{width:24px;height:24px;border-radius:8px;flex:none;border:1px solid var(--border);box-shadow:inset 0 1px 0 #fff4}
+.themeswatch.dark{background:linear-gradient(145deg,#0d1117,#2d333b)}
+.themeswatch.light{background:linear-gradient(145deg,#fff,#d0d7de)}
+.themeswatch.liquid-glass-white{background:radial-gradient(circle at 25% 20%,#fff,#a8e4f4 52%,#e8c7e4)}
+.themeswatch.liquid-glass-color{background:conic-gradient(from 35deg,#ff2d92,#a855f7,#4ecdc4,#ffd93d,#ff2d92)}
+.themecheck{margin-left:auto;color:var(--acc)}
 button.icon.kofi{background:#00b9fe;border-color:#00b9fe;height:36px;display:inline-flex;align-items:center;justify-content:center}
 button.icon.kofi:hover{border-color:#00b9fe;filter:brightness(1.08)}
 .kofilogo{width:18px;height:18px;flex:none}
@@ -297,14 +373,22 @@ canvas#screen{display:block;width:100%;aspect-ratio:4/1;image-rendering:pixelate
 .melorow .meta:empty{display:none}
 .audbar{justify-content:flex-end;margin:0 0 8px}
 .applist{display:grid;gap:6px}
-.approw{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:8px;
-  padding:7px 10px;border:1px solid transparent;flex-wrap:wrap}
-.approw.dover{border-color:var(--acc)}
+.applist.tiles{grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px}
+.approw{position:relative;display:flex;align-items:center;gap:8px;background:var(--card2);
+  border-radius:9px;padding:7px 10px;border:1px solid transparent;flex-wrap:wrap;min-width:0}
+.approw.dover{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 24%,transparent)}
+.draglayer{position:fixed;inset:0;z-index:100;pointer-events:none}
+.draglayer .dragghost{position:absolute;margin:0;opacity:.94;border-color:var(--acc);cursor:grabbing;
+  box-shadow:0 14px 34px var(--sh);transform:none;transition:none}
+.draglayer .dragghost:hover{transform:none;border-color:var(--acc);box-shadow:0 14px 34px var(--sh)}
+.dragghost .rowmenu,.dragghost .appcfg{display:none}
+.tiles .approw.dragplace{opacity:.25;transform:none;box-shadow:none}
+body.dragging-app{cursor:grabbing;user-select:none}
 .approw .grip{cursor:grab;color:var(--dim);flex:none;user-select:none;font-size:15px;line-height:1;
   touch-action:none;padding:6px 4px;margin:-6px -2px}
 .approw .pos{color:var(--dim);font:11px ui-monospace,Consolas,monospace;width:20px;text-align:right;flex:none}
 .approw .rowmain{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
-.approw .nm{flex:1 1 110px;min-width:0;font-size:13.5px;word-break:break-all}
+.approw .nm{flex:1 1 110px;min-width:0;font-size:13.5px;word-break:break-word}
 .approw .nm .sub{display:block;color:var(--dim);font-size:11.5px}
 .approw .chip{font-size:10.5px;color:var(--acc);border:1px solid #58a6ff55;border-radius:99px;padding:1px 8px;flex:none}
 .approw .chip.s{color:var(--ok);border-color:#2ea04355}
@@ -322,7 +406,21 @@ canvas#screen{display:block;width:100%;aspect-ratio:4/1;image-rendering:pixelate
 @media(max-width:520px){.rowmenu>.mlist{min-width:min(70vw,240px)}}
 .approw button{padding:4px 9px;font-size:12px}
 .approw.off .rowmain{opacity:.75}
-.appcfg{flex-basis:100%;margin-top:2px;border-top:1px solid var(--brd2)}
+.tiles .approw{aspect-ratio:1;align-content:stretch;padding:9px;transition:border-color .15s,transform .15s,box-shadow .15s}
+.tiles .approw:hover{border-color:var(--border);transform:translateY(-1px);box-shadow:0 5px 14px var(--sh)}
+.tiles .approw .grip{position:absolute;left:7px;top:7px;margin:0;padding:5px}
+.tiles .approw .pos{position:absolute;left:31px;top:12px;width:auto}
+.tiles .approw .rowmain{height:100%;align-content:center;justify-content:center;text-align:center;padding:23px 2px 28px}
+.tiles .approw .nm{flex:1 1 100%;font-size:13px;font-weight:650;line-height:1.25;display:-webkit-box;
+  overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tiles .approw .nm .sub{display:none}
+.tiles .approw .chip{position:absolute;left:9px;bottom:9px;max-width:62px;overflow:hidden;text-overflow:ellipsis}
+.tiles .approw .chip+.chip{left:auto;right:44px}
+.tiles .approw .rowmenu{position:absolute;right:8px;bottom:8px}
+.tiles .approw:has(.rowmenu .mlist:not([hidden])){z-index:45}
+.tiles .approw:has(.appcfg:not([hidden])){grid-column:1/-1;aspect-ratio:auto;min-height:0;padding-bottom:48px}
+.tiles .approw:has(.appcfg:not([hidden])) .rowmain{height:auto;min-height:70px}
+.appcfg{flex-basis:100%;width:100%;margin-top:2px;border-top:1px solid var(--brd2)}
 .appcfg[hidden]{display:none}
 .appcfg .frow{padding:9px 0}
 .appcfg .cfgbar{display:flex;align-items:center;gap:8px;padding-top:10px}
@@ -411,6 +509,7 @@ canvas#screen{display:block;width:100%;aspect-ratio:4/1;image-rendering:pixelate
   padding:5px 9px;font-size:12.5px}
 .edtop .sec button:hover{color:var(--fg);border-color:var(--border)}
 .edtop button.ico{display:inline-flex;align-items:center;justify-content:center;padding:6px;width:34px;height:34px;flex:none}
+.edtop button.ico.labeled{width:auto;padding-inline:10px;gap:5px}
 .edtop button.ico .ic{width:18px;height:18px}
 .ed{display:flex;background:var(--bg);height:calc(100vh - 250px);min-height:240px}
 .ed .gut,.ed .hl,.ed .ta{font:12.5px/1.5 var(--mono);tab-size:2;padding:8px 10px}
@@ -553,14 +652,17 @@ canvas#screen{display:block;width:100%;aspect-ratio:4/1;image-rendering:pixelate
 }
 @media(min-width:641px){body{padding-bottom:20px}}
 @media(max-width:560px){
+  .applist.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
   .melorow{grid-template-columns:1fr auto}
   .melorow .rt{grid-column:1/-1}
   .appcfg .frow{grid-template-columns:1fr}
   .appcfg .frow .ctl{justify-content:flex-start}
 }
 </style>
-<script>try{document.documentElement.dataset.theme=localStorage.awtrixTheme||
-  (matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');}catch(e){}</script>
+<script>try{const t=localStorage.awtrixTheme||
+  (matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');
+  document.documentElement.dataset.theme=t;
+  document.documentElement.dataset.themeMode=t==='light'?'light':'dark';}catch(e){}</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -597,8 +699,14 @@ canvas#screen{display:block;width:100%;aspect-ratio:4/1;image-rendering:pixelate
   <span class="grow"></span>
   <button class="icon kofi" id="kofibtn" title="Support me"><svg class="kofilogo" aria-hidden="true"><use href="#i-kofi"/></svg></button>
   <button class="icon" id="docsbtn" title="Documentation"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg></button>
-  <button class="icon" id="themebtn" title="Theme"><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></button>
-  <button class="icon" id="langbtn" title="Language"></button>
+  <div class="themepick">
+    <button class="icon" id="themebtn" title="Theme" aria-haspopup="menu" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></button>
+    <div class="langmenu thememenu" id="thememenu" role="menu" hidden></div>
+  </div>
+  <div class="langpick">
+    <button class="icon" id="langbtn" title="Language" aria-haspopup="menu" aria-expanded="false"></button>
+    <div class="langmenu" id="langmenu" role="menu" hidden></div>
+  </div>
 </header>
 <nav id="nav"></nav>
 </div>
@@ -729,9 +837,101 @@ function armable(btn,fn){
   return btn;
 }
 /* WEBUI-MODULE:core END */
+/* WEBUI-MODULE:theme BEGIN */
+const themeRegistry=new Map();
+let appliedThemeVars=[];
+const validThemeId=/^[a-z][a-z0-9-]*$/;
+const validThemeVar=/^[a-z][a-z0-9-]*$/;
+
+function registerTheme(id,options={}){
+  if(!validThemeId.test(id))throw new Error('Invalid theme id: '+id);
+  const vars={};
+  Object.entries(options.vars||{}).forEach(([key,value])=>{
+    if(!validThemeVar.test(key))throw new Error('Invalid theme variable: '+key);
+    vars[key]=String(value);
+  });
+  const theme=Object.freeze({
+    id,
+    label:String(options.label||id),
+    mode:options.mode==='light'?'light':'dark',
+    vars:Object.freeze(vars),
+  });
+  themeRegistry.set(id,theme);
+  return theme;
+}
+
+registerTheme('dark',{label:'Dark',mode:'dark'});
+registerTheme('light',{label:'Light',mode:'light'});
+registerTheme('liquid-glass-white',{
+  label:'White Liquid Glass',
+  mode:'light',
+  vars:{
+    bg:'#eaf4fb',card:'rgba(255,255,255,.54)',card2:'rgba(255,255,255,.38)',
+    border:'rgba(255,255,255,.72)',brd2:'rgba(112,147,171,.18)',fg:'#152738',
+    dim:'#526b7e',acc:'#087eb8',pri:'#087eb8',ok:'#18794e',err:'#c93445',warn:'#8a6500',
+    errbrd:'rgba(201,52,69,.3)',bnw:'rgba(255,241,174,.62)',bna:'rgba(194,233,255,.58)',
+    badbg:'rgba(255,223,226,.7)',badfg:'#8d1425',con:'rgba(245,251,255,.72)',
+    sh:'rgba(32,69,94,.16)',trk:'rgba(78,114,139,.22)',tsel:'#b7e5fb',
+    tselo:'rgba(92,190,235,.26)',tcur:'rgba(255,255,255,.5)',top:'#20384a',
+    'glass-line':'rgba(47,96,128,.3)','glass-surface':'rgba(255,255,255,.48)',
+  },
+});
+registerTheme('liquid-glass-color',{
+  label:'Color Liquid Glass',
+  mode:'dark',
+  vars:{
+    bg:'#071019',card:'rgba(17,35,49,.62)',card2:'rgba(39,61,76,.55)',
+    border:'rgba(190,226,255,.22)',brd2:'rgba(190,226,255,.12)',fg:'#f3f9ff',
+    dim:'#a9bfd0',acc:'#78d7ff',pri:'#087fab',ok:'#5de6a1',err:'#ff7e88',warn:'#ffd166',
+    errbrd:'rgba(255,126,136,.42)',bnw:'rgba(91,70,20,.62)',bna:'rgba(8,77,108,.58)',
+    badbg:'rgba(116,27,39,.64)',badfg:'#ffe6e8',con:'rgba(2,10,16,.78)',
+    sh:'rgba(0,5,12,.42)',trk:'rgba(190,226,255,.2)',tsel:'#245a76',
+    tselo:'rgba(56,153,202,.38)',tcur:'rgba(40,66,82,.6)',top:'#d6eaff',
+    'glass-line':'rgba(218,240,255,.32)','glass-surface':'rgba(22,38,58,.58)',
+  },
+});
+
+function preferredTheme(){
+  try{
+    const saved=localStorage.awtrixTheme;
+    if(themeRegistry.has(saved))return saved;
+    return matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';
+  }catch(_){return'dark';}
+}
+let activeTheme=preferredTheme();
+
+function applyTheme(id,options={}){
+  const theme=themeRegistry.get(id)||themeRegistry.get(preferredTheme())||themeRegistry.get('dark');
+  const root=document.documentElement;
+  appliedThemeVars.forEach(key=>root.style.removeProperty('--'+key));
+  appliedThemeVars=Object.keys(theme.vars);
+  appliedThemeVars.forEach(key=>root.style.setProperty('--'+key,theme.vars[key]));
+  activeTheme=theme.id;
+  root.dataset.theme=theme.id;
+  root.dataset.themeMode=theme.mode;
+  if(options.persist!==false){try{localStorage.awtrixTheme=theme.id;}catch(_){}}
+  window.dispatchEvent(new CustomEvent('awtrix-theme-change',{detail:theme}));
+  return theme;
+}
+
+function nextTheme(){
+  const ids=[...themeRegistry.keys()];
+  return applyTheme(ids[(ids.indexOf(activeTheme)+1)%ids.length]);
+}
+
+window.AWTRIX_THEMES=Object.freeze({
+  register:registerTheme,
+  apply:applyTheme,
+  current:()=>activeTheme,
+  info:()=>themeRegistry.get(activeTheme)||themeRegistry.get('dark'),
+  all:()=>[...themeRegistry.values()],
+  next:nextTheme,
+});
+/* WEBUI-MODULE:theme END */
 /* WEBUI-MODULE:i18n BEGIN */
 const I18N={en:{
   dash:'Dashboard',display:'Display',system:'System',icons:'Icons',palettes:'Palettes',log:'Log',
+  theme:'Theme',themeDark:'Dark',themeLight:'Light',themeLiquidWhite:'White Liquid Glass',themeLiquidColor:'Color Liquid Glass',
   audioTab:'Audio',
   mp3s:'MP3s',
   mp3shelp:'Your own MP3 files, for notifications and scripts.',
@@ -898,6 +1098,7 @@ const I18N={en:{
   grpScript:'Scripting',grpScriptH:'Berry scripts on AWTRIX.',
   grpMisc:'Misc',grpMiscH:'Everything else.',
 },de:{
+  theme:'Design',themeDark:'Dunkel',themeLight:'Hell',themeLiquidWhite:'Weißes Flüssigglas',themeLiquidColor:'Farbiges Flüssigglas',
   audioTab:'Audio',
   mp3s:'MP3s',
   mp3shelp:'Eigene MP3-Dateien für Meldungen und Skripte.',
@@ -1074,6 +1275,7 @@ const LANGUAGES={
 };
 const ZH={
   dash:'仪表盘',display:'显示',system:'系统',icons:'图标',palettes:'调色板',log:'日志',audioTab:'音频',mp3s:'MP3',mp3shelp:'用于通知和脚本的自定义 MP3 文件。',
+  theme:'主题',themeDark:'深色',themeLight:'浅色',themeLiquidWhite:'白色液态玻璃',themeLiquidColor:'彩色液态玻璃',
   radioTab:'电台',radioH:'网络电台。',radionone:'还没有电台，请在下方添加。',radioname:'名称',radiourl:'音频流地址',radioadd:'添加电台',radioplaying:'正在播放',radiostopped:'未播放',radiodupe:'名称已被使用',radiobadurl:'必须以 http:// 或 https:// 开头',radiolong:'名称不能超过 24 个字符',
   appsTab:'应用',apploop:'应用轮播',apploopH:'AWTRIX 将依次显示这些应用。拖动 ⠿ 可调整顺序。',scenes:'轮播场景',scenesH:'保存应用组合，一键切换整套轮播。',sceneName:'场景名称',sceneSave:'保存场景',sceneApply:'应用',sceneDelete:'删除',sceneNone:'没有已保存的场景',background:'后台运行',backgroundH:'持续运行，但不会显示在屏幕上。',disabledapps:'已禁用',disabledH:'当前未使用。“启用”可将应用放回轮播或后台。',activate:'启用',deactivate:'禁用',switchto:'立即显示',more:'操作',dupapp:'复制',nobackground:'没有后台脚本',noapps:'没有应用',dragord:'顺序',chipPushed:'推送',chipScript:'脚本',chipModule:'模块',modules:'模块',modulesH:'供其他脚本通过 import 复用的组件。',modimport:'导入',modnone:'还没有模块',chipSkip:'已跳过',chipSkipH:'脚本跳过了本轮，但仍保留在轮播中。',chipGone:'无数据',chipGoneH:'应用已启用并保留位置，但尚未收到数据；下次推送时会重新绘制。',orderSaved:'应用顺序已保存',
   cfgTitle:'设置',cfgHide:'关闭设置',cfgLoading:'正在加载设置…',cfgNone:'此脚本没有可配置项。',cfgSaved:'设置已保存，应用已重启',cfgDefaults:'使用默认值',cfgWarnH:'脚本的设置头有问题，请在编辑器中修复。',save:'保存',saved:'已保存',sure:'确定？',cancel:'取消',del:'删除',edit:'编辑',discard:'放弃',unsaved:'未保存的更改',choose:'选择文件…',preview:'在 AWTRIX 上显示',upload:'上传',uploaded:'已上传',neterr:'无法连接设备',power:'电源',brightness:'亮度',prevapp:'上一个应用',nextapp:'下一个应用',dismiss:'关闭通知',dismissed:'通知已关闭',snap:'保存截图',rec:'录制 GIF',recstop:'停止录制并保存 GIF',livepre:'实时预览',version:'版本',host:'主机名',ip:'IP 地址',wifi:'WiFi',uptime:'运行时间',ram:'可用内存',psram:'PSRAM',psramnone:'无——如果开发板带 PSRAM，请刷写 -s3-quad- 镜像',
@@ -1539,29 +1741,71 @@ function render(){
 }
 window.addEventListener('hashchange',render);
 const languageCodes=Object.keys(LANGUAGES);
+const languageMenu=$('#langmenu');
+const closeLanguageMenu=()=>{
+  languageMenu.hidden=true;
+  $('#langbtn').setAttribute('aria-expanded','false');
+};
 const paintLanguage=()=>{
   const info=LANGUAGES[LANG];
   $('#langbtn').replaceChildren(LANG==='zh'?'中':LANG.toUpperCase());
   $('#langbtn').title=info.label;
   $('#langbtn').setAttribute('aria-label',info.label);
+  languageMenu.replaceChildren(...languageCodes.map(code=>{
+    const b=el('button',{role:'menuitem',class:code===LANG?'on':'',lang:code},LANGUAGES[code].label);
+    b.addEventListener('click',()=>{
+      LANG=code;localStorage.awtrixLang=LANG;closeLanguageMenu();paintLanguage();paintTheme();render();
+    });
+    return b;
+  }));
 };
-$('#langbtn').addEventListener('click',()=>{
-  LANG=languageCodes[(languageCodes.indexOf(LANG)+1)%languageCodes.length];
-  localStorage.awtrixLang=LANG;
-  paintLanguage();
-  render();
+$('#langbtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  closeThemeMenu();
+  languageMenu.hidden=!languageMenu.hidden;
+  $('#langbtn').setAttribute('aria-expanded',String(!languageMenu.hidden));
 });
+languageMenu.addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('click',closeLanguageMenu);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLanguageMenu();});
 $('#kofibtn').addEventListener('click',()=>window.open('https://ko-fi.com/blueforcer','_blank','noopener'));
 $('#docsbtn').addEventListener('click',()=>window.open('https://blueforcer.github.io/awtrix-ng/','_blank','noopener'));
 const themeUse=$('#themebtn').querySelector('use');
-function paintTheme(){themeUse.setAttribute('href',document.documentElement.dataset.theme==='light'?'#i-moon':'#i-sun');}
-$('#themebtn').addEventListener('click',()=>{
-  const d=document.documentElement.dataset;
-  d.theme=d.theme==='light'?'dark':'light';
-  try{localStorage.awtrixTheme=d.theme;}catch(e){}
+const themeMenu=$('#thememenu');
+const themeLabel=id=>({dark:t('themeDark'),light:t('themeLight'),
+  'liquid-glass-white':t('themeLiquidWhite'),'liquid-glass-color':t('themeLiquidColor')})[id];
+const closeThemeMenu=()=>{
+  themeMenu.hidden=true;
+  $('#themebtn').setAttribute('aria-expanded','false');
+};
+function paintTheme(){
+  const info=AWTRIX_THEMES.info();
+  themeUse.setAttribute('href',info.mode==='light'?'#i-moon':'#i-sun');
+  $('#themebtn').title=t('theme')+' · '+(themeLabel(info.id)||info.label);
+  $('#themebtn').setAttribute('aria-label',t('theme'));
+  themeMenu.replaceChildren(...AWTRIX_THEMES.all().map(theme=>{
+    const b=el('button',{role:'menuitemradio','aria-checked':String(theme.id===info.id),
+      class:theme.id===info.id?'on':''},
+      el('span',{class:'themeswatch '+theme.id}),
+      el('span',null,themeLabel(theme.id)||theme.label),
+      theme.id===info.id?el('span',{class:'themecheck'},'✓'):null);
+    b.addEventListener('click',()=>{AWTRIX_THEMES.apply(theme.id);closeThemeMenu();});
+    return b;
+  }));
+}
+window.addEventListener('awtrix-theme-change',()=>{
   paintTheme();
   notifyPiskelTheme();
 });
+$('#themebtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  closeLanguageMenu();
+  themeMenu.hidden=!themeMenu.hidden;
+  $('#themebtn').setAttribute('aria-expanded',String(!themeMenu.hidden));
+});
+themeMenu.addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('click',closeThemeMenu);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeThemeMenu();});
 /* WEBUI-MODULE:shell END */
 /* WEBUI-MODULE:forms BEGIN */
 function mkSwitch(checked,onchange){
@@ -2172,7 +2416,7 @@ async function viewApps(view){
   let loop=[],background=[],disabled=[],modules=[],scenes=[],activeScene='',orig='[]',dragFrom=null;
   const panels=new Map();
   let panelTaken=new Set();
-  const loopList=el('div',{class:'applist'});
+  const loopList=el('div',{class:'applist tiles'});
   const bgList=el('div',{class:'applist'});
   const disabledList=el('div',{class:'applist'});
   const modList=el('div',{class:'applist'});
@@ -2259,30 +2503,49 @@ async function viewApps(view){
 
   function appRow(a,idx,mode){
     const inLoop=mode==='loop';
-    const row=el('div',{class:'approw'+(mode==='off'?' off':'')});
+    const row=el('div',{class:'approw '+mode+(mode==='off'?' off':'')});
     const grip=inLoop?el('span',{class:'grip',title:t('dragord')},'⠿'):null;
     if(inLoop){
       grip.addEventListener('pointerdown',e=>{
         e.preventDefault();
         try{grip.setPointerCapture(e.pointerId);}catch(_){}
         dragFrom=idx;
-        row.classList.add('dover');
         const doc=row.ownerDocument;
+        const rect=row.getBoundingClientRect();
+        const offsetX=e.clientX-rect.left;
+        const offsetY=e.clientY-rect.top;
+        const dragLayer=el('div',{class:'draglayer tiles'});
+        const dragGhost=row.cloneNode(true);
+        dragGhost.classList.add('dragghost');
+        dragGhost.style.width=rect.width+'px';
+        dragGhost.style.height=rect.height+'px';
+        dragLayer.append(dragGhost);
+        doc.body.append(dragLayer);
+        doc.body.classList.add('dragging-app');
+        const moveGhost=ev=>{
+          dragGhost.style.left=(ev.clientX-offsetX)+'px';
+          dragGhost.style.top=(ev.clientY-offsetY)+'px';
+        };
+        moveGhost(e);
+        row.classList.add('dragplace');
         const over=ev=>{
-          const at=doc.elementFromPoint(ev.clientX,ev.clientY);
+          moveGhost(ev);
+          const at=doc.elementFromPoint?doc.elementFromPoint(ev.clientX,ev.clientY):null;
           const cell=at&&at.closest?at.closest('.approw'):null;
           const under=cell?[...loopList.children].indexOf(cell):-1;
           if(under<0||dragFrom==null||under===dragFrom)return;
           const[m]=loop.splice(dragFrom,1);loop.splice(under,0,m);
           dragFrom=under;render();
           const moved=loopList.children[under];
-          if(moved)moved.classList.add('dover');
+          if(moved)moved.classList.add('dragplace');
         };
         const done=()=>{
           doc.removeEventListener('pointermove',over);
           doc.removeEventListener('pointerup',done);
           doc.removeEventListener('pointercancel',done);
-          dragFrom=null;row.classList.remove('dover');render();
+          dragLayer.remove();
+          doc.body.classList.remove('dragging-app');
+          dragFrom=null;render();
         };
         doc.addEventListener('pointermove',over);
         doc.addEventListener('pointerup',done);
@@ -2336,6 +2599,7 @@ async function viewApps(view){
       ]);
     const m=a.meta||{};
     const bits=[m.name&&m.name!==a.name?a.name:null,...metaBits(m)].filter(Boolean);
+    row.title=[m.name||a.name,...bits].join(' · ');
     [grip,
      inLoop?el('span',{class:'pos'},String(idx+1)):null,
      el('div',{class:'rowmain'},
@@ -2789,7 +3053,7 @@ function viewScripts(view){
     }catch(e){toast(e.message,false);}
   });
   const saveBtn=el('button',{class:'pri ico',title:t('save'),'aria-label':t('save')},icon('save'));
-  const libraryBtn=el('button',{class:'ico',title:t('library'),'aria-label':t('library')},icon('book'),t('library'));
+  const libraryBtn=el('button',{class:'ico labeled',title:t('library'),'aria-label':t('library')},icon('book'),t('library'));
   function openLibrary(){
     const veil=el('div',{class:'libveil',role:'presentation'});
     const close=()=>veil.remove();
@@ -3463,7 +3727,8 @@ function maintenanceSection(page){
     onlineState.className='badge';onlineState.replaceChildren(t('fwChecking'));
     try{
       const local=await api('/api/v1/version',{cache:'no-store'}),image=local.data.updateImage;
-      const manifestResponse=await fetch('https://github.com/Anthonyrr98/awtrix-ng-next/releases/latest/download/release-manifest.json',{cache:'no-store'});
+      const firmwareBase='https://blueforcer.github.io/awtrix-ng/firmware/';
+      const manifestResponse=await fetch(firmwareBase+'release-manifest.json',{cache:'no-store'});
       if(!manifestResponse.ok)throw new Error('manifest HTTP '+manifestResponse.status);
       const manifest=await manifestResponse.json();
       const latest=String(manifest.version||'').replace(/^v/,'');
@@ -3477,7 +3742,7 @@ function maintenanceSection(page){
         onlineState.className='badge good';onlineState.replaceChildren(t('fwCurrent')+' · '+current);
       }else{
         onlineState.className='badge good';onlineState.replaceChildren('v'+latest+' '+t('fwAvailable')+' · '+t('fwVerified'));
-        installBtn.asset={name:image,sha256,browser_download_url:'https://github.com/Anthonyrr98/awtrix-ng-next/releases/download/v'+latest+'/'+image};
+        installBtn.asset={name:image,sha256,browser_download_url:firmwareBase+image};
         installBtn.style.display='';
       }
     }catch(e){onlineState.className='badge bad';onlineState.replaceChildren(t('fwCheckFail'));toast(e.message,false);}
@@ -3708,7 +3973,7 @@ function postToPiskel(msg){
   const f=$('#piskelFrame'),o=piskelOrigin();
   if(f&&f.contentWindow&&o)f.contentWindow.postMessage(Object.assign({ns:'awtrix'},msg),o);
 }
-function notifyPiskelTheme(){postToPiskel({type:'theme',theme:document.documentElement.dataset.theme==='light'?'light':'dark'});}
+function notifyPiskelTheme(){postToPiskel({type:'theme',theme:AWTRIX_THEMES.info().mode});}
 let pendingEditIcon=null;
 let piskelReady=false;
 function b64ToBlob(b64,mime){
@@ -3782,7 +4047,7 @@ function viewEditor(view){
   if(piskelLiveOn)piskelLiveOff();
   piskelReady=false;
   const url=getPiskelUrl();
-  const theme=document.documentElement.dataset.theme==='light'?'light':'dark';
+  const theme=AWTRIX_THEMES.info().mode;
   const src=url+(url.includes('?')?'&':'?')+'theme='+encodeURIComponent(theme)+'&sizes=8x8,32x8&host=awtrix';
   const loading=el('div',{class:'piskelload'},el('span',{class:'spin'}),el('span',null,t('edLoading')));
   const frame=el('iframe',{id:'piskelFrame',src,title:t('editorTab'),allow:'clipboard-read; clipboard-write'});
@@ -4733,6 +4998,7 @@ function viewLog(view){
 }
 /* WEBUI-MODULE:page-log END */
 /* WEBUI-MODULE:boot BEGIN */
+AWTRIX_THEMES.apply(AWTRIX_THEMES.current(),{persist:false});
 paintLanguage();
 paintTheme();
 render();

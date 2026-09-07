@@ -67,7 +67,7 @@ async function viewApps(view){
   let loop=[],background=[],disabled=[],modules=[],scenes=[],activeScene='',orig='[]',dragFrom=null;
   const panels=new Map();
   let panelTaken=new Set();
-  const loopList=el('div',{class:'applist'});
+  const loopList=el('div',{class:'applist tiles'});
   const bgList=el('div',{class:'applist'});
   const disabledList=el('div',{class:'applist'});
   const modList=el('div',{class:'applist'});
@@ -154,30 +154,49 @@ async function viewApps(view){
 
   function appRow(a,idx,mode){
     const inLoop=mode==='loop';
-    const row=el('div',{class:'approw'+(mode==='off'?' off':'')});
+    const row=el('div',{class:'approw '+mode+(mode==='off'?' off':'')});
     const grip=inLoop?el('span',{class:'grip',title:t('dragord')},'⠿'):null;
     if(inLoop){
       grip.addEventListener('pointerdown',e=>{
         e.preventDefault();
         try{grip.setPointerCapture(e.pointerId);}catch(_){}
         dragFrom=idx;
-        row.classList.add('dover');
         const doc=row.ownerDocument;
+        const rect=row.getBoundingClientRect();
+        const offsetX=e.clientX-rect.left;
+        const offsetY=e.clientY-rect.top;
+        const dragLayer=el('div',{class:'draglayer tiles'});
+        const dragGhost=row.cloneNode(true);
+        dragGhost.classList.add('dragghost');
+        dragGhost.style.width=rect.width+'px';
+        dragGhost.style.height=rect.height+'px';
+        dragLayer.append(dragGhost);
+        doc.body.append(dragLayer);
+        doc.body.classList.add('dragging-app');
+        const moveGhost=ev=>{
+          dragGhost.style.left=(ev.clientX-offsetX)+'px';
+          dragGhost.style.top=(ev.clientY-offsetY)+'px';
+        };
+        moveGhost(e);
+        row.classList.add('dragplace');
         const over=ev=>{
-          const at=doc.elementFromPoint(ev.clientX,ev.clientY);
+          moveGhost(ev);
+          const at=doc.elementFromPoint?doc.elementFromPoint(ev.clientX,ev.clientY):null;
           const cell=at&&at.closest?at.closest('.approw'):null;
           const under=cell?[...loopList.children].indexOf(cell):-1;
           if(under<0||dragFrom==null||under===dragFrom)return;
           const[m]=loop.splice(dragFrom,1);loop.splice(under,0,m);
           dragFrom=under;render();
           const moved=loopList.children[under];
-          if(moved)moved.classList.add('dover');
+          if(moved)moved.classList.add('dragplace');
         };
         const done=()=>{
           doc.removeEventListener('pointermove',over);
           doc.removeEventListener('pointerup',done);
           doc.removeEventListener('pointercancel',done);
-          dragFrom=null;row.classList.remove('dover');render();
+          dragLayer.remove();
+          doc.body.classList.remove('dragging-app');
+          dragFrom=null;render();
         };
         doc.addEventListener('pointermove',over);
         doc.addEventListener('pointerup',done);
@@ -231,6 +250,7 @@ async function viewApps(view){
       ]);
     const m=a.meta||{};
     const bits=[m.name&&m.name!==a.name?a.name:null,...metaBits(m)].filter(Boolean);
+    row.title=[m.name||a.name,...bits].join(' · ');
     [grip,
      inLoop?el('span',{class:'pos'},String(idx+1)):null,
      el('div',{class:'rowmain'},

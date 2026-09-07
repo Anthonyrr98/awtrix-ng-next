@@ -357,7 +357,7 @@ function viewScripts(view){
     }catch(e){toast(e.message,false);}
   });
   const saveBtn=el('button',{class:'pri ico',title:t('save'),'aria-label':t('save')},icon('save'));
-  const libraryBtn=el('button',{class:'ico',title:t('library'),'aria-label':t('library')},icon('book'),t('library'));
+  const libraryBtn=el('button',{class:'ico labeled',title:t('library'),'aria-label':t('library')},icon('book'),t('library'));
   function openLibrary(){
     const veil=el('div',{class:'libveil',role:'presentation'});
     const close=()=>veil.remove();

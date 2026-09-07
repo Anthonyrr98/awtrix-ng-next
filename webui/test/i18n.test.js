@@ -13,8 +13,12 @@ function check(value, message) {
   const doc = window.document;
   const button = doc.querySelector('#langbtn');
 
-  button.click(); // English -> Deutsch
-  button.click(); // Deutsch -> 简体中文
+  button.click();
+  check(button.getAttribute('aria-expanded') === 'true', 'language button opens a menu');
+  const choices = [...doc.querySelectorAll('#langmenu button')];
+  check(choices.map(b => b.textContent).join(',') === 'English,Deutsch,简体中文',
+    'menu lists every registered language');
+  choices.find(b => b.lang === 'zh').click();
   await flush(40);
   check(button.textContent === '中', 'language control reaches Simplified Chinese');
   check(window.localStorage.awtrixLang === 'zh', 'language preference is persisted');
@@ -27,7 +31,8 @@ function check(value, message) {
   check(doc.body.textContent.includes('WiFi 网络'), 'settings field labels are translated');
   check(doc.body.textContent.includes('连接超时'), 'settings field help structure supports Chinese');
 
-  button.click(); // 简体中文 -> English
+  button.click();
+  [...doc.querySelectorAll('#langmenu button')].find(b => b.lang === 'en').click();
   await flush(20);
   check(button.textContent === 'EN' && window.localStorage.awtrixLang === 'en',
     'language cycle returns to English');
