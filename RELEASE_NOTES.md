@@ -1,23 +1,11 @@
-## AWTRIX NG 1.6.0
+## AWTRIX NG 1.6.1
 
-**Trusted and identifiable firmware updates**
+**Online update hotfix**
 
-- Stable update manifests now publish an Ed25519 detached signature, generated and verified by release CI for downstream clients and independent provenance checks.
-- SHA-256 image verification, board-variant checks and post-boot rollback validation remain in place as separate safety layers.
-- The version endpoint now reports the source build ID, reproducible commit timestamp and embedded Web UI ETag, making local and release builds unambiguous.
-- Release CI warns once a firmware consumes 88% of its OTA slot and refuses builds at 90%.
-
-**Interface performance and reliability**
-
-- Application reordering moves existing cards instead of rebuilding the complete grid during every pointer crossing, and uses compositor-friendly positioning for the drag preview.
-- Liquid Glass avoids expensive blur work while dragging and automatically reduces transparency effects on constrained browsers and for accessibility preferences.
-- Fixed Liquid Glass hiding the script editor's syntax-highlighted source behind its transparent input layer.
-
-**Long-running device validation**
-
-- Added a reusable soak sampler for recording device health as JSON Lines and enforcing minimum internal-heap, contiguous-block and connectivity thresholds during 24–72 hour tests.
+- The stable update checker now reads firmware metadata and images from this repository's GitHub Pages deployment.
+- Fixes “Unable to check GitHub Release” after 1.6.0 because the Web UI still pointed at the upstream project's Pages site.
+- GitHub Pages is now enabled for this repository and is populated from verified release assets by the Docs workflow.
 - Existing configurations, scripts, applications, media, scenes and MQTT credentials are preserved.
-- HTTP, MQTT and Berry application APIs remain compatible; `/api/v1/version` only gains additive fields.
 
 ---
 

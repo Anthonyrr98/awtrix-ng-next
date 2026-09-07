@@ -3743,7 +3743,7 @@ function maintenanceSection(page){
     onlineState.className='badge';onlineState.replaceChildren(t('fwChecking'));
     try{
       const local=await api('/api/v1/version',{cache:'no-store'}),image=local.data.updateImage;
-      const firmwareBase='https://blueforcer.github.io/awtrix-ng/firmware/';
+      const firmwareBase='https://anthonyrr98.github.io/awtrix-ng-next/firmware/';
       const manifestResponse=await fetch(firmwareBase+'release-manifest.json',{cache:'no-store'});
       if(!manifestResponse.ok)throw new Error('manifest HTTP '+manifestResponse.status);
       const manifest=await manifestResponse.json();
