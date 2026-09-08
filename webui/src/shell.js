@@ -84,7 +84,8 @@ $('#docsbtn').addEventListener('click',()=>window.open('https://blueforcer.githu
 const themeUse=$('#themebtn').querySelector('use');
 const themeMenu=$('#thememenu');
 const themeLabel=id=>({dark:t('themeDark'),light:t('themeLight'),
-  'liquid-glass-white':t('themeLiquidWhite'),'liquid-glass-color':t('themeLiquidColor')})[id];
+  'liquid-glass-white':t('themeLiquidWhite'),'liquid-glass-color':t('themeLiquidColor'),
+  'pixel-frame':t('themePixelDark'),'pixel-frame-light':t('themePixelLight')})[id];
 const closeThemeMenu=()=>{
   themeMenu.hidden=true;
   $('#themebtn').setAttribute('aria-expanded','false');

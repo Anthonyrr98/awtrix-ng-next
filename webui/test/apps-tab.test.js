@@ -22,7 +22,7 @@ const INVENTORY = [
   { name: 'Time', enabled: true, inLoop: true, slot: 0, present: true, origin: 'builtin' },
   { name: 'co2', enabled: true, inLoop: false, slot: 1, present: false, origin: null },
   { name: 'Weather', enabled: true, inLoop: true, slot: 2, present: true, origin: 'script',
-    headless: false, skipped: false, config: true, error: null, meta: {} },
+    headless: false, skipped: true, config: true, error: null, meta: {} },
   { name: 'Doorbell', enabled: true, inLoop: false, slot: 3, present: true, origin: 'script',
     headless: true, skipped: false, error: null, meta: {} },
   { name: 'Bridge', enabled: false, inLoop: false, slot: null, present: true, origin: 'script',
@@ -135,6 +135,15 @@ async function run() {
     'tile menus open upward instead of being clipped at the bottom');
   assert(bottomRow.querySelector('.rowbadges')?.contains(bottomRow.querySelector('.chip')),
     'tile status chips share a reserved badge rail away from the menu button');
+
+  const weatherBadges = rowFor2(window, 'Weather').querySelector('.rowbadges');
+  assert(weatherBadges.querySelectorAll('.chip').length === 2,
+    'a skipped script shows both its origin and status badges');
+  assert(window.getComputedStyle(weatherBadges).flexDirection === 'column',
+    'multiple tile badges stack as complete pills instead of squeezing into vertical text');
+  assert([...weatherBadges.querySelectorAll('.chip')].every(chip =>
+    window.getComputedStyle(chip).whiteSpace === 'nowrap'),
+  'tile badge labels cannot wrap one character per line');
 
   const rowsOf = card => [...card.querySelectorAll('.approw')];
   // Every row action lives behind the row's menu now, labelled with words.

@@ -1,6 +1,6 @@
 const I18N={en:{
   dash:'Dashboard',display:'Display',system:'System',icons:'Icons',palettes:'Palettes',log:'Log',
-  theme:'Theme',themeDark:'Dark',themeLight:'Light',themeLiquidWhite:'White Liquid Glass',themeLiquidColor:'Color Liquid Glass',
+  theme:'Theme',themeDark:'Dark',themeLight:'Light',themeLiquidWhite:'White Liquid Glass',themeLiquidColor:'Color Liquid Glass',themePixelDark:'Pixel Frame Dark',themePixelLight:'Pixel Frame Light',
   audioTab:'Audio',
   mp3s:'MP3s',
   mp3shelp:'Your own MP3 files, for notifications and scripts.',
@@ -167,7 +167,7 @@ const I18N={en:{
   grpScript:'Scripting',grpScriptH:'Berry scripts on AWTRIX.',
   grpMisc:'Misc',grpMiscH:'Everything else.',
 },de:{
-  theme:'Design',themeDark:'Dunkel',themeLight:'Hell',themeLiquidWhite:'Weißes Flüssigglas',themeLiquidColor:'Farbiges Flüssigglas',
+  theme:'Design',themeDark:'Dunkel',themeLight:'Hell',themeLiquidWhite:'Weißes Flüssigglas',themeLiquidColor:'Farbiges Flüssigglas',themePixelDark:'Pixel-Rahmen Dunkel',themePixelLight:'Pixel-Rahmen Hell',
   audioTab:'Audio',
   mp3s:'MP3s',
   mp3shelp:'Eigene MP3-Dateien für Meldungen und Skripte.',
@@ -344,7 +344,7 @@ const LANGUAGES={
 };
 const ZH={
   dash:'仪表盘',display:'显示',system:'系统',icons:'图标',palettes:'调色板',log:'日志',audioTab:'音频',mp3s:'MP3',mp3shelp:'用于通知和脚本的自定义 MP3 文件。',
-  theme:'主题',themeDark:'深色',themeLight:'浅色',themeLiquidWhite:'白色液态玻璃',themeLiquidColor:'彩色液态玻璃',
+  theme:'主题',themeDark:'深色',themeLight:'浅色',themeLiquidWhite:'白色液态玻璃',themeLiquidColor:'彩色液态玻璃',themePixelDark:'深色像素画框',themePixelLight:'浅色像素画框',
   radioTab:'电台',radioH:'网络电台。',radionone:'还没有电台，请在下方添加。',radioname:'名称',radiourl:'音频流地址',radioadd:'添加电台',radioplaying:'正在播放',radiostopped:'未播放',radiodupe:'名称已被使用',radiobadurl:'必须以 http:// 或 https:// 开头',radiolong:'名称不能超过 24 个字符',
   appsTab:'应用',apploop:'应用轮播',apploopH:'AWTRIX 将依次显示这些应用。拖动 ⠿ 可调整顺序。',scenes:'轮播场景',scenesH:'保存应用组合，一键切换整套轮播。',sceneName:'场景名称',sceneSave:'保存场景',sceneApply:'应用',sceneDelete:'删除',sceneNone:'没有已保存的场景',background:'后台运行',backgroundH:'持续运行，但不会显示在屏幕上。',disabledapps:'已禁用',disabledH:'当前未使用。“启用”可将应用放回轮播或后台。',activate:'启用',deactivate:'禁用',switchto:'立即显示',more:'操作',dupapp:'复制',nobackground:'没有后台脚本',noapps:'没有应用',dragord:'顺序',chipPushed:'推送',chipScript:'脚本',chipModule:'模块',modules:'模块',modulesH:'供其他脚本通过 import 复用的组件。',modimport:'导入',modnone:'还没有模块',chipSkip:'已跳过',chipSkipH:'脚本跳过了本轮，但仍保留在轮播中。',chipGone:'无数据',chipGoneH:'应用已启用并保留位置，但尚未收到数据；下次推送时会重新绘制。',orderSaved:'应用顺序已保存',
   cfgTitle:'设置',cfgHide:'关闭设置',cfgLoading:'正在加载设置…',cfgNone:'此脚本没有可配置项。',cfgSaved:'设置已保存，应用已重启',cfgDefaults:'使用默认值',cfgWarnH:'脚本的设置头有问题，请在编辑器中修复。',save:'保存',saved:'已保存',sure:'确定？',cancel:'取消',del:'删除',edit:'编辑',discard:'放弃',unsaved:'未保存的更改',choose:'选择文件…',preview:'在 AWTRIX 上显示',upload:'上传',uploaded:'已上传',neterr:'无法连接设备',power:'电源',brightness:'亮度',prevapp:'上一个应用',nextapp:'下一个应用',dismiss:'关闭通知',dismissed:'通知已关闭',snap:'保存截图',rec:'录制 GIF',recstop:'停止录制并保存 GIF',livepre:'实时预览',version:'版本',host:'主机名',ip:'IP 地址',wifi:'WiFi',uptime:'运行时间',ram:'可用内存',psram:'PSRAM',psramnone:'无——如果开发板带 PSRAM，请刷写 -s3-quad- 镜像',

@@ -95,6 +95,27 @@
   :root[data-theme|=liquid-glass] select,:root[data-theme|=liquid-glass] textarea,
   :root[data-theme|=liquid-glass] .approw,:root[data-theme|=liquid-glass] .healthitem{backdrop-filter:none}
 }
+:root[data-theme|=pixel-frame] body{font-family:var(--mono);background-color:var(--bg);
+  background-image:linear-gradient(color-mix(in srgb,var(--border) 24%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--border) 24%,transparent) 1px,transparent 1px);background-size:8px 8px}
+:root[data-theme|=pixel-frame] .topbar{background:var(--bg);border-bottom:2px solid var(--acc);box-shadow:0 4px 0 var(--sh)}
+:root[data-theme|=pixel-frame] nav{border-bottom:0}
+:root[data-theme|=pixel-frame] .card,:root[data-theme|=pixel-frame] .section,:root[data-theme|=pixel-frame] .edwrap,
+:root[data-theme|=pixel-frame] .langmenu,:root[data-theme|=pixel-frame] .rowmenu>.mlist{
+  border:2px solid var(--border);border-radius:2px;box-shadow:4px 4px 0 #000;background:var(--card)}
+:root[data-theme|=pixel-frame] button,:root[data-theme|=pixel-frame] input,:root[data-theme|=pixel-frame] select,
+:root[data-theme|=pixel-frame] textarea,:root[data-theme|=pixel-frame] .approw,:root[data-theme|=pixel-frame] .healthitem{
+  border-radius:2px;border-width:2px;box-shadow:2px 2px 0 #000}
+:root[data-theme|=pixel-frame] nav a{border:2px solid transparent;border-radius:2px;text-transform:uppercase;letter-spacing:.04em}
+:root[data-theme|=pixel-frame] nav a:hover,:root[data-theme|=pixel-frame] nav a.on{color:var(--bg);background:var(--acc);border-color:var(--acc);box-shadow:2px 2px 0 #000}
+:root[data-theme|=pixel-frame] button:hover{color:var(--acc);border-color:var(--acc);transform:translate(-1px,-1px);box-shadow:3px 3px 0 #000}
+:root[data-theme|=pixel-frame] button:active{transform:translate(1px,1px);box-shadow:none}
+:root[data-theme|=pixel-frame] button.pri{color:var(--bg);background:var(--acc);border-color:var(--fg);font-weight:700}
+:root[data-theme|=pixel-frame] .section>header{background:var(--card2);border-bottom:2px solid var(--border)}
+:root[data-theme|=pixel-frame] .frow{border-bottom-style:dashed}
+:root[data-theme|=pixel-frame] .tiles .approw{background:var(--card2)}
+:root[data-theme|=pixel-frame] .tiles .approw:hover{border-color:var(--acc);box-shadow:4px 4px 0 #000}
+:root[data-theme|=pixel-frame] h1,:root[data-theme|=pixel-frame] h2{text-transform:uppercase;letter-spacing:.05em}
+:root[data-theme|=pixel-frame] .chip{background:var(--bg)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg);color:var(--fg)}
 body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding-bottom:70px}
@@ -124,6 +145,8 @@ button.icon{padding:7px 10px}
 .themeswatch.light{background:linear-gradient(145deg,#fff,#d0d7de)}
 .themeswatch.liquid-glass-white{background:radial-gradient(circle at 25% 20%,#fff,#a8e4f4 52%,#e8c7e4)}
 .themeswatch.liquid-glass-color{background:conic-gradient(from 35deg,#ff2d92,#a855f7,#4ecdc4,#ffd93d,#ff2d92)}
+.themeswatch.pixel-frame{border-radius:2px;background:repeating-conic-gradient(#b8f34a 0 25%,#111612 0 50%) 0/8px 8px;box-shadow:2px 2px 0 #000}
+.themeswatch.pixel-frame-light{border-radius:2px;background:repeating-conic-gradient(#087f5b 0 25%,#fffced 0 50%) 0/8px 8px;box-shadow:2px 2px 0 #596457}
 .themecheck{margin-left:auto;color:var(--acc)}
 button.icon.kofi{background:#00b9fe;border-color:#00b9fe;height:36px;display:inline-flex;align-items:center;justify-content:center}
 button.icon.kofi:hover{border-color:#00b9fe;filter:brightness(1.08)}
@@ -427,7 +450,10 @@ body.dragging-app .applist.tiles>.approw:hover{transform:none}
   overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .tiles .approw .nm .sub{display:none}
 .tiles .approw .rowbadges{position:absolute;left:9px;right:52px;bottom:9px;overflow:hidden}
-.tiles .rowbadges .chip{flex:1;min-width:0;overflow:hidden}
+.tiles .rowbadges .chip{flex:0 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tiles .approw:has(.rowbadges .chip + .chip) .rowmain{padding-bottom:47px}
+.tiles .approw .rowbadges:has(.chip + .chip){right:48px;bottom:7px;flex-direction:column;align-items:flex-start;gap:2px;overflow:visible}
+.tiles .rowbadges:has(.chip + .chip) .chip{max-width:100%}
 .tiles .approw .rowmenu{position:absolute;right:8px;bottom:8px}
 .tiles .approw:has(.rowmenu .mlist:not([hidden])){z-index:45}
 .tiles .approw:has(.appcfg:not([hidden])){grid-column:1/-1;aspect-ratio:auto;min-height:0;padding-bottom:48px}
@@ -905,6 +931,28 @@ registerTheme('liquid-glass-color',{
     'glass-line':'rgba(218,240,255,.32)','glass-surface':'rgba(22,38,58,.58)',
   },
 });
+registerTheme('pixel-frame',{
+  label:'Pixel Frame Dark',
+  mode:'dark',
+  vars:{
+    bg:'#090b0a',card:'#111612',card2:'#1a211b',border:'#526052',brd2:'#29322a',fg:'#f3f7df',
+    dim:'#9aa890',acc:'#b8f34a',pri:'#577f16',ok:'#6fe7a5',err:'#ff6b6b',warn:'#ffd166',
+    errbrd:'#8d3838',bnw:'#3b3214',bna:'#102d32',badbg:'#411d21',badfg:'#ffd9d9',
+    con:'#050706',sh:'#000',trk:'#344035',tsel:'#395f1d',tselo:'rgba(184,243,74,.24)',
+    tcur:'#172018',top:'#eaf5d1',
+  },
+});
+registerTheme('pixel-frame-light',{
+  label:'Pixel Frame Light',
+  mode:'light',
+  vars:{
+    bg:'#f4f0dc',card:'#fffced',card2:'#e8e3ca',border:'#30382f',brd2:'#a7ad98',fg:'#182019',
+    dim:'#596457',acc:'#087f5b',pri:'#087f5b',ok:'#16794b',err:'#bd2c32',warn:'#8d6500',
+    errbrd:'#bd6a6e',bnw:'#fff1a8',bna:'#cceff0',badbg:'#ffd9d9',badfg:'#721a20',
+    con:'#fffef5',sh:'#596457',trk:'#a7ad98',tsel:'#a9e6c4',tselo:'rgba(8,127,91,.2)',
+    tcur:'#e1eadb',top:'#1f2d21',
+  },
+});
 
 function preferredTheme(){
   try{
@@ -946,7 +994,7 @@ window.AWTRIX_THEMES=Object.freeze({
 /* WEBUI-MODULE:i18n BEGIN */
 const I18N={en:{
   dash:'Dashboard',display:'Display',system:'System',icons:'Icons',palettes:'Palettes',log:'Log',
-  theme:'Theme',themeDark:'Dark',themeLight:'Light',themeLiquidWhite:'White Liquid Glass',themeLiquidColor:'Color Liquid Glass',
+  theme:'Theme',themeDark:'Dark',themeLight:'Light',themeLiquidWhite:'White Liquid Glass',themeLiquidColor:'Color Liquid Glass',themePixelDark:'Pixel Frame Dark',themePixelLight:'Pixel Frame Light',
   audioTab:'Audio',
   mp3s:'MP3s',
   mp3shelp:'Your own MP3 files, for notifications and scripts.',
@@ -1113,7 +1161,7 @@ const I18N={en:{
   grpScript:'Scripting',grpScriptH:'Berry scripts on AWTRIX.',
   grpMisc:'Misc',grpMiscH:'Everything else.',
 },de:{
-  theme:'Design',themeDark:'Dunkel',themeLight:'Hell',themeLiquidWhite:'Weißes Flüssigglas',themeLiquidColor:'Farbiges Flüssigglas',
+  theme:'Design',themeDark:'Dunkel',themeLight:'Hell',themeLiquidWhite:'Weißes Flüssigglas',themeLiquidColor:'Farbiges Flüssigglas',themePixelDark:'Pixel-Rahmen Dunkel',themePixelLight:'Pixel-Rahmen Hell',
   audioTab:'Audio',
   mp3s:'MP3s',
   mp3shelp:'Eigene MP3-Dateien für Meldungen und Skripte.',
@@ -1290,7 +1338,7 @@ const LANGUAGES={
 };
 const ZH={
   dash:'仪表盘',display:'显示',system:'系统',icons:'图标',palettes:'调色板',log:'日志',audioTab:'音频',mp3s:'MP3',mp3shelp:'用于通知和脚本的自定义 MP3 文件。',
-  theme:'主题',themeDark:'深色',themeLight:'浅色',themeLiquidWhite:'白色液态玻璃',themeLiquidColor:'彩色液态玻璃',
+  theme:'主题',themeDark:'深色',themeLight:'浅色',themeLiquidWhite:'白色液态玻璃',themeLiquidColor:'彩色液态玻璃',themePixelDark:'深色像素画框',themePixelLight:'浅色像素画框',
   radioTab:'电台',radioH:'网络电台。',radionone:'还没有电台，请在下方添加。',radioname:'名称',radiourl:'音频流地址',radioadd:'添加电台',radioplaying:'正在播放',radiostopped:'未播放',radiodupe:'名称已被使用',radiobadurl:'必须以 http:// 或 https:// 开头',radiolong:'名称不能超过 24 个字符',
   appsTab:'应用',apploop:'应用轮播',apploopH:'AWTRIX 将依次显示这些应用。拖动 ⠿ 可调整顺序。',scenes:'轮播场景',scenesH:'保存应用组合，一键切换整套轮播。',sceneName:'场景名称',sceneSave:'保存场景',sceneApply:'应用',sceneDelete:'删除',sceneNone:'没有已保存的场景',background:'后台运行',backgroundH:'持续运行，但不会显示在屏幕上。',disabledapps:'已禁用',disabledH:'当前未使用。“启用”可将应用放回轮播或后台。',activate:'启用',deactivate:'禁用',switchto:'立即显示',more:'操作',dupapp:'复制',nobackground:'没有后台脚本',noapps:'没有应用',dragord:'顺序',chipPushed:'推送',chipScript:'脚本',chipModule:'模块',modules:'模块',modulesH:'供其他脚本通过 import 复用的组件。',modimport:'导入',modnone:'还没有模块',chipSkip:'已跳过',chipSkipH:'脚本跳过了本轮，但仍保留在轮播中。',chipGone:'无数据',chipGoneH:'应用已启用并保留位置，但尚未收到数据；下次推送时会重新绘制。',orderSaved:'应用顺序已保存',
   cfgTitle:'设置',cfgHide:'关闭设置',cfgLoading:'正在加载设置…',cfgNone:'此脚本没有可配置项。',cfgSaved:'设置已保存，应用已重启',cfgDefaults:'使用默认值',cfgWarnH:'脚本的设置头有问题，请在编辑器中修复。',save:'保存',saved:'已保存',sure:'确定？',cancel:'取消',del:'删除',edit:'编辑',discard:'放弃',unsaved:'未保存的更改',choose:'选择文件…',preview:'在 AWTRIX 上显示',upload:'上传',uploaded:'已上传',neterr:'无法连接设备',power:'电源',brightness:'亮度',prevapp:'上一个应用',nextapp:'下一个应用',dismiss:'关闭通知',dismissed:'通知已关闭',snap:'保存截图',rec:'录制 GIF',recstop:'停止录制并保存 GIF',livepre:'实时预览',version:'版本',host:'主机名',ip:'IP 地址',wifi:'WiFi',uptime:'运行时间',ram:'可用内存',psram:'PSRAM',psramnone:'无——如果开发板带 PSRAM，请刷写 -s3-quad- 镜像',
@@ -1788,7 +1836,8 @@ $('#docsbtn').addEventListener('click',()=>window.open('https://blueforcer.githu
 const themeUse=$('#themebtn').querySelector('use');
 const themeMenu=$('#thememenu');
 const themeLabel=id=>({dark:t('themeDark'),light:t('themeLight'),
-  'liquid-glass-white':t('themeLiquidWhite'),'liquid-glass-color':t('themeLiquidColor')})[id];
+  'liquid-glass-white':t('themeLiquidWhite'),'liquid-glass-color':t('themeLiquidColor'),
+  'pixel-frame':t('themePixelDark'),'pixel-frame-light':t('themePixelLight')})[id];
 const closeThemeMenu=()=>{
   themeMenu.hidden=true;
   $('#themebtn').setAttribute('aria-expanded','false');

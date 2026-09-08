@@ -1,14 +1,13 @@
-## AWTRIX NG 1.6.3
+## AWTRIX NG 1.6.4
 
-**System-audio visualizer and Web UI refinements**
+**Pixel Frame themes and clearer application status cards**
 
-- Adds `awtrix-music-visualizer.exe`, a self-contained Windows companion that captures the default system output through WASAPI and streams a real-time FFT spectrum to AWTRIX NG.
-- The visualizer offers neon, fire, ocean and monochrome palettes, automatic level adaptation, smoothing and peak falloff.
-- The visualizer keeps its pushed app active for the whole capture session instead of being replaced by normal app rotation; stopping it removes the temporary app and restores rotation.
-- Double-clicking the visualizer opens an English setup prompt. Python is not required on the destination computer.
-- Application tile action menus now open upward, preventing the bottom row from being clipped.
-- Application status badges have a reserved layout area and no longer overlap the action button.
-- Existing configurations, scripts, applications, media, scenes and MQTT credentials are preserved.
+- Adds Pixel Frame Dark and Pixel Frame Light to the global theme selector, with crisp two-pixel borders, offset shadows, an 8 px grid and high-contrast pixel-inspired palettes.
+- Adds English, German and Simplified Chinese names for both Pixel Frame variants.
+- Application cards now keep multiple status badges, such as `Script` and `Skipped`, on separate readable lines instead of squeezing their labels into vertical text.
+- Cards automatically reserve enough space for multiple badges without covering the application name or action menu.
+- Expands the compressed Web UI size guard from 84 KiB to 85 KiB for the two complete theme variants; the release UI remains within that limit.
+- Existing configurations, scripts, applications, media, scenes, themes and MQTT credentials are preserved. No migration is required.
 
 ---
 

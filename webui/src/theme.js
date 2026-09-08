@@ -50,6 +50,28 @@ registerTheme('liquid-glass-color',{
     'glass-line':'rgba(218,240,255,.32)','glass-surface':'rgba(22,38,58,.58)',
   },
 });
+registerTheme('pixel-frame',{
+  label:'Pixel Frame Dark',
+  mode:'dark',
+  vars:{
+    bg:'#090b0a',card:'#111612',card2:'#1a211b',border:'#526052',brd2:'#29322a',fg:'#f3f7df',
+    dim:'#9aa890',acc:'#b8f34a',pri:'#577f16',ok:'#6fe7a5',err:'#ff6b6b',warn:'#ffd166',
+    errbrd:'#8d3838',bnw:'#3b3214',bna:'#102d32',badbg:'#411d21',badfg:'#ffd9d9',
+    con:'#050706',sh:'#000',trk:'#344035',tsel:'#395f1d',tselo:'rgba(184,243,74,.24)',
+    tcur:'#172018',top:'#eaf5d1',
+  },
+});
+registerTheme('pixel-frame-light',{
+  label:'Pixel Frame Light',
+  mode:'light',
+  vars:{
+    bg:'#f4f0dc',card:'#fffced',card2:'#e8e3ca',border:'#30382f',brd2:'#a7ad98',fg:'#182019',
+    dim:'#596457',acc:'#087f5b',pri:'#087f5b',ok:'#16794b',err:'#bd2c32',warn:'#8d6500',
+    errbrd:'#bd6a6e',bnw:'#fff1a8',bna:'#cceff0',badbg:'#ffd9d9',badfg:'#721a20',
+    con:'#fffef5',sh:'#596457',trk:'#a7ad98',tsel:'#a9e6c4',tselo:'rgba(8,127,91,.2)',
+    tcur:'#e1eadb',top:'#1f2d21',
+  },
+});
 
 function preferredTheme(){
   try{
