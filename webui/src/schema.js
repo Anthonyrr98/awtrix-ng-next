@@ -9,6 +9,7 @@ const FIELDS={
  power:F('bright','toggle','Display on|Anzeige an','Turns the matrix off without cutting power.|Schaltet die Matrix aus, ohne den Strom zu trennen.'),
  appDurationMs:F('apps','number','Time per app|Zeit pro App','How long each app stays.|Wie lange jede App bleibt.',{min:1000,max:3600000,step:500,unit:'ms'}),
  autoTransition:F('apps','toggle','Auto rotation|Automatischer Wechsel','Moves to the next app on its own.|Wechselt von selbst zur nächsten App.'),
+ gifGalleryMode:F('apps','select','GIF Gallery mode|GIF-Galerie-Modus','Continuous stays in GIF Gallery; rotation resumes where it stopped.|Fortlaufend bleibt in der GIF-Galerie; Rotation setzt an der letzten Stelle fort.',{opt:[['rotation','App rotation|App-Rotation'],['continuous','Continuous loop|Endlosschleife']]}),
  transitionDurationMs:F('apps','number','Transition duration|Übergangsdauer','Length of the switch. 0 = instant.|Dauer des Wechsels. 0 = sofort.',{min:0,max:5000,unit:'ms'}),
  transitionEffect:F('apps','select','Transition effect|Übergangseffekt','Animation between two apps.|Animation zwischen zwei Apps.',{opt:'transitions'}),
  blockNavigation:F('apps','toggle','Block buttons|Tasten sperren','Ignore buttons and API for app switching.|App-Wechsel per Taste und API ignorieren.'),

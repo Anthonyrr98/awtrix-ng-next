@@ -21,6 +21,7 @@ enum class Kind : uint8_t {
   Int,
   LongMs,
   Float,
+  String,
   Enum,
   Color,
   ColorNull,
@@ -40,6 +41,7 @@ struct Field {
     int Settings::*i;
     long Settings::*l;
     float Settings::*f;
+    std::string Settings::*s;
     uint32_t Settings::*c;
     OptColor Settings::*oc;
   };
@@ -49,6 +51,8 @@ struct Field {
       : key(k), kind(kd), lo(lo_), hi(hi_), names(nm), nNames(n), i(m) {}
   constexpr Field(const char* k, Kind kd, long Settings::*m) : key(k), kind(kd), l(m) {}
   constexpr Field(const char* k, Kind kd, float Settings::*m) : key(k), kind(kd), f(m) {}
+  constexpr Field(const char* k, Kind kd, std::string Settings::*m, int maxLen)
+      : key(k), kind(kd), hi(maxLen), s(m) {}
   constexpr Field(const char* k, Kind kd, uint32_t Settings::*m) : key(k), kind(kd), c(m) {}
   constexpr Field(const char* k, Kind kd, OptColor Settings::*m) : key(k), kind(kd), oc(m) {}
 };
@@ -59,6 +63,9 @@ constexpr Field mkInt(const char* k, int Settings::*m, int lo, int hi) {
 }
 constexpr Field mkLong(const char* k, long Settings::*m) { return {k, Kind::LongMs, m}; }
 constexpr Field mkFloat(const char* k, float Settings::*m) { return {k, Kind::Float, m}; }
+constexpr Field mkString(const char* k, std::string Settings::*m, int maxLen) {
+  return {k, Kind::String, m, maxLen};
+}
 constexpr Field mkEnum(const char* k, int Settings::*m, const char* const* names, int n) {
   return {k, Kind::Enum, m, 0, 0, names, n};
 }
@@ -72,6 +79,7 @@ const char* const kSepModeNames[] = {"steady", "blink", "pulse"};
 const char* const kDateOrderNames[] = {"dayMonthYear", "monthDayYear", "yearMonthDay"};
 const char* const kDateSepNames[] = {"dot", "slash", "dash"};
 const char* const kYearModeNames[] = {"none", "twoDigit", "fourDigit"};
+const char* const kGifGalleryModeNames[] = {"rotation", "continuous"};
 
 constexpr Field kFields[] = {
     mkBool("autoBrightness", &Settings::autoBrightness),
@@ -81,6 +89,8 @@ constexpr Field kFields[] = {
     mkTransition("transitionEffect", &Settings::transitionEffect),
     mkInt("transitionDurationMs", &Settings::transitionDurationMs, 0, INT_MAX),
     mkLong("appDurationMs", &Settings::appDurationMs),
+    mkEnum("gifGalleryMode", &Settings::gifGalleryMode, kGifGalleryModeNames, 2),
+    mkString("gifGalleryIcons", &Settings::gifGalleryIcons, 512),
     mkInt("timeMode", &Settings::timeMode, 0, 6),
     mkColor("calendarHeaderColor", &Settings::calendarHeaderColor),
     mkColor("calendarTextColor", &Settings::calendarTextColor),
@@ -167,6 +177,7 @@ void Settings::writeMembers(api::JsonWriter& w) const {
       case Kind::Int: w.member(f.key, this->*f.i); break;
       case Kind::LongMs: w.member(f.key, this->*f.l); break;
       case Kind::Float: w.member(f.key, this->*f.f); break;
+      case Kind::String: w.member(f.key, this->*f.s); break;
       case Kind::Enum: {
         const int i = this->*f.i;
         w.member(f.key, (i >= 0 && i < f.nNames) ? f.names[i] : f.names[0]);
@@ -206,6 +217,7 @@ SettingValue Settings::read(std::string_view key) const {
     case Kind::Int: return SettingValue::ofInt(this->*f->i);
     case Kind::LongMs: return SettingValue::ofInt(this->*f->l);
     case Kind::Float: return SettingValue::ofReal(this->*f->f);
+    case Kind::String: return SettingValue::ofText((this->*f->s).c_str());
     case Kind::Enum: {
       const int i = this->*f->i;
       return SettingValue::ofText((i >= 0 && i < f->nNames) ? f->names[i] : f->names[0]);
@@ -253,6 +265,14 @@ int Settings::applyRead(api::JsonReader r) {
           const float fv = api::coerceFloat(r);
           this->*f->f = fv > 0.0f ? fv : this->*f->f;
           ++applied;
+          break;
+        }
+        case Kind::String: {
+          std::string value;
+          if (r.isString() && r.appendString(value) && value.size() <= static_cast<size_t>(f->hi)) {
+            this->*f->s = std::move(value);
+            ++applied;
+          }
           break;
         }
         case Kind::Enum: {
@@ -356,6 +376,14 @@ bool Settings::validateRead(api::JsonReader r, SettingsError& err) {
         double d = 0.0;
         if (!r.isNumber() || !r.asDouble(d) || static_cast<float>(d) <= 0.0f) {
           err = {key, "must be a positive number"};
+          return false;
+        }
+        break;
+      }
+      case Kind::String: {
+        std::string value;
+        if (!r.isString() || !r.appendString(value) || value.size() > static_cast<size_t>(f->hi)) {
+          err = {key, "must be a string no longer than " + std::to_string(f->hi) + " bytes"};
           return false;
         }
         break;

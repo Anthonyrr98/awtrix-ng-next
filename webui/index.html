@@ -116,6 +116,18 @@
 :root[data-theme|=pixel-frame] .tiles .approw:hover{border-color:var(--acc);box-shadow:4px 4px 0 #000}
 :root[data-theme|=pixel-frame] h1,:root[data-theme|=pixel-frame] h2{text-transform:uppercase;letter-spacing:.05em}
 :root[data-theme|=pixel-frame] .chip{background:var(--bg)}
+:root[data-theme|=pixel-frame] .meta{background:var(--card);border:2px solid var(--border);border-radius:2px;
+  box-shadow:3px 3px 0 #000;color:var(--dim);font-family:"Segoe UI","Microsoft YaHei UI",sans-serif;
+  font-size:12.5px;font-weight:500;line-height:1.55}
+:root[data-theme|=pixel-frame] .meta b{font-family:var(--mono);font-weight:700;color:var(--fg)}
+:root[data-theme|=pixel-frame] .subnav{padding:7px;background:var(--card);border:2px solid var(--border);
+  border-radius:2px;box-shadow:3px 3px 0 #000;gap:3px}
+:root[data-theme|=pixel-frame] .subnav a{background:var(--card);color:var(--fg);border:1px solid transparent;
+  border-left:3px solid transparent;border-radius:1px;font-family:"Segoe UI","Microsoft YaHei UI",sans-serif;
+  font-size:13px;font-weight:500;line-height:1.45;text-shadow:none}
+:root[data-theme|=pixel-frame] .subnav a:hover{background:var(--card2);border-color:var(--brd2);border-left-color:var(--acc)}
+:root[data-theme|=pixel-frame] .subnav a.on{color:var(--bg);background:var(--acc);border-color:var(--border);
+  border-left-color:var(--border);border-radius:1px;font-weight:700;box-shadow:2px 2px 0 #000}
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg);color:var(--fg)}
 body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding-bottom:70px}
@@ -1020,7 +1032,7 @@ const I18N={en:{
   chipSkip:'skipped',chipSkipH:'The script skipped this round. It stays in the rotation.',
   chipGone:'no data',chipGoneH:'This app is switched on and keeps its slot, but nothing has sent it any data yet. It draws again on the next push.',
   orderSaved:'App order saved',
-  cfgTitle:'Settings',cfgHide:'Close settings',cfgLoading:'Loading settings…',cfgNone:'This script offers no settings.',
+  cfgTitle:'Settings',cfgHide:'Close settings',cfgLoading:'Loading settings…',cfgNone:'This script offers no settings.',gifIconIds:'Choose GIFs',gifIconIdsH:'Click an uploaded GIF to add or remove it.',gifNoIds:'No GIF icons found',gifPlayOrder:'Playback order',gifPlayOrderH:'Use the arrows to change the order.',gifNoneSelected:'No GIF selected',gifAdd:'Add GIF',gifRemove:'Remove GIF',gifUp:'Move up',gifDown:'Move down',gifSelectAll:'Select all',gifClearAll:'Clear',gifModeRotation:'Follow app rotation',gifModeRotationH:'Leave with the normal rotation and resume at the previous GIF next time.',gifModeContinuous:'Continuous GIF loop',gifModeContinuousH:'Stay in GIF Gallery and continuously loop all GIFs.',
   cfgSaved:'Settings saved - the app restarted',cfgDefaults:'Use defaults',
   cfgWarnH:'The script’s settings header has a problem. Fix it in the editor.',
   save:'Save',saved:'Saved',sure:'Sure?',cancel:'Cancel',del:'Delete',edit:'Edit',
@@ -1341,7 +1353,7 @@ const ZH={
   theme:'主题',themeDark:'深色',themeLight:'浅色',themeLiquidWhite:'白色液态玻璃',themeLiquidColor:'彩色液态玻璃',themePixelDark:'深色像素画框',themePixelLight:'浅色像素画框',
   radioTab:'电台',radioH:'网络电台。',radionone:'还没有电台，请在下方添加。',radioname:'名称',radiourl:'音频流地址',radioadd:'添加电台',radioplaying:'正在播放',radiostopped:'未播放',radiodupe:'名称已被使用',radiobadurl:'必须以 http:// 或 https:// 开头',radiolong:'名称不能超过 24 个字符',
   appsTab:'应用',apploop:'应用轮播',apploopH:'AWTRIX 将依次显示这些应用。拖动 ⠿ 可调整顺序。',scenes:'轮播场景',scenesH:'保存应用组合，一键切换整套轮播。',sceneName:'场景名称',sceneSave:'保存场景',sceneApply:'应用',sceneDelete:'删除',sceneNone:'没有已保存的场景',background:'后台运行',backgroundH:'持续运行，但不会显示在屏幕上。',disabledapps:'已禁用',disabledH:'当前未使用。“启用”可将应用放回轮播或后台。',activate:'启用',deactivate:'禁用',switchto:'立即显示',more:'操作',dupapp:'复制',nobackground:'没有后台脚本',noapps:'没有应用',dragord:'顺序',chipPushed:'推送',chipScript:'脚本',chipModule:'模块',modules:'模块',modulesH:'供其他脚本通过 import 复用的组件。',modimport:'导入',modnone:'还没有模块',chipSkip:'已跳过',chipSkipH:'脚本跳过了本轮，但仍保留在轮播中。',chipGone:'无数据',chipGoneH:'应用已启用并保留位置，但尚未收到数据；下次推送时会重新绘制。',orderSaved:'应用顺序已保存',
-  cfgTitle:'设置',cfgHide:'关闭设置',cfgLoading:'正在加载设置…',cfgNone:'此脚本没有可配置项。',cfgSaved:'设置已保存，应用已重启',cfgDefaults:'使用默认值',cfgWarnH:'脚本的设置头有问题，请在编辑器中修复。',save:'保存',saved:'已保存',sure:'确定？',cancel:'取消',del:'删除',edit:'编辑',discard:'放弃',unsaved:'未保存的更改',choose:'选择文件…',preview:'在 AWTRIX 上显示',upload:'上传',uploaded:'已上传',neterr:'无法连接设备',power:'电源',brightness:'亮度',prevapp:'上一个应用',nextapp:'下一个应用',dismiss:'关闭通知',dismissed:'通知已关闭',snap:'保存截图',rec:'录制 GIF',recstop:'停止录制并保存 GIF',livepre:'实时预览',version:'版本',host:'主机名',ip:'IP 地址',wifi:'WiFi',uptime:'运行时间',ram:'可用内存',psram:'PSRAM',psramnone:'无——如果开发板带 PSRAM，请刷写 -s3-quad- 镜像',
+  cfgTitle:'设置',cfgHide:'关闭设置',cfgLoading:'正在加载设置…',cfgNone:'此脚本没有可配置项。',gifIconIds:'选择 GIF',gifIconIdsH:'点击已上传的 GIF，即可加入或移除。',gifNoIds:'没有识别到 GIF 图标',gifPlayOrder:'播放顺序',gifPlayOrderH:'使用上下箭头调整播放顺序。',gifNoneSelected:'尚未选择 GIF',gifAdd:'加入 GIF',gifRemove:'移除 GIF',gifUp:'上移',gifDown:'下移',gifSelectAll:'全选',gifClearAll:'清空',gifModeRotation:'跟随应用轮播',gifModeRotationH:'按照全部应用顺序播放；下次轮到时从上次的 GIF 继续。',gifModeContinuous:'GIF 连续循环',gifModeContinuousH:'停留在 GIF Gallery，循环播放全部 GIF。',cfgSaved:'设置已保存，应用已重启',cfgDefaults:'使用默认值',cfgWarnH:'脚本的设置头有问题，请在编辑器中修复。',save:'保存',saved:'已保存',sure:'确定？',cancel:'取消',del:'删除',edit:'编辑',discard:'放弃',unsaved:'未保存的更改',choose:'选择文件…',preview:'在 AWTRIX 上显示',upload:'上传',uploaded:'已上传',neterr:'无法连接设备',power:'电源',brightness:'亮度',prevapp:'上一个应用',nextapp:'下一个应用',dismiss:'关闭通知',dismissed:'通知已关闭',snap:'保存截图',rec:'录制 GIF',recstop:'停止录制并保存 GIF',livepre:'实时预览',version:'版本',host:'主机名',ip:'IP 地址',wifi:'WiFi',uptime:'运行时间',ram:'可用内存',psram:'PSRAM',psramnone:'无——如果开发板带 PSRAM，请刷写 -s3-quad- 镜像',
   health:'设备健康',healthH:'本次启动的供电、内存和连接状态。',healthGood:'健康',healthAttention:'需要注意',healthReset:'最近复位',healthHeap:'内部内存',healthBlock:'最大连续空闲块',healthNet:'连接',healthFps:'渲染',healthResetOk:'正常启动',healthResetBad:'请检查供电和设备日志',healthHeapOk:'余量充足',healthHeapLow:'内存余量较低',healthBlockLow:'内存碎片较多，安装脚本前请重启',healthNetOk:'WiFi 和已启用服务均在线',healthNetBad:'某个连接正在重试或已失败',healthFpsOk:'显示循环响应正常',healthFpsLow:'显示循环运行较慢',diagDownload:'下载诊断报告',battery:'电池',light:'光照',temp:'温度',hum:'湿度',curapp:'当前应用',excellent:'极佳',good:'良好',fair:'一般',weak:'较弱',
   advanced:'高级',advhelp:'固件已返回但本页没有表单的字段。以下为原始值，请谨慎修改。',rebootreq:'已保存，需要重启才能应用新配置。',rebootnow:'立即重启',rbclose:'关闭提醒',rebooting:'正在重启，页面将自动重新加载…',reboot:'重启',apbanner:'配网模式：请在下方将 AWTRIX 连接到 WiFi。',scan:'扫描',scanning:'正在扫描…',networks:'个网络',maint:'维护',mainthelp:'固件更新和重置。',apmaintH:'重启 AWTRIX 以应用已保存的 WiFi 设置。',fwfile:'上传固件（.bin）',fwOnline:'稳定版更新',fwOnlineH:'检查已验证的 GitHub Release，并安装与本开发板匹配的固件。',fwCheck:'检查更新',fwChecking:'正在检查…',fwCurrent:'已是最新版',fwAvailable:'可用',fwInstall:'安装更新',fwDownloading:'正在下载固件…',fwRelease:'发行说明',fwBackingUp:'正在下载安全备份…',fwVerifying:'正在验证发布清单…',fwUploading:'正在安装已验证固件…',fwVerified:'SHA-256 已验证',fwNoAsset:'该版本没有与此开发板匹配的固件。',fwCheckFail:'无法检查 GitHub Release。',
   resetset:'重置设置',resetsetH:'将显示设置恢复默认值（保留网络配置）。',factory:'恢复出厂设置',factoryH:'清除全部内容（WiFi、文件和设置）。请输入主机名确认。',erase:'清除全部内容',eraseNo:'主机名不匹配',bkSection:'备份与恢复',bkSectionH:'将所选内容下载为 ZIP，或恢复已有备份。',bkSectionAp:'恢复',bkSectionApH:'上传以前创建的备份 .zip。',bkTitle:'创建备份',bkDownload:'下载备份',bkDownloadH:'选择要包含的内容，然后保存 .zip。',bkWorking:'正在收集…',bkDone:'备份已下载',bkNone:'请至少选择一项',bkWifi:'WiFi',bkSettings:'设置',bkIcons:'图标',bkMelodies:'旋律',bkPalettes:'调色板',bkMp3:'MP3',bkScripts:'脚本',bkApporder:'应用顺序与场景',bkRadio:'电台',bkAll:'全选',bkRestoreT:'恢复备份',bkRestore:'选择备份…',bkRestoreH:'上传备份 .zip。',bkCaptiveHint:'WiFi 登录弹窗无法上传文件。请在浏览器中打开此页面进行恢复：',bkRestored:'备份已恢复',bkWarnings:'条警告',bkRebootQ:'恢复已应用。是否立即重启？',storage:'存储空间',of:'共',free:'可用',
@@ -1358,7 +1370,7 @@ let LANG=LANGUAGES[localStorage.awtrixLang]?localStorage.awtrixLang:detectedLang
 const t=k=>(I18N[LANG]&&I18N[LANG][k])??I18N.en[k]??k;
 const ZH_FIELDS={
   'Black = use the global text colour.':'黑色表示使用全局文字颜色。','Brightness':'亮度','Ignored while auto brightness is on.':'开启自动亮度时忽略此项。','Auto brightness':'自动亮度','Follows the ambient light sensor.':'跟随环境光传感器。','Display on':'开启显示','Turns the matrix off without cutting power.':'关闭矩阵屏但不切断电源。',
-  'Time per app':'每个应用的显示时间','How long each app stays.':'每个应用停留的时长。','Auto rotation':'自动轮播','Moves to the next app on its own.':'自动切换到下一个应用。','Transition duration':'过渡时长','Length of the switch. 0 = instant.':'切换动画时长，0 表示立即切换。','Transition effect':'过渡效果','Animation between two apps.':'两个应用之间的切换动画。','Block buttons':'禁止切换','Ignore buttons and API for app switching.':'忽略按键和 API 的应用切换请求。',
+  'Time per app':'每个应用的显示时间','How long each app stays.':'每个应用停留的时长。','Auto rotation':'自动轮播','Moves to the next app on its own.':'自动切换到下一个应用。','GIF Gallery mode':'GIF 图库模式','Continuous stays in GIF Gallery; rotation resumes where it stopped.':'连续循环会停留在 GIF 图库；参与轮播会从上次位置继续。','App rotation':'参与应用轮播','Continuous loop':'连续循环','Transition duration':'过渡时长','Length of the switch. 0 = instant.':'切换动画时长，0 表示立即切换。','Transition effect':'过渡效果','Animation between two apps.':'两个应用之间的切换动画。','Block buttons':'禁止切换','Ignore buttons and API for app switching.':'忽略按键和 API 的应用切换请求。',
   'Clock layout':'时钟布局','What the clock app draws.':'时钟应用的显示方式。','Time only':'仅时间','Calendar, weekday bar below':'日历，星期栏在下方','Calendar, weekday bar on top':'日历，星期栏在上方','Spiral calendar, weekday below':'环形日历，星期在下方','Spiral calendar, weekday on top':'环形日历，星期在上方','Big clock':'大号时钟','Binary clock':'二进制时钟','24-hour clock':'24 小时制','Off = 12-hour clock.':'关闭则使用 12 小时制。','Leading zero':'补前导零','Show 07:05 instead of 7:05.':'显示 07:05，而不是 7:05。','Show seconds':'显示秒','Plain clock layout only.':'仅适用于普通时钟布局。','AM/PM indicator':'上午/下午标记','12-hour clock only; hidden while seconds show.':'仅用于 12 小时制；显示秒时隐藏。','Colon between hours and minutes':'小时与分钟间的冒号','Blinking shows the seconds without digits.':'闪烁可在不显示秒数时表示秒。','Steady on':'常亮','Blinking every second':'每秒闪烁','Pulsing (soft fade)':'呼吸（柔和渐变）',
   'Date order':'日期顺序','Applies everywhere a date is shown.':'应用于所有日期显示。','Day, month, year (31.12.25)':'日、月、年（31.12.25）','Month, day, year (12/31/25)':'月、日、年（12/31/25）','Year, month, day (25-12-31)':'年、月、日（25-12-31）','Date separator':'日期分隔符','Character between day and month.':'日期各部分之间的字符。','Dot (31.12.)':'点（31.12.）','Slash (31/12)':'斜杠（31/12）','Dash (31-12)':'短横线（31-12）','Year in the date':'日期中的年份','Hiding it leaves more room on the panel.':'隐藏后可为面板留出更多空间。','Hidden':'隐藏','2 digits (25)':'2 位（25）','4 digits (2025)':'4 位（2025）','Weekday prefix':'星期前缀','Short weekday name before the date (Wed 31.12.).':'在日期前显示星期简称。','Month as name':'月份使用名称','Show “31 Dec” instead of “31.12”.':'显示“31 Dec”而不是“31.12”。','Weekday bar':'星期栏','Row of seven marks for the days of the week.':'用七个标记表示一周。','Week starts Monday':'每周从星期一开始','Display order only.':'仅影响显示顺序。','Weekend days':'周末','Days that use the weekend colours.':'使用周末颜色的日期。','Today':'今天','Mark of the current day.':'当天的标记。','Other workdays':'其他工作日','Marks of the remaining days.':'其他日期的标记。','Today on a weekend':'周末的今天','Used when today is a weekend day.':'今天是周末时使用。','Other weekend days':'其他周末','The rest of the weekend list.':'其余周末日期。','Time colour':'时间颜色','Date colour':'日期颜色','Calendar header':'日历标题','Only in the calendar layouts.':'仅用于日历布局。','Calendar text':'日历文字','Day number.':'日期数字。','Calendar body':'日历背景','Background.':'背景。',
   'Text colour':'文字颜色','Applies to all text.':'应用于所有文字。','Uppercase':'全大写','Shows every text in capitals.':'将所有文字显示为大写。','Scroll mode':'滚动模式','What text does when it is too long for the panel.':'文字超出面板宽度时的行为。','Stand still, clip the rest':'静止并裁切','Start over after each pass':'每次滚完后重新开始','Run continuously':'连续滚动','Sweep back and forth':'往返滚动','Scroll direction':'滚动方向','Which way the text moves.':'文字移动方向。','Right to left':'从右向左','Left to right':'从左向右','Text entry':'文字进入方式','Where a text starts its first pass.':'文字首次滚动的起始位置。','Visible right away':'立即可见','Run in from off-panel':'从面板外进入','Text that fits':'未超宽的文字','Only affects text short enough for the panel.':'仅影响能完整显示的短文字。','Stays still':'保持静止','Moves anyway':'仍然滚动','Scroll speed':'滚动速度','100 % = normal, 0 stops.':'100% 为正常速度，0 为停止。','Loop gap':'循环间隔','Space between repetitions.':'两次重复之间的空白。','Pause':'暂停','Before the text starts, and at each bounce turn.':'开始滚动前及每次折返时暂停。',
@@ -1385,6 +1397,7 @@ const FIELDS={
  power:F('bright','toggle','Display on|Anzeige an','Turns the matrix off without cutting power.|Schaltet die Matrix aus, ohne den Strom zu trennen.'),
  appDurationMs:F('apps','number','Time per app|Zeit pro App','How long each app stays.|Wie lange jede App bleibt.',{min:1000,max:3600000,step:500,unit:'ms'}),
  autoTransition:F('apps','toggle','Auto rotation|Automatischer Wechsel','Moves to the next app on its own.|Wechselt von selbst zur nächsten App.'),
+ gifGalleryMode:F('apps','select','GIF Gallery mode|GIF-Galerie-Modus','Continuous stays in GIF Gallery; rotation resumes where it stopped.|Fortlaufend bleibt in der GIF-Galerie; Rotation setzt an der letzten Stelle fort.',{opt:[['rotation','App rotation|App-Rotation'],['continuous','Continuous loop|Endlosschleife']]}),
  transitionDurationMs:F('apps','number','Transition duration|Übergangsdauer','Length of the switch. 0 = instant.|Dauer des Wechsels. 0 = sofort.',{min:0,max:5000,unit:'ms'}),
  transitionEffect:F('apps','select','Transition effect|Übergangseffekt','Animation between two apps.|Animation zwischen zwei Apps.',{opt:'transitions'}),
  blockNavigation:F('apps','toggle','Block buttons|Tasten sperren','Ignore buttons and API for app switching.|App-Wechsel per Taste und API ignorieren.'),
@@ -2392,7 +2405,7 @@ function viewDash(view){
       metaItem(t('version'),st.version),metaItem(t('host'),st.hostname||S.sysHost),metaItem(t('ip'),st.ipAddress),
       metaItem(t('uptime'),uptimeStr(st.uptimeSeconds)),
       metaItem(t('ram'),fmtBytes(st.freeHeapBytes)),
-      ...(st.psramTotalBytes?[metaItem(t('psram'),fmtBytes(st.psramFreeBytes)+' / '+fmtBytes(st.psramTotalBytes))]
+      ...(st.psramTotalBytes?[metaItem(t('psram'),fmtBytes(st.psramTotalBytes-st.psramFreeBytes)+' / '+fmtBytes(st.psramTotalBytes))]
         :st.soc==='esp32s3'?[metaItem(t('psram'),t('psramnone'),'warn')]:[]),
       metaItem(t('curapp'),st.currentApp));
     const defs=healthDefs(st),attention=defs.some(x=>x.tone==='err'||x.tone==='warn');
@@ -2475,6 +2488,95 @@ async function fillConfigPanel(name,box,saveError){
   box.replaceChildren(...warnings.map(warnBadge),...rows.map(m=>m.row),err,bar);
   paint();
   return true;
+}
+
+async function fillGifGalleryPanel(box){
+  box.replaceChildren(el('div',{class:'mono'},t('cfgLoading')));
+  try{
+    const [settings,files]=await Promise.all([
+      api('/api/v1/settings'),
+      api('/api/v1/files?dir='+encodeURIComponent('/ICONS'),{cache:'no-store'}),
+    ]);
+    const ids=(files.data.files||[]).filter(f=>/\.gif$/i.test(f.name))
+      .map(f=>f.name.replace(/\.[^.]+$/,'')).sort((a,b)=>a.localeCompare(b));
+    let mode=settings.data.gifGalleryMode||'rotation';
+    let initialIcons=settings.data.gifGalleryIcons||'';
+    let selected=initialIcons
+      ?initialIcons.split(',').map(x=>x.trim()).filter(x=>ids.includes(x))
+      :ids.slice();
+    let initialSelection=selected.join(',');
+    const availableBox=el('div',{style:'display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end'});
+    const selectedBox=el('div',{style:'display:grid;gap:6px;min-width:240px'});
+    const selectAll=el('button',{type:'button'},t('gifSelectAll'));
+    const clearAll=el('button',{type:'button'},t('gifClearAll'));
+    selectAll.addEventListener('click',()=>{selected=ids.slice();paintIcons();});
+    clearAll.addEventListener('click',()=>{selected=[];paintIcons();});
+    const choices=[
+      ['rotation','gifModeRotation','gifModeRotationH'],
+      ['continuous','gifModeContinuous','gifModeContinuousH'],
+    ].map(([value,label,help])=>{
+      const input=el('input',{type:'radio',name:'gifGalleryMode',value,checked:mode===value});
+      return{value,input,node:el('label',{class:'frow'},
+        el('div',{class:'lab'},el('div',{class:'l1'},el('b',null,t(label))),
+          el('div',{class:'help'},t(help))),el('div',{class:'ctl'},input))};
+    });
+    const save=el('button',{class:'pri'},t('save'));
+    save.disabled=true;
+    const serialized=()=>selected.join(',');
+    const dirty=()=>mode!==(settings.data.gifGalleryMode||'rotation')||serialized()!==initialSelection;
+    function paintIcons(){
+      availableBox.replaceChildren(...ids.map(id=>{
+        const on=selected.includes(id);
+        const b=el('button',{type:'button',class:on?'pri':'',title:on?t('gifRemove'):t('gifAdd')},
+          (on?'✓ ':'＋ ')+id);
+        b.addEventListener('click',()=>{
+          selected=on?selected.filter(x=>x!==id):[...selected,id];paintIcons();
+        });
+        return b;
+      }));
+      if(!ids.length)availableBox.replaceChildren(el('span',{class:'mono'},t('gifNoIds')));
+      selectedBox.replaceChildren(...selected.map((id,i)=>{
+        const up=el('button',{type:'button',disabled:i===0,title:t('gifUp')},'↑');
+        const down=el('button',{type:'button',disabled:i===selected.length-1,title:t('gifDown')},'↓');
+        const remove=el('button',{type:'button',class:'danger',title:t('gifRemove')},'×');
+        up.addEventListener('click',()=>{[selected[i-1],selected[i]]=[selected[i],selected[i-1]];paintIcons();});
+        down.addEventListener('click',()=>{[selected[i],selected[i+1]]=[selected[i+1],selected[i]];paintIcons();});
+        remove.addEventListener('click',()=>{selected.splice(i,1);paintIcons();});
+        return el('div',{class:'row',style:'gap:6px'},el('span',{class:'mono grow'},(i+1)+'. '+id),up,down,remove);
+      }));
+      if(!selected.length)selectedBox.replaceChildren(el('span',{class:'mono'},t('gifNoneSelected')));
+      save.disabled=!dirty();
+    }
+    choices.forEach(c=>c.input.addEventListener('change',()=>{
+      mode=c.value;save.disabled=!dirty();
+    }));
+    save.addEventListener('click',async()=>{
+      save.disabled=true;
+      try{
+        const iconsValue=serialized()===initialSelection?initialIcons:serialized();
+        await req('PATCH','/api/v1/settings',{
+          gifGalleryMode:mode,gifGalleryIcons:iconsValue});
+        settings.data.gifGalleryMode=mode;initialIcons=iconsValue;initialSelection=serialized();toast(t('cfgSaved'));
+      }catch(e){toast(e.message,false);save.disabled=false;}
+    });
+    box.replaceChildren(
+      el('div',{class:'frow'},
+        el('div',{class:'lab'},el('div',{class:'l1'},el('b',null,t('gifIconIds'))),
+          el('div',{class:'help'},t('gifIconIdsH'))),
+        el('div',{class:'ctl',style:'display:grid;gap:8px'},
+          el('div',{class:'row',style:'justify-content:flex-end'},selectAll,clearAll),availableBox)),
+      el('div',{class:'frow'},
+        el('div',{class:'lab'},el('div',{class:'l1'},el('b',null,t('gifPlayOrder'))),
+          el('div',{class:'help'},t('gifPlayOrderH'))),
+        el('div',{class:'ctl'},selectedBox)),
+      ...choices.map(c=>c.node),
+      el('div',{class:'cfgbar'},el('span',{class:'grow'}),save));
+    paintIcons();
+    return true;
+  }catch(e){
+    box.replaceChildren(el('div',{class:'badge bad'},e.message));
+    return false;
+  }
 }
 async function viewApps(view){
   let loop=[],background=[],disabled=[],modules=[],scenes=[],activeScene='',orig='[]',dragFrom=null;
@@ -2653,7 +2755,16 @@ async function viewApps(view){
         toast(t('deleted'));drop();
       }catch(e){toast(e.message,false);}
     };
-    const[toggleCfg,cfgBox]=scr?cfgPanel(a):[null,null];
+    let[toggleCfg,cfgBox]=(scr||a.name==='GIFGallery')
+      ?cfgPanel(a.name==='GIFGallery'?{...a,config:true}:a):[null,null];
+    if(a.name==='GIFGallery'&&toggleCfg){
+      toggleCfg=async()=>{
+        const open=cfgBox.hidden;
+        cfgBox.hidden=!open;
+        render();
+        if(open)await fillGifGalleryPanel(cfgBox);
+      };
+    }
     const menu=cfgBox&&!cfgBox.hidden
       ?el('div',{class:'rowmenu'},closeCfgBtn(cfgBox))
       :rowMenu([

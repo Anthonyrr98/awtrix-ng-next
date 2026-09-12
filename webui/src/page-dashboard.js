@@ -127,7 +127,7 @@ function viewDash(view){
       metaItem(t('version'),st.version),metaItem(t('host'),st.hostname||S.sysHost),metaItem(t('ip'),st.ipAddress),
       metaItem(t('uptime'),uptimeStr(st.uptimeSeconds)),
       metaItem(t('ram'),fmtBytes(st.freeHeapBytes)),
-      ...(st.psramTotalBytes?[metaItem(t('psram'),fmtBytes(st.psramFreeBytes)+' / '+fmtBytes(st.psramTotalBytes))]
+      ...(st.psramTotalBytes?[metaItem(t('psram'),fmtBytes(st.psramTotalBytes-st.psramFreeBytes)+' / '+fmtBytes(st.psramTotalBytes))]
         :st.soc==='esp32s3'?[metaItem(t('psram'),t('psramnone'),'warn')]:[]),
       metaItem(t('curapp'),st.currentApp));
     const defs=healthDefs(st),attention=defs.some(x=>x.tone==='err'||x.tone==='warn');

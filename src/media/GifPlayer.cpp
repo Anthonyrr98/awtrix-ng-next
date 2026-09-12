@@ -69,6 +69,9 @@ GifPlayer::OpenResult GifPlayer::open(const std::string& iconId, bool firstFrame
     return OpenResult::kOom;
   }
   active_ = true;
+  looped_ = false;
+  hasDisplayed_ = false;
+  displayed_.resize(static_cast<size_t>(w_) * h_);
   nextFrameMs_ = 0;
   return OpenResult::kGood;
 }
@@ -107,12 +110,15 @@ void GifPlayer::close() {
   data_.clear();
   frames_.clear();
   delays_.clear();
+  displayed_.clear();
+  hasDisplayed_ = false;
   frameCount_ = 0;
   cur_ = 0;
   w_ = 0;
   h_ = 0;
   streamFirstFrame_ = true;
   active_ = false;
+  looped_ = false;
 }
 
 void GifPlayer::blitFrame(Canvas& dst, int frame) const {
@@ -121,13 +127,33 @@ void GifPlayer::blitFrame(Canvas& dst, int frame) const {
     for (int x = 0; x < w_; ++x) dst.setPixel(x, y, *px++);
 }
 
+void GifPlayer::blitDisplayed(Canvas& dst) const {
+  if (!hasDisplayed_) return;
+  const uint32_t* px = displayed_.data();
+  for (int y = 0; y < h_; ++y)
+    for (int x = 0; x < w_; ++x) dst.setPixel(x, y, *px++);
+}
+
+void GifPlayer::captureDisplayed(const Canvas& dst) {
+  if (displayed_.size() < static_cast<size_t>(w_) * h_) return;
+  uint32_t* px = displayed_.data();
+  for (int y = 0; y < h_; ++y)
+    for (int x = 0; x < w_; ++x) *px++ = dst.getPixel(x, y);
+  hasDisplayed_ = true;
+}
+
 void GifPlayer::render(Canvas& dst, int64_t nowMs) {
   if (!active_) return;
+  // Render runs on every display refresh while GIF timing advances less often. Keep presenting the
+  // last decoded frame between deadlines instead of exposing the freshly cleared app canvas.
+  blitDisplayed(dst);
   if (nowMs < nextFrameMs_) return;
   if (frameCount_ > 0) {
     blitFrame(dst, cur_);
+    captureDisplayed(dst);
     nextFrameMs_ = nowMs + delays_[cur_];
     cur_ = (cur_ + 1) % frameCount_;
+    if (cur_ == 0) looped_ = true;
     return;
   }
   if (!streaming_) return;
@@ -140,6 +166,7 @@ void GifPlayer::render(Canvas& dst, int64_t nowMs) {
   // animation never shows a blank tick.
   media::MicroGif::Step st = gif_.nextFrame(dst, delayMs);
   if (st == media::MicroGif::Step::kEnd) {
+    looped_ = true;
     gif_.rewind();
     dst.fillRect(0, 0, w_, h_, 0x000000u);
     st = gif_.nextFrame(dst, delayMs);
@@ -151,6 +178,7 @@ void GifPlayer::render(Canvas& dst, int64_t nowMs) {
     return;
   }
   if (delayMs <= 0) delayMs = 100;
+  captureDisplayed(dst);
   nextFrameMs_ = nowMs + delayMs;
 }
 

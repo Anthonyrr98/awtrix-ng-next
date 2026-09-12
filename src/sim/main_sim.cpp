@@ -31,6 +31,7 @@
 #include "core/apps/SpecRenderer.h"
 #include "core/apps/builtin/BatteryApp.h"
 #include "core/apps/builtin/DateApp.h"
+#include "core/apps/builtin/GifGalleryApp.h"
 #include "core/apps/builtin/HumidityApp.h"
 #include "core/apps/builtin/TempApp.h"
 #include "core/apps/builtin/TimeApp.h"
@@ -115,6 +116,7 @@ CoreEngine* g_engine = nullptr;
 AppRegistry g_apps;
 TimeApp g_timeApp;
 DateApp g_dateApp;
+GifGalleryApp g_gifGalleryApp;
 TempApp g_tempApp;
 HumidityApp g_humApp;
 BatteryApp g_batApp;
@@ -267,6 +269,7 @@ int main(int argc, char** argv) {
 
   g_apps.add(&g_timeApp);
   g_apps.add(&g_dateApp);
+  g_apps.add(&g_gifGalleryApp);
   g_apps.add(&g_tempApp);
   g_apps.add(&g_humApp);
   g_apps.add(&g_batApp);

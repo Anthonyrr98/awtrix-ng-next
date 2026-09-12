@@ -63,6 +63,95 @@ async function fillConfigPanel(name,box,saveError){
   paint();
   return true;
 }
+
+async function fillGifGalleryPanel(box){
+  box.replaceChildren(el('div',{class:'mono'},t('cfgLoading')));
+  try{
+    const [settings,files]=await Promise.all([
+      api('/api/v1/settings'),
+      api('/api/v1/files?dir='+encodeURIComponent('/ICONS'),{cache:'no-store'}),
+    ]);
+    const ids=(files.data.files||[]).filter(f=>/\.gif$/i.test(f.name))
+      .map(f=>f.name.replace(/\.[^.]+$/,'')).sort((a,b)=>a.localeCompare(b));
+    let mode=settings.data.gifGalleryMode||'rotation';
+    let initialIcons=settings.data.gifGalleryIcons||'';
+    let selected=initialIcons
+      ?initialIcons.split(',').map(x=>x.trim()).filter(x=>ids.includes(x))
+      :ids.slice();
+    let initialSelection=selected.join(',');
+    const availableBox=el('div',{style:'display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end'});
+    const selectedBox=el('div',{style:'display:grid;gap:6px;min-width:240px'});
+    const selectAll=el('button',{type:'button'},t('gifSelectAll'));
+    const clearAll=el('button',{type:'button'},t('gifClearAll'));
+    selectAll.addEventListener('click',()=>{selected=ids.slice();paintIcons();});
+    clearAll.addEventListener('click',()=>{selected=[];paintIcons();});
+    const choices=[
+      ['rotation','gifModeRotation','gifModeRotationH'],
+      ['continuous','gifModeContinuous','gifModeContinuousH'],
+    ].map(([value,label,help])=>{
+      const input=el('input',{type:'radio',name:'gifGalleryMode',value,checked:mode===value});
+      return{value,input,node:el('label',{class:'frow'},
+        el('div',{class:'lab'},el('div',{class:'l1'},el('b',null,t(label))),
+          el('div',{class:'help'},t(help))),el('div',{class:'ctl'},input))};
+    });
+    const save=el('button',{class:'pri'},t('save'));
+    save.disabled=true;
+    const serialized=()=>selected.join(',');
+    const dirty=()=>mode!==(settings.data.gifGalleryMode||'rotation')||serialized()!==initialSelection;
+    function paintIcons(){
+      availableBox.replaceChildren(...ids.map(id=>{
+        const on=selected.includes(id);
+        const b=el('button',{type:'button',class:on?'pri':'',title:on?t('gifRemove'):t('gifAdd')},
+          (on?'✓ ':'＋ ')+id);
+        b.addEventListener('click',()=>{
+          selected=on?selected.filter(x=>x!==id):[...selected,id];paintIcons();
+        });
+        return b;
+      }));
+      if(!ids.length)availableBox.replaceChildren(el('span',{class:'mono'},t('gifNoIds')));
+      selectedBox.replaceChildren(...selected.map((id,i)=>{
+        const up=el('button',{type:'button',disabled:i===0,title:t('gifUp')},'↑');
+        const down=el('button',{type:'button',disabled:i===selected.length-1,title:t('gifDown')},'↓');
+        const remove=el('button',{type:'button',class:'danger',title:t('gifRemove')},'×');
+        up.addEventListener('click',()=>{[selected[i-1],selected[i]]=[selected[i],selected[i-1]];paintIcons();});
+        down.addEventListener('click',()=>{[selected[i],selected[i+1]]=[selected[i+1],selected[i]];paintIcons();});
+        remove.addEventListener('click',()=>{selected.splice(i,1);paintIcons();});
+        return el('div',{class:'row',style:'gap:6px'},el('span',{class:'mono grow'},(i+1)+'. '+id),up,down,remove);
+      }));
+      if(!selected.length)selectedBox.replaceChildren(el('span',{class:'mono'},t('gifNoneSelected')));
+      save.disabled=!dirty();
+    }
+    choices.forEach(c=>c.input.addEventListener('change',()=>{
+      mode=c.value;save.disabled=!dirty();
+    }));
+    save.addEventListener('click',async()=>{
+      save.disabled=true;
+      try{
+        const iconsValue=serialized()===initialSelection?initialIcons:serialized();
+        await req('PATCH','/api/v1/settings',{
+          gifGalleryMode:mode,gifGalleryIcons:iconsValue});
+        settings.data.gifGalleryMode=mode;initialIcons=iconsValue;initialSelection=serialized();toast(t('cfgSaved'));
+      }catch(e){toast(e.message,false);save.disabled=false;}
+    });
+    box.replaceChildren(
+      el('div',{class:'frow'},
+        el('div',{class:'lab'},el('div',{class:'l1'},el('b',null,t('gifIconIds'))),
+          el('div',{class:'help'},t('gifIconIdsH'))),
+        el('div',{class:'ctl',style:'display:grid;gap:8px'},
+          el('div',{class:'row',style:'justify-content:flex-end'},selectAll,clearAll),availableBox)),
+      el('div',{class:'frow'},
+        el('div',{class:'lab'},el('div',{class:'l1'},el('b',null,t('gifPlayOrder'))),
+          el('div',{class:'help'},t('gifPlayOrderH'))),
+        el('div',{class:'ctl'},selectedBox)),
+      ...choices.map(c=>c.node),
+      el('div',{class:'cfgbar'},el('span',{class:'grow'}),save));
+    paintIcons();
+    return true;
+  }catch(e){
+    box.replaceChildren(el('div',{class:'badge bad'},e.message));
+    return false;
+  }
+}
 async function viewApps(view){
   let loop=[],background=[],disabled=[],modules=[],scenes=[],activeScene='',orig='[]',dragFrom=null;
   const panels=new Map();
@@ -240,7 +329,16 @@ async function viewApps(view){
         toast(t('deleted'));drop();
       }catch(e){toast(e.message,false);}
     };
-    const[toggleCfg,cfgBox]=scr?cfgPanel(a):[null,null];
+    let[toggleCfg,cfgBox]=(scr||a.name==='GIFGallery')
+      ?cfgPanel(a.name==='GIFGallery'?{...a,config:true}:a):[null,null];
+    if(a.name==='GIFGallery'&&toggleCfg){
+      toggleCfg=async()=>{
+        const open=cfgBox.hidden;
+        cfgBox.hidden=!open;
+        render();
+        if(open)await fillGifGalleryPanel(cfgBox);
+      };
+    }
     const menu=cfgBox&&!cfgBox.hidden
       ?el('div',{class:'rowmenu'},closeCfgBtn(cfgBox))
       :rowMenu([

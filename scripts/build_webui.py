@@ -11,7 +11,7 @@ Import("env")
 
 # Three complete built-in languages and five themes still leave ample room in every OTA slot.
 # Keep a hard ceiling so further locale or UI growth remains an explicit choice.
-BUDGET = 85 * 1024
+BUDGET = 87 * 1024
 SRC = os.path.join(env["PROJECT_DIR"], "webui", "index.html")
 SCRIPTS_SRC = os.path.join(env["PROJECT_DIR"], "webui", "src", "page-scripts.js")
 OUT = os.path.join(env["PROJECT_DIR"], "src", "transport", "http", "WebUiAsset.h")

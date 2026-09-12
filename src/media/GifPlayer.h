@@ -27,14 +27,19 @@ class GifPlayer {
   int width() const { return w_; }
   int height() const { return h_; }
   void render(Canvas& dst, int64_t nowMs);
+  bool takeLooped() { const bool v = looped_; looped_ = false; return v; }
 
  private:
   enum class PreDecode { kDone, kStream, kOom };
   PreDecode preDecode(bool firstFrameOnly, int maxResidentFrames);
   void blitFrame(Canvas& dst, int frame) const;
+  void blitDisplayed(Canvas& dst) const;
+  void captureDisplayed(const Canvas& dst);
 
   media::PodBuffer<uint32_t> frames_;
   media::PodBuffer<uint16_t> delays_;
+  media::PodBuffer<uint32_t> displayed_;
+  bool hasDisplayed_ = false;
   int frameCount_ = 0;
   int cur_ = 0;
   int w_ = 0, h_ = 0;
@@ -47,6 +52,7 @@ class GifPlayer {
   bool streamFirstFrame_ = true;
 
   bool active_ = false;
+  bool looped_ = false;
   int64_t nextFrameMs_ = 0;
 };
 

@@ -74,6 +74,9 @@ struct Settings {
   int transitionEffect = 19;
   int transitionDurationMs = 1000;
   long appDurationMs = 7000;
+  int gifGalleryMode = 0;
+  // Comma-separated icon IDs. Empty means every GIF in /ICONS, sorted by filename.
+  std::string gifGalleryIcons;
   int timeMode = 1;
   uint32_t calendarHeaderColor = 0xFF0000u;
   uint32_t calendarTextColor = 0x000000u;

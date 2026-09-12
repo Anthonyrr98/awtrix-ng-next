@@ -76,6 +76,7 @@ void CoreEngine::tick(int64_t nowMs) {
     if (d > 0) dwellMs = d;
   }
   const bool holds = rotationHold_ || scriptRotationPaused_ ||
+                     (cur == "GIFGallery" && state_.settings().gifGalleryMode == 1) ||
                      (scripts_ && isScriptApp(cur) && scripts_->scriptScrollHolds(cur));
   appHost_.tick(nowMs, dwellMs, state_.settings().transitionDurationMs,
                 state_.settings().autoTransition && !holds);
@@ -104,6 +105,7 @@ std::vector<std::string> CoreEngine::knownApps() const {
   std::vector<std::string> k;
   k.push_back("Time");
   k.push_back("Date");
+  k.push_back("GIFGallery");
   const RuntimeState& rt = state_.runtime();
   if (rt.hasTemperature) k.push_back("Temperature");
   if (rt.hasHumidity) k.push_back("Humidity");

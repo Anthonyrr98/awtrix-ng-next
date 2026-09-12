@@ -1,12 +1,13 @@
-## AWTRIX NG 1.6.4
+## AWTRIX NG 1.6.5
 
-**Pixel Frame themes and clearer application status cards**
+**GIF Gallery playback and clearer PSRAM usage**
 
-- Adds Pixel Frame Dark and Pixel Frame Light to the global theme selector, with crisp two-pixel borders, offset shadows, an 8 px grid and high-contrast pixel-inspired palettes.
-- Adds English, German and Simplified Chinese names for both Pixel Frame variants.
-- Application cards now keep multiple status badges, such as `Script` and `Skipped`, on separate readable lines instead of squeezing their labels into vertical text.
-- Cards automatically reserve enough space for multiple badges without covering the application name or action menu.
-- Expands the compressed Web UI size guard from 84 KiB to 85 KiB for the two complete theme variants; the release UI remains within that limit.
+- Adds the built-in `GIFGallery` app, which plays uploaded GIF icons as an ordered playlist.
+- Adds a visual GIF picker with add/remove controls and playback-order buttons; manual comma-separated ID entry is no longer required.
+- Adds two playback modes: follow the normal application rotation and resume at the previous GIF, or remain in GIF Gallery and loop continuously.
+- Keeps the last decoded GIF frame visible between animation deadlines, preventing black-frame flicker on the display.
+- Refreshes the GIF file list automatically so newly uploaded icons become available without restarting the device.
+- Shows PSRAM as used memory divided by total memory on the Dashboard.
 - Existing configurations, scripts, applications, media, scenes, themes and MQTT credentials are preserved. No migration is required.
 
 ---
