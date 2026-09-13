@@ -2,12 +2,12 @@
 
 The settings are the **saved preferences** of your AWTRIX - brightness, colors,
 clock and date formatting, transitions, volume, and the look of the built-in apps.
-There are **40 keys**, all camelCase, all readable and writable through one endpoint.
+There are **43 keys**, all camelCase, all readable and writable through one endpoint.
 
 | | |
 |---|---|
-| **Read** | `GET /api/v1/settings` - returns all 40 keys |
-| **Write** | `PATCH /api/v1/settings` - any subset; all keys or none are applied; returns all 40 keys back |
+| **Read** | `GET /api/v1/settings` - returns all 43 keys |
+| **Write** | `PATCH /api/v1/settings` - any subset; all keys or none are applied; returns all 43 keys back |
 | **Reset** | `POST /api/v1/settings/reset` - clears the stored settings and reboots |
 
 Settings survive a reboot. Durations are integer milliseconds, colors are `"#RRGGBB"` on the way
@@ -40,7 +40,7 @@ curl http://<awtrix-ip>/api/v1/settings
 }
 ```
 
-*(abbreviated - the real response carries all 40 keys)*
+*(abbreviated - the real response carries all 43 keys)*
 
 Every value round-trips: what `GET` returns is exactly what `PATCH` accepts.
 
@@ -72,7 +72,7 @@ the next one.
 The tables below are the complete set of settings keys. Any other key fails validation with `422`
 and `"message": "unknown field"`.
 
-A successful `PATCH` responds **`200` with all 40 settings, updated** - use that response instead
+A successful `PATCH` responds **`200` with all 43 settings, updated** - use that response instead
 of a follow-up `GET`. Every change takes effect at once; no setting needs a reboot.
 
 ---
@@ -171,6 +171,8 @@ curl -X PATCH http://<awtrix-ip>/api/v1/settings \
 |---|---|---|---|---|---|
 | `autoTransition` | boolean | - | `true` | - | Advance through the apps automatically. When `false` the rotation only moves on a button press or an API call. |
 | `appDurationMs` | integer | ≥ 0 | `7000` | ms | How long each app is shown before the rotation advances. Also the default lifetime of a notification. No upper bound. |
+| `gifGalleryMode` | string | `rotation` · `continuous` | `"rotation"` | - | Whether GIF Gallery follows app rotation and resumes, or remains active and loops continuously. |
+| `gifGalleryIcons` | string | ≤ 512 UTF-8 bytes | `""` | - | Comma-separated GIF icon IDs in playback order. Empty uses every GIF in filename order. |
 | `transitionEffect` | string | see below | `"Rain"` | - | The animation played when the rotation changes app. |
 | `transitionDurationMs` | integer | 0–2147483647 | `1000` | ms | Length of that animation. `0` = instant. |
 

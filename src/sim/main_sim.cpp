@@ -270,6 +270,7 @@ int main(int argc, char** argv) {
   g_apps.add(&g_timeApp);
   g_apps.add(&g_dateApp);
   g_apps.add(&g_gifGalleryApp);
+  g_engine->addBuiltinApp("GIFGallery");
   g_apps.add(&g_tempApp);
   g_apps.add(&g_humApp);
   g_apps.add(&g_batApp);

@@ -1955,6 +1955,14 @@ components:
           description: One of capabilities.transitions (e.g. "Slide", "Random")
         transitionDurationMs: { type: integer, minimum: 0 }
         appDurationMs: { type: integer, minimum: 0 }
+        gifGalleryMode:
+          type: string
+          enum: [rotation, continuous]
+          description: Follow app rotation and resume, or remain in GIF Gallery and loop continuously.
+        gifGalleryIcons:
+          type: string
+          maxLength: 512
+          description: Comma-separated GIF icon IDs in playback order; empty selects every GIF by filename.
         timeMode:
           type: integer
           minimum: 0

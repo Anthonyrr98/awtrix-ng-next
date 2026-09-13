@@ -1,4 +1,4 @@
-## AWTRIX NG 1.6.5
+## AWTRIX NG 1.6.6
 
 **GIF Gallery playback and clearer PSRAM usage**
 

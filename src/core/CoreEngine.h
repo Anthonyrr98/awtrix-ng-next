@@ -58,6 +58,7 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
 
   void syncScriptApp(const std::string& name);
   void removeScriptApp(const std::string& name);
+  void addBuiltinApp(const std::string& name);
 
   void setOverlayRegistry(const EffectRegistry* overlays) { overlays_ = overlays; }
   void setEffectRegistry(const EffectRegistry* effects) { effects_ = effects; }
@@ -164,6 +165,7 @@ class CoreEngine : public IAppService, public INotifyService, public IRadioStati
   std::vector<PushedAppEntry> pushedApps_;
   uint32_t nextArrival_ = 0;
   std::vector<std::string> scriptApps_;
+  std::vector<std::string> extraBuiltinApps_;
   struct AppScene {
     std::string name;
     std::vector<std::string> order;

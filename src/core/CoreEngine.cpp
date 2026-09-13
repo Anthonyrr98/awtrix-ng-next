@@ -105,7 +105,7 @@ std::vector<std::string> CoreEngine::knownApps() const {
   std::vector<std::string> k;
   k.push_back("Time");
   k.push_back("Date");
-  k.push_back("GIFGallery");
+  for (const auto& n : extraBuiltinApps_) k.push_back(n);
   const RuntimeState& rt = state_.runtime();
   if (rt.hasTemperature) k.push_back("Temperature");
   if (rt.hasHumidity) k.push_back("Humidity");
@@ -187,6 +187,13 @@ void CoreEngine::syncScriptApp(const std::string& name) {
   if (name.empty()) return;
   if (std::find(scriptApps_.begin(), scriptApps_.end(), name) == scriptApps_.end())
     scriptApps_.push_back(name);
+  rebuildAppList();
+}
+
+void CoreEngine::addBuiltinApp(const std::string& name) {
+  if (name.empty() || std::find(extraBuiltinApps_.begin(), extraBuiltinApps_.end(), name) !=
+                          extraBuiltinApps_.end()) return;
+  extraBuiltinApps_.push_back(name);
   rebuildAppList();
 }
 

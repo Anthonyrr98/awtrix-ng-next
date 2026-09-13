@@ -52,7 +52,7 @@ def ground_truth():
     """The key sets the firmware actually implements."""
     settings_src = read("src/core/Settings.cpp")
     settings = set(re.findall(
-        r'mk(?:Bool|Int|Long|Float|Enum|Color|NullColor|Transition)\("([a-zA-Z0-9]+)"',
+        r'mk(?:Bool|Int|Long|Float|String|Enum|Color|NullColor|Transition)\("([a-zA-Z0-9]+)"',
         settings_src))
     settings |= set(re.findall(r'w\.key\("([a-zA-Z0-9]+)"\)', settings_src))
     system = set(re.findall(r"X\(([a-zA-Z0-9]+),", read("src/persistence/DeviceConfigFields.h")))
