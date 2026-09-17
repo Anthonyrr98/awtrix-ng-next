@@ -69,6 +69,13 @@ void AudioOutEsp32::operator delete(void* p) { std::free(p); }
 AudioOutEsp32::AudioOutEsp32(CoreEngine& engine, int pinBclk, int pinLrclk, int pinDout)
     : engine_(engine), pinBclk_(pinBclk), pinLrclk_(pinLrclk), pinDout_(pinDout) {
   lock_ = xSemaphoreCreateMutex();
+  // Keep the I2S lines low until the first stream installs the driver. Floating clock lines can
+  // make the amplifier crackle; a stationary BCLK lets it remain quiet.
+  for (int pin : {pinBclk_, pinLrclk_, pinDout_}) {
+    if (pin < 0) continue;
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, LOW);
+  }
 }
 
 AudioOutEsp32::~AudioOutEsp32() {

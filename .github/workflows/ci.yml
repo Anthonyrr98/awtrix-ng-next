@@ -75,6 +75,20 @@ jobs:
           path: dist/music-visualizer/awtrix-music-visualizer.exe
           if-no-files-found: error
 
+  desktop-preview-build:
+    name: Windows desktop preview
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and smoke-test the native companion
+        shell: powershell
+        run: ./tools/build_desktop_preview.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: awtrix-desktop-preview
+          path: dist/desktop-preview/awtrix-desktop-preview.exe
+          if-no-files-found: error
+
   device-build:
     name: Firmware build (${{ matrix.env }})
     runs-on: ubuntu-latest
@@ -183,7 +197,7 @@ jobs:
   release:
     name: Publish firmware release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [native-tests, webui-tests, music-visualizer-build, device-build, docs]
+    needs: [native-tests, webui-tests, music-visualizer-build, desktop-preview-build, device-build, docs]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -253,6 +267,11 @@ jobs:
         with:
           name: awtrix-music-visualizer
           path: release-tools
+      - name: Download the Windows desktop preview
+        uses: actions/download-artifact@v4
+        with:
+          name: awtrix-desktop-preview
+          path: release-tools
       - name: Stage the release as a draft
         # Created as a draft on purpose. Publishing fires `release: published`,
         # which is what notifies Discord -- do that before the assets are
@@ -273,6 +292,7 @@ jobs:
             release-manifest.json
             release-manifest.sig
             release-tools/awtrix-music-visualizer.exe
+            release-tools/awtrix-desktop-preview.exe
             usb-awtrix-ng.zip
             licenses-awtrix-ng.zip
       - name: Flip the release live, now that every asset is attached

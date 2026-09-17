@@ -23,7 +23,7 @@ function makeVirtualConsole() {
 }
 
 // Shared beforeParse: give the page the globals jsdom omits.
-function installGlobals(fetchImpl) {
+function installGlobals(fetchImpl, customize) {
   return window => {
     window.fetch = fetchImpl(window);
     window.TextEncoder = TextEncoder;
@@ -34,6 +34,7 @@ function installGlobals(fetchImpl) {
     // jsdom has no layout, so it ships no ResizeObserver. Without a stub the UI
     // throws on construction and every run prints a jsdomError that is not one.
     window.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+    if (customize) customize(window);
   };
 }
 
@@ -213,7 +214,7 @@ async function boot(opts) {
     pretendToBeVisual: true,
     url: 'http://localhost/',
     virtualConsole: makeVirtualConsole(),
-    beforeParse: installGlobals(() => mockFetch(store, netlog)),
+    beforeParse: installGlobals(() => mockFetch(store, netlog), opts && opts.beforeParse),
   });
   await flush(60); // boot render() + device/capabilities/system fetches
   return { dom, window: dom.window, store, netlog };

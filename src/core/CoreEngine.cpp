@@ -103,13 +103,16 @@ const AppSpec* CoreEngine::pushedApp(const std::string& name) const {
 // script apps. This is also the fallback loop order for anything the user has not arranged.
 std::vector<std::string> CoreEngine::knownApps() const {
   std::vector<std::string> k;
-  k.push_back("Time");
-  k.push_back("Date");
-  for (const auto& n : extraBuiltinApps_) k.push_back(n);
+  const auto builtin = [&](const std::string& name) {
+    if (!pushedApp(name)) k.push_back(name);
+  };
+  builtin("Time");
+  builtin("Date");
+  for (const auto& n : extraBuiltinApps_) builtin(n);
   const RuntimeState& rt = state_.runtime();
-  if (rt.hasTemperature) k.push_back("Temperature");
-  if (rt.hasHumidity) k.push_back("Humidity");
-  if (rt.hasBattery) k.push_back("Battery");
+  if (rt.hasTemperature) builtin("Temperature");
+  if (rt.hasHumidity) builtin("Humidity");
+  if (rt.hasBattery) builtin("Battery");
   std::vector<const PushedAppEntry*> byArrival;
   byArrival.reserve(pushedApps_.size());
   for (const auto& e : pushedApps_) byArrival.push_back(&e);

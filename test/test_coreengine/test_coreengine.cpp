@@ -220,6 +220,23 @@ static void test_an_app_that_turns_up_later_joins_the_loop() {
   TEST_ASSERT_EQUAL_STRING("Temperature", e.appHost().ids()[0].c_str());
 }
 
+static void test_a_pushed_app_replaces_a_builtin_of_the_same_name() {
+  sound::AudioRouter so; FDisplay di; FSystem sy;
+  CoreEngine e(so, di, sy);
+  e.addBuiltinApp("GIFGallery");
+  const unsigned before = static_cast<unsigned>(e.appHost().count());
+  TEST_ASSERT_EQUAL_STRING("Time", e.appHost().ids()[0].c_str());
+  e.execute(cmd(CommandType::SetPushedApp, "Time", "{\"text\":\"x\"}"));
+  TEST_ASSERT_EQUAL_UINT(before, static_cast<unsigned>(e.appHost().count()));
+  TEST_ASSERT_EQUAL_STRING("Time", e.appHost().ids()[before - 1].c_str());
+  e.execute(cmd(CommandType::SetPushedApp, "GIFGallery", "{\"text\":\"y\"}"));
+  TEST_ASSERT_EQUAL_UINT(before, static_cast<unsigned>(e.appHost().count()));
+  e.deletePushedApp("Time");
+  e.deletePushedApp("GIFGallery");
+  TEST_ASSERT_EQUAL_UINT(before, static_cast<unsigned>(e.appHost().count()));
+  TEST_ASSERT_EQUAL_STRING("Time", e.appHost().ids()[0].c_str());
+}
+
 static void test_order_allows_duplicate_apps() {
   sound::AudioRouter so; FDisplay di; FSystem sy;
   CoreEngine e(so, di, sy);
@@ -994,6 +1011,7 @@ int main(int, char**) {
   RUN_TEST(test_switch_app);
   RUN_TEST(test_the_disabled_list_decides_what_stays_out);
   RUN_TEST(test_an_app_that_turns_up_later_joins_the_loop);
+  RUN_TEST(test_a_pushed_app_replaces_a_builtin_of_the_same_name);
   RUN_TEST(test_order_allows_duplicate_apps);
   RUN_TEST(test_order_reserves_spot_for_unknown_apps);
   RUN_TEST(test_apps_inventory_includes_switched_off_apps);

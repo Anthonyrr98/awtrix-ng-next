@@ -51,6 +51,9 @@ function check(value, message) {
   check(window.document.documentElement.dataset.themeMode === 'light' &&
         window.document.documentElement.style.getPropertyValue('--bg') === '#f4f0dc',
     'Pixel Frame Light applies its warm paper palette');
+  const css=[...window.document.querySelectorAll('style')].map(style=>style.textContent).join('\n');
+  check(css.includes('[data-theme|=pixel-frame] .meta') && css.includes('[data-theme|=pixel-frame] .subnav'),
+    'Pixel Frame protects metadata and settings navigation from the page grid');
   api.apply('light');
 
   let eventTheme = '';

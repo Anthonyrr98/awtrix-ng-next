@@ -142,6 +142,18 @@ weather views, ambient animations, games, progress displays, and API-driven apps
 Read the [scripting guide](https://anthonyrr98.github.io/awtrix-ng-next/guides/scripting/)
 for the lifecycle, API, modules, limits, and complete examples.
 
+## Windows desktop preview
+
+The optional `awtrix-desktop-preview.exe` mirrors the live matrix in a small,
+resizable Windows desktop window. It connects directly to AWTRIX NG—no browser
+needs to remain open—and can stay in the notification area, remain always on
+top, and start with Windows.
+
+Download it from the
+[latest release](https://github.com/Anthonyrr98/awtrix-ng-next/releases/latest)
+and read the [desktop preview guide](https://anthonyrr98.github.io/awtrix-ng-next/advanced/desktop-preview/)
+for controls and troubleshooting.
+
 ## Windows system-audio visualizer
 
 The optional `awtrix-music-visualizer.exe` captures the Windows system-output mix

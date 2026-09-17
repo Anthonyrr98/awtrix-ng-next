@@ -37,6 +37,24 @@ function check(value, message) {
   check(button.textContent === 'EN' && window.localStorage.awtrixLang === 'en',
     'language cycle returns to English');
   window.close();
+
+  const unsupported = await boot({ beforeParse(w) {
+    const RealDateTimeFormat = w.Intl.DateTimeFormat;
+    function DateTimeFormat(locale, options) {
+      if (options && options.timeZone === 'Asia/Shanghai') throw new RangeError('unsupported zone');
+      return new RealDateTimeFormat(locale, options);
+    }
+    DateTimeFormat.prototype = RealDateTimeFormat.prototype;
+    w.Intl.DateTimeFormat = DateTimeFormat;
+  }});
+  await goto(unsupported.window, '#/system');
+  const zoneValues = [...unsupported.window.document.querySelectorAll('select option')]
+    .map(option => option.value);
+  check(!zoneValues.includes('Asia/Shanghai'),
+    'a time zone rejected by the browser is omitted without aborting the System page');
+  check(unsupported.window.document.body.textContent.includes('Stable update'),
+    'maintenance remains visible when the browser rejects a time zone');
+  unsupported.window.close();
   if (failures) process.exitCode = 1;
   else console.log('all checks passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });

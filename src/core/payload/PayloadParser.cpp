@@ -593,6 +593,12 @@ Take takeNotificationMember(const std::string& k, api::JsonReader r, AppSpec& s,
     if (!r.isString()) return Take::Ok;
     std::string melody;
     r.appendString(melody);
+    // An empty string means "no melody", matching other optional sound fields. Only a
+    // non-empty melody has to satisfy the RTTTL format.
+    if (melody.empty()) {
+      s.extrasMut().rtttl.clear();
+      return Take::Ok;
+    }
     const rtttl::Parse parsed = rtttl::parse(melody);
     if (!parsed.ok) {
       if (err) {

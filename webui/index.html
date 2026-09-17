@@ -1570,11 +1570,18 @@ TZ_TABLE.forEach(([rule,zones])=>{
   TZFIRST.set(rule,list[0]);
   list.forEach(n=>TZRULE.set(n,rule));
 });
-const TZNAMES=[...TZRULE.keys()].sort();
 const TZFMT=new Map();
+function tzFmtFor(zone){
+  if(TZFMT.has(zone))return TZFMT.get(zone);
+  let f=null;
+  try{f=new Intl.DateTimeFormat('en',{timeZone:zone,timeZoneName:'longOffset'});}catch(e){}
+  TZFMT.set(zone,f);
+  return f;
+}
+const TZNAMES=[...TZRULE.keys()].filter(n=>tzFmtFor(n)).sort();
 function tzOffset(zone,at){
-  let f=TZFMT.get(zone);
-  if(!f)TZFMT.set(zone,f=new Intl.DateTimeFormat('en',{timeZone:zone,timeZoneName:'longOffset'}));
+  const f=tzFmtFor(zone);
+  if(!f)return 0;
   const s=f.formatToParts(at).find(p=>p.type==='timeZoneName').value;
   const m=/GMT([+-])(\d+)(?::(\d+))?/.exec(s);
   return m?(m[1]==='-'?-1:1)*(Number(m[2])*60+Number(m[3]||0)):0;
@@ -2001,7 +2008,7 @@ const WIDGETS={
     const sel=el('select',null);
     const prev=el('div',{class:'tzprev'});
     const detect=el('button',{type:'button',title:t('tzDetectH')},t('tzDetect'));
-    let cur=TZRULE.has(value)?value:'UTC';
+    let cur=(TZRULE.has(value)&&tzFmtFor(value))?value:'UTC';
     const now=new Date();
     const label=n=>(n.includes('/')?n.split('/').slice(1).join('/'):n).replace(/_/g,' ')
       +' · '+tzOffsetStr(tzOffset(n,now));
@@ -2027,7 +2034,7 @@ const WIDGETS={
     preview();
     ctl.append(el('div',{class:'tzctl'},el('div',{class:'tzrow'},detect,sel),prev));
     return{input:sel,get:()=>cur,
-      set:v=>{cur=TZRULE.has(v)?v:'UTC';sel.value=cur;preview();}};
+      set:v=>{cur=(TZRULE.has(v)&&tzFmtFor(v))?v:'UTC';sel.value=cur;preview();}};
   },
   raw(ctl,def,value,onInput){
     const input=el('input',{type:'text',value:typeof value==='string'?value:JSON.stringify(value)});
@@ -2924,13 +2931,16 @@ const crc32=(()=>{const t=new Uint32Array(256);
 function zipStore(entries){
   const enc=new TextEncoder(),parts=[],central=[];let off=0;
   const u16=v=>[v&0xFF,(v>>8)&0xFF],u32=v=>[v&0xFF,(v>>8)&0xFF,(v>>16)&0xFF,(v>>>24)&0xFF];
+  const now=new Date(),year=Math.max(1980,Math.min(2107,now.getFullYear()));
+  const dosTime=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1);
+  const dosDate=((year-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
   for(const e of entries){
     const name=enc.encode(e.name);
     const data=e.data instanceof Uint8Array?e.data:enc.encode(String(e.data));
     const crc=crc32(data),sz=data.length;
-    parts.push(new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),
+    parts.push(new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(dosTime),...u16(dosDate),
       ...u32(crc),...u32(sz),...u32(sz),...u16(name.length),...u16(0)]),name,data);
-    central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),
+    central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(dosTime),...u16(dosDate),
       ...u32(crc),...u32(sz),...u32(sz),...u16(name.length),...u16(0),...u16(0),...u16(0),...u16(0),
       ...u32(0),...u32(off)]),name);
     off+=30+name.length+sz;

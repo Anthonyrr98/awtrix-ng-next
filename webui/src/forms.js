@@ -114,7 +114,7 @@ const WIDGETS={
     const sel=el('select',null);
     const prev=el('div',{class:'tzprev'});
     const detect=el('button',{type:'button',title:t('tzDetectH')},t('tzDetect'));
-    let cur=TZRULE.has(value)?value:'UTC';
+    let cur=(TZRULE.has(value)&&tzFmtFor(value))?value:'UTC';
     const now=new Date();
     const label=n=>(n.includes('/')?n.split('/').slice(1).join('/'):n).replace(/_/g,' ')
       +' · '+tzOffsetStr(tzOffset(n,now));
@@ -140,7 +140,7 @@ const WIDGETS={
     preview();
     ctl.append(el('div',{class:'tzctl'},el('div',{class:'tzrow'},detect,sel),prev));
     return{input:sel,get:()=>cur,
-      set:v=>{cur=TZRULE.has(v)?v:'UTC';sel.value=cur;preview();}};
+      set:v=>{cur=(TZRULE.has(v)&&tzFmtFor(v))?v:'UTC';sel.value=cur;preview();}};
   },
   raw(ctl,def,value,onInput){
     const input=el('input',{type:'text',value:typeof value==='string'?value:JSON.stringify(value)});
